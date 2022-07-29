@@ -1,0 +1,5 @@
+sendgrid.env
+.env
+/node_modules
+grafana-agent-installer.exe
+grafanacloud-install.ps1

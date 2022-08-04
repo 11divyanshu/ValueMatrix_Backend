@@ -1,17 +1,13 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import dotenv from "dotenv";
 import { collectDefaultMetrics, register } from "prom-client";
 import Connection from "./database/db.js";
 import Routes from "./routes/routes.js";
-import axios from 'axios';
+import axios from "axios";
 import session from "express-session";
 import passport from "passport";
-import passportLocalMongoose from "passport-local-mongoose";
-import { Strategy } from "passport-google-oauth20";
-import findOrCreate from "mongoose-findorcreate";
-import { generate } from "password-hash";
+import User from "./models/userSchema.js";
 
 collectDefaultMetrics();
 
@@ -39,15 +35,19 @@ app.get("/metrics", async (_req, res) => {
   }
 });
 
-
 let backend_url = process.env.BACKEND_URL;
-let url = process.env.FRONTEND_URL
-// Token Generator
+let url = process.env.FRONTEND_URL;
 
+// Token Generator
 const getToken = async (user) => {
-  let token = await axios.post(`${backend_url}/generateToken`, user);
-  user.access_token = access_token;
-  user.save();
+  let token = await axios.post(`${backend_url}/generateToken`, {
+    user: user.id,
+  });
+  await User.findOne({ _id: user.id }, function (err, res) {
+    res.access_token = token.data.token;
+    res.access_valid = true;
+    res.save();
+  }).clone();
   return token;
 };
 
@@ -61,35 +61,61 @@ app.get(
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", {
-    failureRedirect: `${url}`,
+    failureRedirect: `${url}/login`,
   }),
   async function (req, res) {
     // Successful authentication, redirect secrets.
     const token = await getToken(req.user);
-    res.cookie('access_token', token.data.token);
-    res.redirect(`${url}`);
+    res.cookie("access_token", token.data.token);
+    if(req.user.isAdmin)
+      res.redirect(`${url}/admin`);
+    else
+      res.redirect(`${url}`);
   }
 );
-app.get("/logout", function (req, res) {
-  res.redirect(`${url}`);
-});
 
 // Goolge Auth
 
 // Microsoft Auth
-app.get('/auth/microsoft',
-      passport.authenticate('microsoft', {
-        prompt: 'select_account',
-      }));
+app.get(
+  "/auth/microsoft",
+  passport.authenticate("microsoft", {
+    prompt: "select_account",
+  })
+);
 
-    app.get('/auth/microsoft/callback', 
-      passport.authenticate('microsoft', { failureRedirect: '/login' }),
-      async function(req, res) {
-        // const token = await getToken(req.user);
-        // res.cookie('access_token', token.data.token);
-        res.redirect(`${url}`);
-      });
+app.get(
+  "/auth/microsoft/callback",
+  passport.authenticate("microsoft", { failureRedirect: "/login" }),
+  async function (req, res) {
+    const token = await getToken(req.user);
+    res.cookie("access_token", token.data.token);
+    res.redirect(`${url}`);
+  }
+);
 // Microsoft Auth
+
+// LinkedIn Auth
+app.get(
+  "/auth/linkedin",
+  passport.authenticate("linkedin", {
+    scope: ["r_emailaddress", "r_liteprofile"],
+  })
+);
+
+app.get(
+  "/auth/linkedin/callback",
+  passport.authenticate("linkedin", {
+    failureRedirect: "/login",
+  }),
+  async function (req, res) {
+    const token = await getToken(req.user);
+    res.cookie("access_token", token.data.token);
+    res.redirect(`${url}`);
+  }
+);
+
+// LinkedIn Auth
 
 app.listen(PORT, "0.0.0.0", () =>
   console.log(`Server is running successfully on PORT ${PORT}`)
@@ -98,4 +124,10 @@ app.listen(PORT, "0.0.0.0", () =>
 app.use(bodyParser.json({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+const corsOptions ={
+  origin:url, 
+  credentials:true,            //access-control-allow-credentials:true
+  optionSuccessStatus:200
+}
+app.use(cors(corsOptions));
 app.use("/", Routes);

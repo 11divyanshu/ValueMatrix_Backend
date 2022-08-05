@@ -38,7 +38,6 @@ export const vaildateSignupDetails = async (request, response) => {
 // User Login
 export const userLogin = async (request, response) => {
   try {
-    console.log(request.body);
     var user = await User.findOne({ email: request.body.username });
     if (user == null) {
       user = await User.findOne({ username: request.body.username });
@@ -57,7 +56,7 @@ export const userLogin = async (request, response) => {
       user.access_token = access_token;
       user.access_valid = true;
       user.save();
-      return response.status(200).json({ access_token: access_token });
+      return response.status(200).json({access_token: access_token});
     } else {
       return response.status(401).json("Invalid Login!");
     }

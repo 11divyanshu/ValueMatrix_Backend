@@ -7,7 +7,7 @@ import { Strategy as MicrosoftStrategy } from "passport-microsoft";
 import { Strategy as LinkedInStrategy } from "passport-linkedin-oauth2";
 import {} from "dotenv/config";
 import axios from "axios";
-
+  
 const url = process.env.BACKEND_URL;
 
 const userSchema = new mongoose.Schema({
@@ -49,6 +49,10 @@ const userSchema = new mongoose.Schema({
   profileImg: {
     data: Buffer,
     contentType: String,
+  },
+  timeRegistered:{
+    type: Date,
+    default: Date.now(),
   },
   isAdmin: {
     type: Boolean,
@@ -175,6 +179,7 @@ passport.use(
       scope: ["r_emailaddress", "r_liteprofile"],
     },
     function (token, tokenSecret, profile, done) {
+      console.log(`${url}/auth/linkedin/callback`);
       let email = profile.emails[0] ? profile.emails[0].value : profile.id;
       let contact = profile._json.mobilePhone;
       if (contact === null || contact === undefined) contact = profile.id;

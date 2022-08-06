@@ -7,6 +7,7 @@ import passport from 'passport';
 import verifyToken from '../middleware/auth.js';
 import { adminLogin } from '../controllers/adminController.js';
 import { getUserNotification, markNotiReadForUser, pushNotification, sendEmailNotification } from '../controllers/notification-controller.js';
+import { sendOneSignalNotification } from '../controllers/oneSignal.js';
 
 const router = express.Router();
 
@@ -39,6 +40,7 @@ router.post('/test', verifyToken, testAPI );
 router.post('/pushNotification', verifyToken, pushNotification);
 router.post('/getUserNotification', verifyToken, getUserNotification);
 router.post('/markNotificationRead', verifyToken, markNotiReadForUser);
+router.post('/sendOneSignalNotification', verifyToken, sendOneSignalNotification);
 
 // Email Notifications
 router.post('/sendEmailNotification', verifyToken, sendEmailNotification);

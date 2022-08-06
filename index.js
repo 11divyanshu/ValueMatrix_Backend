@@ -44,6 +44,8 @@ const getToken = async (user) => {
     user: user.id,
   });
   await User.findOne({ _id: user.id }, function (err, res) {
+    if(!res || err)
+      return null;
     res.access_token = token.data.token;
     res.access_valid = true;
     res.save();
@@ -63,8 +65,9 @@ app.get(
   passport.authenticate("google", {
     failureRedirect: `${url}/login`,
   }),
-  async function (req, res) {
+ async function (req, res) {
     // Successful authentication, redirect secrets.
+    console.log("D")
     const token = await getToken(req.user);
     res.cookie("access_token", token.data.token);
     if(req.user.isAdmin)

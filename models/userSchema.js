@@ -94,14 +94,16 @@ const user = mongoose.model("user", userSchema);
 // Google Login
 passport.use(user.createStrategy());
 
-passport.serializeUser(function (user, done) {
-  done(null, user.id);
+passport.serializeUser( function (user, done) 
+{
+  console.log("B");
+  done(null, user._id);
 });
 
-passport.deserializeUser(function (id, done) {
-  user.findById(id, function (err, user) {
-    done(err, user);
-  });
+passport.deserializeUser(async function (id, done) {
+  const USER = await user.findById(id);
+  console.log(USER);
+  done(null, USER);
 });
 
 passport.use(
@@ -111,11 +113,12 @@ passport.use(
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: `${url}/auth/google/callback`,
     },
-    function (accessToken, refreshToken, profile, cb) {
-      user.findOne({ googleId: profile.id }, function (err, res) {
+    async function (accessToken, refreshToken, profile, cb) {
+      console.log("A");
+      await user.findOne({ googleId: profile.id }, async function (err, res) {
         let user1 = null;
         if (res === null) {
-          user1 = user.create({
+          user1 = await user.create({
             googleId: profile.id,
             username: profile.id,
             firstName: profile.name.givenName,
@@ -127,7 +130,7 @@ passport.use(
           user1 = res;
         }
         return cb(err, user1);
-      });
+      }).clone();
     }
   )
 );
@@ -146,12 +149,12 @@ passport.use(
       authorizationURL:
         "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
     },
-    function (accessToken, refreshToken, profile, done) {
+    async function (accessToken, refreshToken, profile, done) {
       let email = profile.emails[0] ? profile.emails[0].value : profile.id;
       let contact = profile._json.mobilePhone;
       if (contact === null) contact = profile.id;
       let username = profile.displayName ? profile.displayName : profile.id;
-      user.findOrCreate(
+      await user.findOrCreate(
         {
           microsoftId: profile.id,
           username: username,
@@ -178,7 +181,7 @@ passport.use(
       callbackURL: `${url}/auth/linkedin/callback`,
       scope: ["r_emailaddress", "r_liteprofile"],
     },
-    function (token, tokenSecret, profile, done) {
+    async function (token, tokenSecret, profile, done) {
       console.log(`${url}/auth/linkedin/callback`);
       let email = profile.emails[0] ? profile.emails[0].value : profile.id;
       let contact = profile._json.mobilePhone;
@@ -186,7 +189,7 @@ passport.use(
       let username = profile.displayName;
       let user1 = user.findOne({ username: profile.displayName });
       if (user1) username = profile.id;
-      user.findOrCreate(
+      await user.findOrCreate(
         {
           linkedInId: profile.id,
           username: username,

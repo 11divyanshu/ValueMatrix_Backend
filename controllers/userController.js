@@ -184,8 +184,9 @@ export const updateProfileImage = async (req, res) => {
 export const logout = async (req, response) => {
   try {
     await User.findOne({ _id: req.body.user_id }, function (err, res) {
-      res.access_valid = false;
-      res.save();
+      if(res){
+        res.access_valid = false;
+      res.save();}
     }).clone();
     response.redirect(`${front_url}/login`);
   } catch (error) {

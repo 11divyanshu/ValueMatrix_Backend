@@ -3,8 +3,10 @@ import axios from "axios";
 import passwordHash from "password-hash";
 import jwt from "jsonwebtoken";
 import {} from "dotenv/config";
-import e, { response } from "express";
+import verifyToken from "../middleware/auth.js";
 import multer from "multer";
+import fs from "fs";
+import path from "path";
 
 const url = process.env.BACKEND_URL;
 const front_url = process.env.FRONTEND_URL;
@@ -14,7 +16,8 @@ var storage = multer.diskStorage({
     cb(null, "media/profileImg");
   },
   filename: (req, file, cb) => {
-    cb(null, file.fieldname + "-" + Date.now());
+    console.log(file);
+    cb(null, file.filename+"-"+Date.now());
   },
 });
 var upload = multer({ storage: storage });
@@ -98,22 +101,6 @@ export const userSignup = async (request, response) => {
   }
 };
 
-export const testAPI = async (req, res) => {
-  try {
-    jwt.verify(req.token, process.env.ACCESS_TOKEN_SECRET, (err, authData) => {
-      if (err) {
-        res.sendStatus(403);
-      } else {
-        // Refresh the token here
-        console.log(authData);
-      }
-    });
-    res.status(200).json({ MSG: "Passed" });
-  } catch (error) {
-    console.log("error");
-  }
-};
-
 // Get User From Id
 export const getUserFromId = async (request, response) => {
   try {
@@ -138,7 +125,7 @@ export const updateUserDetails = async (request, response) => {
     );
     if (validate.data.email) {
       return response.json({
-        Error: "Email already registered",
+        Error: "Email already registered",  
         contact: 0,
         email: 1,
       });
@@ -150,7 +137,7 @@ export const updateUserDetails = async (request, response) => {
         email: 0,
       });
     }
-    console.log(request.body.updates);
+    
     User.findOne({ _id: request.body.user_id }, function (err, res) {
       if (res.access_valid === false) return response.status(403);
     });
@@ -167,13 +154,14 @@ export const updateUserDetails = async (request, response) => {
 // Update Profile Picture
 export const updateProfileImage = async (req, res) => {
   try {
-    var user1 = User.findOne({ _id: req.body.user_id }, function (err, user) {
+    User.findOne({ _id: req.body.user_id }, function (err, user) {
+      console.log(req.files)
       user.profileImg = {
-        data: fs.readFileSync(path.join(req.file.path)),
-        contentType: "image",
+        data: req.files[0].originalname,
+        contentType: 'image/png'
       };
       user.save();
-      res.status(200);
+      res.status(200).json({Success:true});
     });
   } catch (error) {
     console.log("Error : ", error);

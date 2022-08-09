@@ -7,7 +7,7 @@ import { Strategy as MicrosoftStrategy } from "passport-microsoft";
 import { Strategy as LinkedInStrategy } from "passport-linkedin-oauth2";
 import {} from "dotenv/config";
 import axios from "axios";
-  
+
 const url = process.env.BACKEND_URL;
 
 const userSchema = new mongoose.Schema({
@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema({
     data: Buffer,
     contentType: String,
   },
-  timeRegistered:{
+  timeRegistered: {
     type: Date,
     default: Date.now(),
   },
@@ -94,15 +94,12 @@ const user = mongoose.model("user", userSchema);
 // Google Login
 passport.use(user.createStrategy());
 
-passport.serializeUser( function (user, done) 
-{
-  console.log("B");
+passport.serializeUser(function (user, done) {
   done(null, user._id);
 });
 
 passport.deserializeUser(async function (id, done) {
   const USER = await user.findById(id);
-  console.log(USER);
   done(null, USER);
 });
 
@@ -114,23 +111,26 @@ passport.use(
       callbackURL: `${url}/auth/google/callback`,
     },
     async function (accessToken, refreshToken, profile, cb) {
-      console.log("A");
-      await user.findOne({ googleId: profile.id }, async function (err, res) {
-        let user1 = null;
-        if (res === null) {
-          user1 = await user.create({
-            googleId: profile.id,
-            username: profile.id,
-            firstName: profile.name.givenName,
-            lastName: profile.name.familyname,
-            email: profile.id,
-            contact: profile.id,
-          });
-        } else if (res) {
-          user1 = res;
-        }
-        return cb(err, user1);
-      }).clone();
+      await user
+        .findOne({ email: profile.emails[0].value }, async function (err, res) {
+          let user1 = null;
+          if (res === null) {
+            user1 = await user.create({
+              googleId: profile.id,
+              username: profile.id,
+              firstName: profile.name.givenName,
+              lastName: profile.name.familyname,
+              email: profile.emails[0].value,
+              contact: profile.id,
+            });
+          } else if (res) {
+            res.googleId = profile.id;
+            res.save();
+            user1 = res;
+          }
+          return cb(err, user1);
+        })
+        .clone();
     }
   )
 );
@@ -150,23 +150,35 @@ passport.use(
         "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
     },
     async function (accessToken, refreshToken, profile, done) {
+      let cont = true;
       let email = profile.emails[0] ? profile.emails[0].value : profile.id;
       let contact = profile._json.mobilePhone;
       if (contact === null) contact = profile.id;
       let username = profile.displayName ? profile.displayName : profile.id;
-      await user.findOrCreate(
-        {
-          microsoftId: profile.id,
-          username: username,
-          firstName: profile.name.givenName,
-          lastName: profile.name.familyname,
-          email: email,
-          contact: contact,
-        },
-        function (err, user) {
-          return done(err, user);
-        }
-      );
+      await user
+        .findOne({ email: email }, async function (err, res) {
+          if (res) {
+            res.microsoftId = profile.id;
+            await res.save();
+            cont = false;
+            return done(err, res);
+          } else {
+            await user.Create(
+              {
+                microsoftId: profile.id,
+                username: username,
+                firstName: profile.name.givenName,
+                lastName: profile.name.familyname,
+                email: email,
+                contact: contact,
+              },
+              function (err, user) {
+                return done(err, user);
+              }
+            ).clone();  
+          }
+        })
+        .clone();
     }
   )
 );
@@ -182,13 +194,19 @@ passport.use(
       scope: ["r_emailaddress", "r_liteprofile"],
     },
     async function (token, tokenSecret, profile, done) {
-      console.log(`${url}/auth/linkedin/callback`);
       let email = profile.emails[0] ? profile.emails[0].value : profile.id;
       let contact = profile._json.mobilePhone;
       if (contact === null || contact === undefined) contact = profile.id;
       let username = profile.displayName;
-      let user1 = user.findOne({ username: profile.displayName });
-      if (user1) username = profile.id;
+      await user
+        .findOne({ email: email }, function (err, res) {
+          if (res) {
+            res.linkedInId = profile.id;
+            res.save();
+            return done(err, res);
+          }
+        })
+        .clone();
       await user.findOrCreate(
         {
           linkedInId: profile.id,

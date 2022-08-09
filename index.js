@@ -57,7 +57,7 @@ const getToken = async (user) => {
 
 app.get(
   "/auth/google",
-  passport.authenticate("google", { scope: ["profile"] })
+  passport.authenticate("google", { scope: ["profile","email"] })
 );
 
 app.get(
@@ -67,13 +67,12 @@ app.get(
   }),
  async function (req, res) {
     // Successful authentication, redirect secrets.
-    console.log("D")
     const token = await getToken(req.user);
     res.cookie("access_token", token.data.token);
     if(req.user.isAdmin)
       res.redirect(`${url}/admin`);
     else
-      res.redirect(`${url}`);
+      res.redirect(`${url}/user`);
   }
 );
 
@@ -92,8 +91,8 @@ app.get(
   passport.authenticate("microsoft", { failureRedirect: "/login" }),
   async function (req, res) {
     const token = await getToken(req.user);
-    res.cookie("access_token", token.data.token);
-    res.redirect(`${url}`);
+    await res.cookie("access_token", token.data.token);
+    res.redirect(`${url}/user`);
   }
 );
 // Microsoft Auth
@@ -114,7 +113,7 @@ app.get(
   async function (req, res) {
     const token = await getToken(req.user);
     res.cookie("access_token", token.data.token);
-    res.redirect(`${url}`);
+    res.redirect(`${url}/user`);
   }
 );
 

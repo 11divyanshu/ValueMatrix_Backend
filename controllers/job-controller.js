@@ -145,3 +145,18 @@ export const exportJobDetails = async (request, response) => {
     response.status(200).json({ Message: "Files Downloaded" });
   } catch (error) {}
 };
+
+
+// Get Job From Id
+export const GetJobFromId = async(request, response) => {
+  try {
+    
+    await Job.findOne({_id : request.body.job_id}, function(err, res){
+      if(res)
+        response.status(200).json({job:res});
+    })
+
+  } catch (error) {
+    
+  }
+}

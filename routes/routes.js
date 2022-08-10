@@ -51,5 +51,5 @@ router.post("/addJob", verifyToken, addJob);
 router.post("/listJob", listJobs);
 router.post("/updateJobDetails", verifyToken, updateJob);
 router.post("/exportJobDetails", exportJobDetails);
-
+router.post("/getJobFromId", verifyToken, GetJobFromId);
 export default router;

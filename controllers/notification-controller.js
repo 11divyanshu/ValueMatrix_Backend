@@ -40,13 +40,15 @@ export const getUserNotification = async (request, response) => {
           {
             forAll: true,
             hideFrom: { $ne: request.body.user_id },
-            timeCreated: { $ge: request.body.user.timeRegistered },
+            timeCreated: { $gte: request.body.user.timeRegistered },
+            type: "Notification",
           },
           {
             forAll: false,
             user_type: "User",
             hideFrom: { $ne: request.body.user_id },
-            timeCreated: { $ge: request.body.user.timeRegistered },
+            timeCreated: { $gte: request.body.user.timeRegistered },
+            type: "Notification",
           },
         ],
       },
@@ -89,8 +91,7 @@ export const sendEmailNotification = async (request, response) => {
         return;
       }
     });
-    console.log("Message");
-    console.log(request.body);
+    
     let query = null;
     switch (request.body.sendTo) {
       case "All":
@@ -103,6 +104,13 @@ export const sendEmailNotification = async (request, response) => {
         query = User.find({ isAdmin: true }).select("email");
         break;
     }
+    let noti = new Notification({
+        forAll: (request.body.sendTo === "All") ? true : false,
+        title : request.body.subject,
+        message: request.body.text,
+        user_type : request.body.sendTo,
+    })
+    await noti.save();
     let to = null;
     await query.exec(async function (err, res) {
       console.log("RES:", res);

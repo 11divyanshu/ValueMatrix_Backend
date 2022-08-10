@@ -70,6 +70,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  user_type:{
+    type:String,
+    enum : ["Company", "User", "XI", "SuperXI"]
+  },
   secret: {
     type: String,
     required: false,

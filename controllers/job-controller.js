@@ -43,8 +43,6 @@ export const listJobs = async(request,response) => {
         await Job.find({}).sort({createTime : -1}).exec(async function(err,res){
             await response.status(200).json({"jobs":res});
             return;
-        }).then(()=>{
-            response.status(403).json({"Message":"No Job Found"});
         })
     } catch (error) {
         console.log(error);

@@ -25,6 +25,11 @@ const notificationSchema = new mongoose.Schema({
     hideFrom:{
         type: Array(String),
         default: []
+    },
+    type:{
+        type: String,
+        enum : ["Email", "Notification","OneSignal"],
+        default:"Notification",
     }
 })
 

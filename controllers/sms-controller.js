@@ -8,6 +8,7 @@ const url =process.env.BACKEND_URL;
 
 export const sendOTPSMS = async(request,response) => {
     try {
+      console.log("OTP : ", request.body);
         var digits = "0123456789";
         let OTP = "";
         for (let i = 0; i < 6; i++) {

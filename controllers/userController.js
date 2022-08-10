@@ -53,13 +53,12 @@ export const userLogin = async (request, response) => {
       correctuser = passwordHash.verify(request.body.password, user.password);
     }
     if (user && correctuser) {
-      let u = { user };
       const token = await axios.post(`${url}/generateToken`, { user: user.id });
       const access_token = token.data.token;
       user.access_token = access_token;
       user.access_valid = true;
-      user.save();
-      return response.status(200).json({access_token: access_token});
+      await user.save();
+      return response.status(200).json({access_token: access_token, user: user});
     } else {
       return response.status(401).json("Invalid Login!");
     }
@@ -84,6 +83,7 @@ export const userSignup = async (request, response) => {
       firstName: firstname,
       lastname: lastname,
       password: password,
+      user_type : request.body.user_type
     };
 
     const newUser = new User(user1);

@@ -10,6 +10,7 @@ sendGridMail.setApiKey(process.env.SENDGRID_API_KEY);
 // OTP For Sign Up
 export const sendOTPEmail = async (req, res) => {
   try {
+    console.log("EMail : ", req.body);
     var digits = "0123456789";
     let OTP = "";
     for (let i = 0; i < 6; i++) {

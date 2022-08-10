@@ -9,7 +9,7 @@ import { getUserIdFromToken, tokenGenerator } from '../controllers/token-control
 import { adminLogin } from '../controllers/adminController.js';
 import { getUserNotification, markNotiReadForUser, pushNotification, sendEmailNotification } from '../controllers/notification-controller.js';
 import { sendOneSignalNotification } from '../controllers/oneSignal.js';
-import {addJob, listJobs} from "../controllers/job-controller.js";
+import {addJob, exportJobDetails, listJobs, updateJob} from "../controllers/job-controller.js";
 
 const upload = multer();
 const router = express.Router();
@@ -49,5 +49,7 @@ router.post('/sendEmailNotification', verifyToken, sendEmailNotification);
 // Job
 router.post("/addJob", verifyToken, addJob);
 router.post("/listJob", listJobs);
+router.post("/updateJobDetails", verifyToken, updateJob);
+router.post("/exportJobDetails", exportJobDetails);
 
 export default router;

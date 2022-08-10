@@ -14,10 +14,10 @@ const jobSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
-  uploadBy: {
+ uploadBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: user
-  },
+  }, 
   location: {
     type: String,
     required: true,

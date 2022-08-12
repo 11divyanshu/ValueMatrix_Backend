@@ -8,7 +8,7 @@ import json2xls from "json2xls";
 export const addJob = async (request, response) => {
   try {
     User.findOne({ _id: request.body.user_id }, async function (err, res) {
-      if (res === null || res === undefined || res.isAdmin === false) {
+      if (res === null || res === undefined) {
         response.status(404).json({ Message: "Admin Not Found" });
         return;
       }
@@ -26,7 +26,7 @@ export const addJob = async (request, response) => {
 
       const newJob = new Job(jobC);
       await newJob.save();
-
+      console.log("D");
       if (newJob) {
         response
           .status(200)
@@ -60,12 +60,12 @@ export const listJobs = async (request, response) => {
 export const updateJob = async (request, response) => {
   try {
     let user1 = null;
-    await User.findOne({ _id: request.body.user_id }, function (err, res) {
-      user1 = res;
+    user1 = res;
       if (res === undefined || res === null || res.user_type !== "Company") {
         response.status(403);
         return;
-      }
+      }  await User.findOne({ _id: request.body.user_id }, function (err, res) {
+    
     });
     let job = Job.findOne({ _id: request.body.job_id });
     if (job.uploadBy !== user1) {

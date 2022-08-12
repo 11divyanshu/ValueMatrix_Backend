@@ -50,6 +50,9 @@ const userSchema = new mongoose.Schema({
     data: Buffer,
     contentType: String,
   },
+  about:{
+    data: String,
+  },
   timeRegistered: {
     type: Date,
     default: Date.now(),

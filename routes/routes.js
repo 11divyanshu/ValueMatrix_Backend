@@ -9,7 +9,7 @@ import { getUserIdFromToken, tokenGenerator } from '../controllers/token-control
 import { adminLogin } from '../controllers/adminController.js';
 import { getUserNotification, markNotiReadForUser, pushNotification, sendEmailNotification } from '../controllers/notification-controller.js';
 import { sendOneSignalNotification } from '../controllers/oneSignal.js';
-import {addJob, exportJobDetails, listJobs, updateJob} from "../controllers/job-controller.js";
+import {addJob, exportJobDetails, listJobs, updateJob, GetJobFromId} from "../controllers/job-controller.js";
 
 const upload = multer();
 const router = express.Router();

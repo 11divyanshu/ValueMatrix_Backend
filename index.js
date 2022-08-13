@@ -44,8 +44,7 @@ const getToken = async (user) => {
     user: user.id,
   });
   await User.findOne({ _id: user.id }, function (err, res) {
-    if(!res || err)
-      return null;
+    if (!res || err) return null;
     res.access_token = token.data.token;
     res.access_valid = true;
     res.save();
@@ -57,7 +56,7 @@ const getToken = async (user) => {
 
 app.get(
   "/auth/google",
-  passport.authenticate("google", { scope: ["profile","email"] })
+  passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
 app.get(
@@ -65,14 +64,15 @@ app.get(
   passport.authenticate("google", {
     failureRedirect: `${url}/login`,
   }),
- async function (req, res) {
+  async function (req, res) {
     // Successful authentication, redirect secrets.
     const token = await getToken(req.user);
     res.cookie("access_token", token.data.token);
-    if(req.user.isAdmin)
-      res.redirect(`${url}/admin`);
-    else
-      res.redirect(`${url}/user`);
+    let type = req.user.user_type;
+    if (type === "Company") res.redirect(`${url}/company`);
+    else if (type === "XI") res.redirect(`${url}/XI`);
+    else if (req.user.isAdmin) res.redirect(`${url}/admin`);
+    else res.redirect(`${url}/user`);
   }
 );
 
@@ -92,7 +92,11 @@ app.get(
   async function (req, res) {
     const token = await getToken(req.user);
     await res.cookie("access_token", token.data.token);
-    res.redirect(`${url}/user`);
+    let type = req.user.user_type;
+    if (type === "Company") res.redirect(`${url}/company`);
+    else if (type === "XI") res.redirect(`${url}/XI`);
+    else if (req.user.isAdmin) res.redirect(`${url}/admin`);
+    else res.redirect(`${url}/user`);
   }
 );
 // Microsoft Auth
@@ -113,7 +117,11 @@ app.get(
   async function (req, res) {
     const token = await getToken(req.user);
     res.cookie("access_token", token.data.token);
-    res.redirect(`${url}/user`);
+    let type = req.user.user_type;  
+    if (type === "Company") res.redirect(`${url}/company`);
+    else if (type === "XI") res.redirect(`${url}/XI`);
+    else if (req.user.isAdmin) res.redirect(`${url}/admin`);
+    else res.redirect(`${url}/user`);
   }
 );
 
@@ -123,13 +131,15 @@ app.listen(PORT, "0.0.0.0", () =>
   console.log(`Server is running successfully on PORT ${PORT}`)
 );
 
+
 app.use(bodyParser.json({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
-const corsOptions ={
-  origin:url, 
-  credentials:true,            //access-control-allow-credentials:true
-  optionSuccessStatus:200
-}
+const corsOptions = {
+  origin: url,
+  credentials: true, //access-control-allow-credentials:true
+  optionSuccessStatus: 200,
+};
+
 app.use(cors(corsOptions));
 app.use("/", Routes);

@@ -61,12 +61,11 @@ export const updateJob = async (request, response) => {
   try {
     let user1 = null;
     user1 = res;
-      if (res === undefined || res === null || res.user_type !== "Company") {
-        response.status(403);
-        return;
-      }  await User.findOne({ _id: request.body.user_id }, function (err, res) {
-    
-    });
+    if (res === undefined || res === null || res.user_type !== "Company") {
+      response.status(403);
+      return;
+    }
+    await User.findOne({ _id: request.body.user_id }, function (err, res) {});
     let job = Job.findOne({ _id: request.body.job_id });
     if (job.uploadBy !== user1) {
       response.status(403);
@@ -106,11 +105,11 @@ export const exportJobDetails = async (request, response) => {
         if (err) console.log("wrtieFileSync Error : ", err);
       });
       await response.download(filename);
-    //   fs.unlink(filename, (err) => {
-    //     if (err) {
-    //       console.log("Error deleting file : ", err);
-    //     }
-    //   });
+      //   fs.unlink(filename, (err) => {
+      //     if (err) {
+      //       console.log("Error deleting file : ", err);
+      //     }
+      //   });
 
       // Getting Canditates
       let candidateArr = res.applicants;
@@ -134,11 +133,11 @@ export const exportJobDetails = async (request, response) => {
             }
           );
           await response.download(filename);
-        //   fs.unlink(filename, (err) => {
-        //     if (err) {
-        //       console.log("Error deleting file : ", err);
-        //     }
-        //   });
+          //   fs.unlink(filename, (err) => {
+          //     if (err) {
+          //       console.log("Error deleting file : ", err);
+          //     }
+          //   });
         }
       });
     });
@@ -146,17 +145,11 @@ export const exportJobDetails = async (request, response) => {
   } catch (error) {}
 };
 
-
 // Get Job From Id
-export const GetJobFromId = async(request, response) => {
+export const GetJobFromId = async (request, response) => {
   try {
-    
-    await Job.findOne({_id : request.body.job_id}, function(err, res){
-      if(res)
-        response.status(200).json({job:res});
-    })
-
-  } catch (error) {
-    
-  }
-}
+    await Job.findOne({ _id: request.body.job_id }, function (err, res) {
+      if (res) response.status(200).json({ job: res });
+    });
+  } catch (error) {}
+};

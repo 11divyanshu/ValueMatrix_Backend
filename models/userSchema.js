@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema({
     data: Buffer,
     contentType: String,
   },
-  about:{
+  about: {
     data: String,
   },
   timeRegistered: {
@@ -73,9 +73,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  user_type:{
-    type:String,
-    enum : ["Company", "User", "XI", "SuperXI"]
+  user_type: {
+    type: String,
+    enum: ["Company", "User", "XI", "SuperXI"],
   },
   secret: {
     type: String,
@@ -170,19 +170,21 @@ passport.use(
             cont = false;
             return done(err, res);
           } else {
-            await user.Create(
-              {
-                microsoftId: profile.id,
-                username: username,
-                firstName: profile.name.givenName,
-                lastName: profile.name.familyname,
-                email: email,
-                contact: contact,
-              },
-              function (err, user) {
-                return done(err, user);
-              }
-            ).clone();  
+            await user
+              .Create(
+                {
+                  microsoftId: profile.id,
+                  username: username,
+                  firstName: profile.name.givenName,
+                  lastName: profile.name.familyname,
+                  email: email,
+                  contact: contact,
+                },
+                function (err, user) {
+                  return done(err, user);
+                }
+              )
+              .clone();
           }
         })
         .clone();
@@ -206,27 +208,28 @@ passport.use(
       if (contact === null || contact === undefined) contact = profile.id;
       let username = profile.displayName;
       await user
-        .findOne({ email: email }, function (err, res) {
+        .findOne({ email: email }, async function (err, res) {
           if (res) {
             res.linkedInId = profile.id;
-            res.save();
+            await res.save();
             return done(err, res);
+          } else {
+            await user.findOrCreate(
+              {
+                linkedInId: profile.id,
+                username: username,
+                firstName: profile.name.givenName,
+                lastName: profile.name.familyName,
+                email: email,
+                contact: contact,
+              },
+              function (err, res) {
+                return done(err, res);
+              }
+            );
           }
         })
         .clone();
-      await user.findOrCreate(
-        {
-          linkedInId: profile.id,
-          username: username,
-          firstName: profile.name.givenName,
-          lastName: profile.name.familyName,
-          email: email,
-          contact: contact,
-        },
-        function (err, res) {
-          return done(err, res);
-        }
-      );
     }
   )
 );

@@ -41,6 +41,7 @@ export const vaildateSignupDetails = async (request, response) => {
 // User Login
 export const userLogin = async (request, response) => {
   try {
+    console.log("Login");
     var user = await User.findOne({ email: request.body.username });
     if (user == null) {
       user = await User.findOne({ username: request.body.username });
@@ -108,8 +109,7 @@ export const getUserFromId = async (request, response) => {
   try {
     User.findById(request.body.id, function (err, res) {
       if (res && res.access_valid) {
-        let image = res.profileImg.data.toString("base64");
-        response.status(200).json({ user: res, profile: image });
+        response.status(200).json({ user: res });
         return;
       }
       response.status(403).json({ Message: "User Not Found" });

@@ -8,24 +8,32 @@ import axios from "axios";
 import session from "express-session";
 import passport from "passport";
 import User from "./models/userSchema.js";
+import {} from "dotenv/config";
+import cookieParser from "cookie-parser";
+import querystring from 'querystring';
 
 collectDefaultMetrics();
 
+const domain = process.env.FRONTEND_DOMAIN
+
 const app = express();
 const PORT = 8000;
-
+  
 app.use(
   session({
     secret: "Our little secret.",
     resave: false,
+    cookie: {domain: domain},
     saveUninitialized: false,
   })
 );
+app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
 
 Connection();
-// collectDefaultMetrics({timeout:5000});
+
+
 app.get("/metrics", async (_req, res) => {
   try {
     res.set("Content-Type", register.contentType);
@@ -67,12 +75,18 @@ app.get(
   async function (req, res) {
     // Successful authentication, redirect secrets.
     const token = await getToken(req.user);
-    res.cookie("access_token", token.data.token);
+    res.cookie("access_token", token.data.token, {origin: domain});
     let type = req.user.user_type;
-    if (type === "Company") res.redirect(`${url}/company`);
-    else if (type === "XI") res.redirect(`${url}/XI`);
-    else if (req.user.isAdmin) res.redirect(`${url}/admin`);
-    else res.redirect(`${url}/user`);
+    let url1 = null;
+    if (type === "Company") url1= `${url}/company`;
+    else if (type === "XI") url1 = `${url}/XI`;
+    else if (req.user.isAdmin) url1 = `${url}/admin`;
+    else url1 = `${url}/user`;
+    let r = querystring.stringify({
+      a : token.data.token
+    });
+
+    res.redirect(url1+"/?"+r);
   }
 );
 
@@ -91,12 +105,18 @@ app.get(
   passport.authenticate("microsoft", { failureRedirect: "/login" }),
   async function (req, res) {
     const token = await getToken(req.user);
-    await res.cookie("access_token", token.data.token);
+    await res.cookie("access_token", token.data.token, {origin: domain});
     let type = req.user.user_type;
-    if (type === "Company") res.redirect(`${url}/company`);
-    else if (type === "XI") res.redirect(`${url}/XI`);
-    else if (req.user.isAdmin) res.redirect(`${url}/admin`);
-    else res.redirect(`${url}/user`);
+    let url1 = null;
+    if (type === "Company") url1= `${url}/company`;
+    else if (type === "XI") url1 = `${url}/XI`;
+    else if (req.user.isAdmin) url1 = `${url}/admin`;
+    else url1 = `${url}/user`;
+    let r = querystring.stringify({
+      a : token.data.token
+    });
+
+    res.redirect(url1+"/?"+a);
   }
 );
 // Microsoft Auth
@@ -116,15 +136,20 @@ app.get(
   }),
   async function (req, res) {
     const token = await getToken(req.user);
-    res.cookie("access_token", token.data.token);
-    let type = req.user.user_type;  
-    if (type === "Company") res.redirect(`${url}/company`);
-    else if (type === "XI") res.redirect(`${url}/XI`);
-    else if (req.user.isAdmin) res.redirect(`${url}/admin`);
-    else res.redirect(`${url}/user`);
+    await res.cookie("access_token", token.data.token, {origin: domain});
+    let url1 = null;
+    let type = req.user.user_type;
+    if (type === "Company") url1= `${url}/company`;
+    else if (type === "XI") url1 = `${url}/XI`;
+    else if (req.user.isAdmin) url1 = `${url}/admin`;
+    else url1 = `${url}/user`;
+    let r = querystring.stringify({
+      a : token.data.token
+    });
+
+    res.redirect(url1+"/?"+r);
   }
 );
-
 // LinkedIn Auth
 
 app.listen(PORT, "0.0.0.0", () =>

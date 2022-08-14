@@ -41,7 +41,7 @@ export const vaildateSignupDetails = async (request, response) => {
 // User Login
 export const userLogin = async (request, response) => {
   try {
-    console.log("Login");
+
     var user = await User.findOne({ email: request.body.username });
     if (user == null) {
       user = await User.findOne({ username: request.body.username });
@@ -158,7 +158,6 @@ export const updateUserDetails = async (request, response) => {
 export const updateProfileImage = async (req, res) => {
   try {
     User.findOne({ _id: req.body.user_id }, async function (err, user) {
-      console.log(req)
       const image = {
         data: new Buffer.from(req.files[0].buffer, "base64"),
         contentType: req.files[0].mimetype,

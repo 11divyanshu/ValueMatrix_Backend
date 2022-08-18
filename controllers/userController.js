@@ -1,11 +1,10 @@
 import User from "../models/userSchema.js";
 import axios from "axios";
 import passwordHash from "password-hash";
-import jwt from "jsonwebtoken";
 import {} from "dotenv/config";
-import verifyToken from "../middleware/auth.js";
 import multer from "multer";
-import {promises as fs} from "fs";
+import fs from "fs";
+import FormData from "form-data";
 import path from "path";
 
 const url = process.env.BACKEND_URL;
@@ -16,7 +15,6 @@ var storage = multer.memoryStorage({
     cb(null, "media/profileImg");
   },
   filename: (req, file, cb) => {
-    console.log(file);
     cb(null, file.filename + "-" + Date.now());
   },
 });
@@ -41,7 +39,6 @@ export const vaildateSignupDetails = async (request, response) => {
 // User Login
 export const userLogin = async (request, response) => {
   try {
-
     var user = await User.findOne({ email: request.body.username });
     if (user == null) {
       user = await User.findOne({ username: request.body.username });
@@ -59,9 +56,7 @@ export const userLogin = async (request, response) => {
       user.access_token = access_token;
       user.access_valid = true;
       await user.save();
-      return response
-        .status(200)
-        .json({ access_token: access_token, user: user });
+      return response.status(200).json({ access_token: access_token, user: user });
     } else {
       return response.status(401).json("Invalid Login!");
     }
@@ -107,10 +102,9 @@ export const userSignup = async (request, response) => {
 // Get User From Id
 export const getUserFromId = async (request, response) => {
   try {
-    User.findById(request.body.id, function (err, res) {
+    User.findById(request.body.id, async function (err, res) {
       if (res && res.access_valid) {
-        response.status(200).json({ user: res });
-        return;
+        return response.status(200).json({ user: res });
       }
       response.status(403).json({ Message: "User Not Found" });
     });
@@ -118,6 +112,27 @@ export const getUserFromId = async (request, response) => {
     console.log("Error :", error);
   }
 };
+
+// GET Profile Image
+export const getProfileImg = async(request ,response) => {{
+  try {
+    User.findById(request.body.id, async function (err, res) {
+      if (res && res.access_valid) {
+        let path_url = 'D:/TDP Vista/Backend/media/profileImg/'+res.profileImg;
+        console.log(path_url);
+        let d = await fs.readFileSync(path.resolve("D:/TDP Vista/Backend/media/profileImg/62f373ab34a66ea1a2300f1e-profileImg"), {},function(err, res){
+          console.log("ERRO :", err);
+          console.log("Res : ", res);
+        })
+        return response.json({"Image": d});
+      }
+
+      return response.status(403).json({ Message: "User Not Found" });
+    });
+  } catch (error) {
+    console.log("Error : ", error);
+  }
+}}
 
 // Update User Profile
 export const updateUserDetails = async (request, response) => {
@@ -155,23 +170,14 @@ export const updateUserDetails = async (request, response) => {
 };
 
 // Update Profile Picture
-export const updateProfileImage = async (req, res) => {
+export const updateProfileImage = async (req, response) => {
   try {
     User.findOne({ _id: req.body.user_id }, async function (err, user) {
-      const image = {
-        data: new Buffer.from(req.files[0].buffer, "base64"),
-        contentType: req.files[0].mimetype,
-      };
-      user.profileImg = image;
-      fs.writeFile(req.files[0].originalname, req.files[0].buffer, (err) => {
-        if (err) {
-            console.log('Error: ', err);
-            res.status(500).send('An error occurred: ' + err.message);
-          } else {
-          user.save();
-            res.status(200).send('ok');
-        }});
-      res.status(200).json({ Success: true });
+      
+      let str = user._id + "-profileImg";
+      user.profileImg = str;
+      await user.save();
+      return response.status(200).json({ Success: true });
     });
   } catch (error) {
     console.log("Error : ", error);

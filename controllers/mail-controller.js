@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import {} from "dotenv/config";
 import sendGridMail from "@sendgrid/mail";
-import axios from 'axios'
+import axios from "axios";
 
 const url = process.env.BACKEND_URL;
 
@@ -50,9 +50,16 @@ export const sendOTPEmail = async (req, res) => {
 
 export const UpdateEmailOTP = async (request, response) => {
   try {
-    let validate = await axios.post(`${url}/validateSignup`, request.body.updates);
-    if(validate.data.email){
-      return response.json({"Error": "Email already registered", contact:0, email : 1});
+    let validate = await axios.post(
+      `${url}/validateSignup`,
+      request.body.updates
+    );
+    if (validate.data.email) {
+      return response.json({
+        Error: "Email already registered",
+        contact: 0,
+        email: 1,
+      });
     }
 
     var digits = "0123456789";
@@ -60,7 +67,7 @@ export const UpdateEmailOTP = async (request, response) => {
     for (let i = 0; i < 6; i++) {
       OTP += digits[Math.floor(Math.random() * 10)];
     }
-    
+
     let html = `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
         <div style="margin:50px auto;width:70%;padding:20px 0">
           <div style="border-bottom:1px solid #eee">
@@ -74,20 +81,19 @@ export const UpdateEmailOTP = async (request, response) => {
         </div>
       </div>`;
 
-      await sendGridMail
+    await sendGridMail
       .send({
         to: request.body.mail,
         from: "developervm171@gmail.com",
         subject: "Repute Hire OTP",
         html: html,
       })
-      .then(() => {        
+      .then(() => {
         return response.status(200).json({ otp: OTP });
       })
       .catch((err) => {
         return response.status(401).json({ Error: "Email Not Sent" });
       });
-
   } catch (error) {
     console.log("Error :", error);
   }

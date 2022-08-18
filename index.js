@@ -30,6 +30,7 @@ app.use(
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(express.static("media/"));
 
 Connection();
 
@@ -116,7 +117,7 @@ app.get(
       a : token.data.token
     });
 
-    res.redirect(url1+"/?"+a);
+    res.redirect(url1+"/?"+r);
   }
 );
 // Microsoft Auth

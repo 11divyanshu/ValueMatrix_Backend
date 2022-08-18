@@ -17,6 +17,7 @@ export const tokenGenerator = async (request, response) => {
 export const getUserIdFromToken = async (request, response) => {
   try {
     const access_token = request.body.access_token;
+    console.log(access_token);
     jwt.verify(
       access_token,
       process.env.ACCESS_TOKEN_SECRET,
@@ -24,6 +25,7 @@ export const getUserIdFromToken = async (request, response) => {
         if (authData === null) {
           response.sendStatus(403);
         } else {
+          console.log(authData);
           response.status(200).json({ user: authData });
         }
       }

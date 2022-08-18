@@ -47,11 +47,10 @@ const userSchema = new mongoose.Schema({
     default: null,
   },
   profileImg: {
-    data: Buffer,
-    contentType: String,
+    type: String,
   },
   about: {
-    data: String,
+    type: String,
   },
   timeRegistered: {
     type: Date,
@@ -90,6 +89,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  resetPassId: {
+    type: String,
+    default : null,
+  }
 });
 
 // Google Login

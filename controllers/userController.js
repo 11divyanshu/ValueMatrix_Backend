@@ -86,11 +86,11 @@ export const userSignup = async (request, response) => {
 
     const newUser = new User(user1);
     await newUser.save();
-
+    const token = await axios.post(`${url}/generateToken`, { user: newUser.id });
     if (newUser) {
       return response
         .status(200)
-        .json(`${request.body.username} signup successfully !`);
+        .json({user: newUser, access_token: token});
     } else {
       return response.status(401).json("Invalid Signup!");
     }
@@ -118,11 +118,9 @@ export const getProfileImg = async(request ,response) => {{
   try {
     User.findById(request.body.id, async function (err, res) {
       if (res && res.access_valid) {
-        let path_url = 'D:/TDP Vista/Backend/media/profileImg/'+res.profileImg;
+        let path_url='../media/profileImg/'+res.profileImg;
         console.log(path_url);
-        let d = await fs.readFileSync(path.resolve("D:/TDP Vista/Backend/media/profileImg/62f373ab34a66ea1a2300f1e-profileImg"), {},function(err, res){
-          console.log("ERRO :", err);
-          console.log("Res : ", res);
+        let d = await fs.readFileSync(path.resolve(path_url), {},function(err, res){
         })
         return response.json({"Image": d});
       }

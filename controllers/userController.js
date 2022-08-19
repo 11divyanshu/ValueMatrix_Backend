@@ -123,20 +123,22 @@ export const getUserFromId = async (request, response) => {
 };
 
 // GET Profile Image
-<<<<<<< HEAD
-export const getProfileImg = async(request ,response) => {{
-  try {
-    User.findById(request.body.id, async function (err, res) {
-      if (res && res.access_valid) {
-        let path_url = 'https://backend.babyhost.in/media/profileImg/'+res.profileImg;
-        console.log(path_url);
-        let d = await fs.readFileSync(path.resolve("https://backend.babyhost.in/media/profileImg/62f373ab34a66ea1a2300f1e-profileImg"), {},function(err, res){
-          console.log("ERRO :", err);
-          console.log("Res : ", res);
-        })
-        return response.json({"Image": d});
-      }
-=======
+// <<<<<<< HEAD
+// export const getProfileImg = async(request ,response) => {
+//   try {
+//     User.findById(request.body.id, async function (err, res) {
+//       if (res && res.access_valid) {
+//         let path_url = 'https://backend.babyhost.in/media/profileImg/'+res.profileImg;
+//         console.log(path_url);
+//         let d = await fs.readFileSync(path.resolve("https://backend.babyhost.in/media/profileImg/62f373ab34a66ea1a2300f1e-profileImg"), {},function(err, res){
+//           console.log("ERRO :", err);
+//           console.log("Res : ", res);
+//         })
+//         return response.json({"Image": d});
+//       }
+//     }}
+//   }
+// =======
 export const getProfileImg = async (request, response) => {
   {
     try {
@@ -151,7 +153,7 @@ export const getProfileImg = async (request, response) => {
           );
           return response.json({ Image: d });
         }
->>>>>>> 4bfe4419d5ea66b9cccad101e1b721a52ce27590
+// >>>>>>> 4bfe4419d5ea66b9cccad101e1b721a52ce27590
 
         return response.status(403).json({ Message: "User Not Found" });
       });
@@ -215,6 +217,7 @@ export const updateProfileImage = async (req, response) => {
 
 // Logout
 export const logout = async (req, response) => {
+  console.log(req.body);
   try {
     await User.findOne({ _id: req.body.user_id }, function (err, res) {
       if (res) {
@@ -223,6 +226,7 @@ export const logout = async (req, response) => {
       }
     }).clone();
     response.status(200);
+    response.send("success");
   } catch (error) {
     console.log("Error : ", error);
   }

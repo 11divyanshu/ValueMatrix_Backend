@@ -118,9 +118,9 @@ export const getProfileImg = async(request ,response) => {{
   try {
     User.findById(request.body.id, async function (err, res) {
       if (res && res.access_valid) {
-        let path_url = 'D:/TDP Vista/Backend/media/profileImg/'+res.profileImg;
+        let path_url = 'https://backend.babyhost.in/media/profileImg/'+res.profileImg;
         console.log(path_url);
-        let d = await fs.readFileSync(path.resolve("D:/TDP Vista/Backend/media/profileImg/62f373ab34a66ea1a2300f1e-profileImg"), {},function(err, res){
+        let d = await fs.readFileSync(path.resolve("https://backend.babyhost.in/media/profileImg/62f373ab34a66ea1a2300f1e-profileImg"), {},function(err, res){
           console.log("ERRO :", err);
           console.log("Res : ", res);
         })

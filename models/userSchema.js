@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema({
     type: String,
   },
   about: {
-    type: String,
+    type: String,   
   },
   timeRegistered: {
     type: Date,

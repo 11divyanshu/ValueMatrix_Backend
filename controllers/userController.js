@@ -23,9 +23,16 @@ var upload = multer({ storage: storage });
 // Validate Signup details
 export const vaildateSignupDetails = async (request, response) => {
   try {
-    var user1 = await User.findOne({ email: request.body.email });
-    var user2 = await User.findOne({ contact: request.body.contact });
-    var user3 = await User.findOne({ username: request.body.username });
+    let user1 = null,
+      user2 = null,
+      user3 = null;
+    if (request.body.email)
+      user1 = await User.findOne({ email: request.body.email });
+    if (request.body.contact)
+      user2 = await User.findOne({ contact: request.body.contact });
+    if (request.body.username) {
+      user3 = await User.findOne({ username: request.body.username });
+    }
     return response.json({
       email: user1 !== null,
       contact: user2 !== null,
@@ -56,7 +63,9 @@ export const userLogin = async (request, response) => {
       user.access_token = access_token;
       user.access_valid = true;
       await user.save();
-      return response.status(200).json({ access_token: access_token, user: user });
+      return response
+        .status(200)
+        .json({ access_token: access_token, user: user });
     } else {
       return response.status(401).json("Invalid Login!");
     }
@@ -86,11 +95,11 @@ export const userSignup = async (request, response) => {
 
     const newUser = new User(user1);
     await newUser.save();
-
+    const token = await axios.post(`${url}/generateToken`, {
+      user: newUser.id,
+    });
     if (newUser) {
-      return response
-        .status(200)
-        .json(`${request.body.username} signup successfully !`);
+      return response.status(200).json({ user: newUser, access_token: token });
     } else {
       return response.status(401).json("Invalid Signup!");
     }
@@ -114,6 +123,7 @@ export const getUserFromId = async (request, response) => {
 };
 
 // GET Profile Image
+<<<<<<< HEAD
 export const getProfileImg = async(request ,response) => {{
   try {
     User.findById(request.body.id, async function (err, res) {
@@ -126,17 +136,35 @@ export const getProfileImg = async(request ,response) => {{
         })
         return response.json({"Image": d});
       }
+=======
+export const getProfileImg = async (request, response) => {
+  {
+    try {
+      User.findById(request.body.id, async function (err, res) {
+        if (res && res.access_valid) {
+          let path_url = "./media/profileImg/" + res.profileImg;
+          console.log(path_url);
+          let d = await fs.readFileSync(
+            path.resolve(path_url),
+            {},
+            function (err, res) {}
+          );
+          return response.json({ Image: d });
+        }
+>>>>>>> 4bfe4419d5ea66b9cccad101e1b721a52ce27590
 
-      return response.status(403).json({ Message: "User Not Found" });
-    });
-  } catch (error) {
-    console.log("Error : ", error);
+        return response.status(403).json({ Message: "User Not Found" });
+      });
+    } catch (error) {
+      console.log("Error : ", error);
+    }
   }
-}}
+};
 
 // Update User Profile
 export const updateUserDetails = async (request, response) => {
   try {
+    console.log(request.body);
     let validate = await axios.post(
       `${url}/validateSignup`,
       request.body.updates
@@ -161,8 +189,10 @@ export const updateUserDetails = async (request, response) => {
     });
     let user1 = await User.findOneAndUpdate(
       { _id: request.body.user_id },
-      request.body.updates
+      request.body.updates,
+      { new: true }
     );
+    console.log(user1);
     response.status(200).json({ user: user1 });
   } catch (error) {
     console.log("Error, ", error);
@@ -173,7 +203,6 @@ export const updateUserDetails = async (request, response) => {
 export const updateProfileImage = async (req, response) => {
   try {
     User.findOne({ _id: req.body.user_id }, async function (err, user) {
-      
       let str = user._id + "-profileImg";
       user.profileImg = str;
       await user.save();

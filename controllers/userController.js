@@ -76,14 +76,15 @@ export const userLogin = async (request, response) => {
 
 // Signup For User Using Email
 export const userSignup = async (request, response) => {
+  console.log("signup");
   try {
+
     let name = String(request.body.name).split(" ");
     let firstname = name[0];
     let lastname = name.slice(1).join(" ");
 
     let password = passwordHash.generate(request.body.password);
-    let user1 = {};
-    user1 = {
+    let user1 = {
       username: request.body.username,
       email: request.body.email,
       contact: request.body.contact,
@@ -94,12 +95,14 @@ export const userSignup = async (request, response) => {
     };
 
     const newUser = new User(user1);
-    await newUser.save();
+     await newUser.save();
+    console.log(newUser);
     const token = await axios.post(`${url}/generateToken`, {
       user: newUser.id,
     });
+    console.log(token);
     if (newUser) {
-      return response.status(200).json({ user: newUser, access_token: token });
+       return response.status(200).json({ user: newUser, access_token: token.data.token });
     } else {
       return response.status(401).json("Invalid Signup!");
     }

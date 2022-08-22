@@ -46,6 +46,22 @@ const userSchema = new mongoose.Schema({
     required: true,
     default: null,
   },
+  address:{
+    type: String,
+  },
+  resume : {
+    type:  String
+  },
+  education : {
+    type : Array,
+  }, 
+  experience : {
+    type : Array,
+  },
+  tools: {
+    type: Array,
+  }
+  ,
   profileImg: {
     type: String,
   },

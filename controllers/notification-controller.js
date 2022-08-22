@@ -45,7 +45,7 @@ export const getUserNotification = async (request, response) => {
           },
           {
             forAll: false,
-            user_type: "User",
+            user_type: request.body.user.user_type,
             hideFrom: { $ne: request.body.user_id },
             timeCreated: { $gte: request.body.user.timeRegistered },
             type: "Notification",
@@ -53,6 +53,7 @@ export const getUserNotification = async (request, response) => {
         ],
       },
       function (err, res) {
+        console.log(res);
         if (res) {
           response.status(200).json({ notifications: res });
         } else response.json({ Error: "No Notification Found" });
@@ -62,6 +63,38 @@ export const getUserNotification = async (request, response) => {
     console.log("Error : ", error);
   }
 };
+
+export const getAdminNotification = async(request, response)=>{
+  try {
+    Notification.find(
+      {
+        $or: [
+          {
+            forAll: true,
+            hideFrom: { $ne: request.body.user_id },
+            timeCreated: { $gte: request.body.user.timeRegistered },
+            type: "Notification",
+          },
+          {
+            forAll: false,
+            user_type: "Admin",
+            hideFrom: { $ne: request.body.user_id },
+            timeCreated: { $gte: request.body.user.timeRegistered },
+            type: "Notification",
+          },
+        ],
+      },
+      function (err, res) {
+        console.log(res);
+        if (res) {
+          response.status(200).json({ notifications: res });
+        } else response.json({ Error: "No Notification Found" });
+      }
+    );
+  } catch (error) {
+    console.log("Error : ", error);
+  }s
+}
 
 // Mark Notification Read for User
 export const markNotiReadForUser = async (request, response) => {

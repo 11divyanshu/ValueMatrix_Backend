@@ -4,11 +4,13 @@ import passwordHash from "password-hash";
 import {} from "dotenv/config";
 import multer from "multer";
 import fs from "fs";
+import sendGridMail from "@sendgrid/mail";
 import FormData from "form-data";
 import path from "path";
 
 const url = process.env.BACKEND_URL;
 const front_url = process.env.FRONTEND_URL;
+sendGridMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 var storage = multer.memoryStorage({
   destination: (req, file, cb) => {
@@ -98,8 +100,22 @@ export const userSignup = async (request, response) => {
     const token = await axios.post(`${url}/generateToken`, {
       user: newUser.id,
     });
+
+    let html = `<div>Hi ${request.body.username}</div>,
+    <div>Welcome to Value Matrix. It is a great pleasure to have you on board</div>. 
+    <div>Our mission is to mission_statement .</div>
+    <div>Regards,</div>
+    <div>Value  Matrix</div>`;
+
+    await sendGridMail
+      .send({
+        to: request.body.mail,
+        from: "developervm171@gmail.com",
+        subject: "Value Matrix Sign Up",
+        html: html,
+      })
     if (newUser) {
-      return response.status(200).json({ user: newUser, access_token: token });
+      return response.status(200).json({ user: newUser, access_token: token.data.token });
     } else {
       return response.status(401).json("Invalid Signup!");
     }

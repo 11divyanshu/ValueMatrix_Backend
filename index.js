@@ -153,6 +153,31 @@ app.get(
 );
 // LinkedIn Auth
 
+// Github Auth
+app.get('/auth/github',
+  passport.authenticate('github'));
+
+app.get('/auth/github/callback', 
+  passport.authenticate('github', { failureRedirect: '/login' }),
+  async function (req, res) {
+    const token = await getToken(req.user);
+    await res.cookie("access_token", token.data.token, {origin: domain});
+    let url1 = null;
+    let type = req.user.user_type;
+    if (type === "Company") url1= `${url}/company`;
+    else if (type === "XI") url1 = `${url}/XI`;
+    else if (req.user.isAdmin) url1 = `${url}/admin`;
+    else url1 = `${url}/user`;
+    let r = querystring.stringify({
+      a : token.data.token
+    });
+
+    res.redirect(url1+"/?"+r);
+  }
+  
+  );
+//Github Auth
+
 app.listen(PORT, "0.0.0.0", () =>
   console.log(`Server is running successfully on PORT ${PORT}`)
 );

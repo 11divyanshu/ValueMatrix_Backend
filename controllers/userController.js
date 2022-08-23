@@ -78,14 +78,15 @@ export const userLogin = async (request, response) => {
 
 // Signup For User Using Email
 export const userSignup = async (request, response) => {
+  console.log("signup");
   try {
+
     let name = String(request.body.name).split(" ");
     let firstname = name[0];
     let lastname = name.slice(1).join(" ");
 
     let password = passwordHash.generate(request.body.password);
-    let user1 = {};
-    user1 = {
+    let user1 = {
       username: request.body.username,
       email: request.body.email,
       contact: request.body.contact,
@@ -96,10 +97,12 @@ export const userSignup = async (request, response) => {
     };
 
     const newUser = new User(user1);
-    await newUser.save();
+     await newUser.save();
+    console.log(newUser);
     const token = await axios.post(`${url}/generateToken`, {
       user: newUser.id,
     });
+
 
     let html = `<div>Hi ${request.body.username}</div>,
     <div>Welcome to Value Matrix. It is a great pleasure to have you on board</div>. 

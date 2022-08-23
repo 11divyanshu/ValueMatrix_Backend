@@ -5,8 +5,10 @@ import findOrCreate from "mongoose-findorcreate";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as MicrosoftStrategy } from "passport-microsoft";
 import { Strategy as LinkedInStrategy } from "passport-linkedin-oauth2";
+import { Strategy as GitHubStrategy } from "passport-github";
 import {} from "dotenv/config";
 import axios from "axios";
+
 
 const url = process.env.BACKEND_URL;
 
@@ -85,6 +87,10 @@ const userSchema = new mongoose.Schema({
     required: false,
   },
   microsoftId: {
+    type: String,
+    required: false,
+  },
+  githubId: {
     type: String,
     required: false,
   },
@@ -253,5 +259,49 @@ passport.use(
   )
 );
 // LinkedIn Auth End
+
+// Github Auth
+
+passport.use(new GitHubStrategy({
+  clientID: process.env.GITHUB_CLIENT_ID,
+  clientSecret: process.env.GITHUB_CLIENT_SECRET,
+  callbackURL: `${url}/auth/github/callback`,
+},
+async function (accessToken, refreshToken, profile, done) {
+  let cont = true;
+  // console.log(profile);
+  let email = profile._json.email ? profile._json.email : profile.id;
+  let contact = profile._json.contact;
+  if (contact === null || contact === undefined) contact = profile.id;
+  let username = profile.username ? profile.username : profile.id;
+  await user
+    .findOne({ email: email }, async function (err, res) {
+      if (res) {
+        res.githubId = profile.id;
+        await res.save();
+        cont = false;
+        return done(err, res);
+      } else {
+        await user.findOrCreate(
+            {
+              githubId: profile.id,
+              username: username,
+              firstName: profile.displayName,
+              company:profile._json.company ? profile._json.company : "",
+              email: email,
+              about:profile._json.bio ? profile._json.bio : "",
+              contact:contact,
+            },
+            function (err, user) {
+              return done(err, user);
+            }
+          )
+         
+      }
+    })
+    .clone();
+}
+));
+//Github Auth
 
 export default user;

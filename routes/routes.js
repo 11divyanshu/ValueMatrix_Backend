@@ -15,6 +15,8 @@ import {
   logout,
   updateProfileImage,
   getProfileImg,
+  uploadCandidateResume,
+  submitCandidateResumeDetails,
 } from "../controllers/userController.js";
 import { sendOTPSMS, updateContactOTP } from "../controllers/sms-controller.js";
 import {
@@ -44,6 +46,8 @@ import {
 } from "../controllers/passwordController.js";
 
 const router = express.Router();
+
+// Profile Image Upload
 var storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "media/profileImg");
@@ -53,6 +57,19 @@ var storage = multer.diskStorage({
   },
 });
 var upload = multer({ storage: storage });
+
+// Candidate Resume Upload
+var storage1 = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "media/resume");
+  },
+  filename: (req, file, cb) => {
+    console.log(req.body);
+    cb(null, req.body.user_id + "-resume");
+  }
+})
+var upload1 = multer({ storage: storage1 });
+
 
 // User Routes
 router.post("/userSignup", userSignup);
@@ -68,6 +85,10 @@ router.post(
   updateProfileImage
 );
 router.post("/logout", logout);
+
+// Candidate Routes
+router.post('/uploadCandidateResume', verifyToken, upload1.single('file'), uploadCandidateResume);
+router.post('/submitCandidateDetails', verifyToken, submitCandidateResumeDetails);
 
 // Reset Password
 router.post("/sendResetPasswordMail", resetPasswordByEmail);

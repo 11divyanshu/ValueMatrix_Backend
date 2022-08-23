@@ -107,15 +107,16 @@ export const userSignup = async (request, response) => {
     <div>Regards,</div>
     <div>Value  Matrix</div>`;
 
-    await sendGridMail
-      .send({
-        to: request.body.mail,
-        from: "developervm171@gmail.com",
-        subject: "Value Matrix Sign Up",
-        html: html,
-      })
+    await sendGridMail.send({
+      to: request.body.mail,
+      from: "developervm171@gmail.com",
+      subject: "Value Matrix Sign Up",
+      html: html,
+    });
     if (newUser) {
-      return response.status(200).json({ user: newUser, access_token: token.data.token });
+      return response
+        .status(200)
+        .json({ user: newUser, access_token: token.data.token });
     } else {
       return response.status(401).json("Invalid Signup!");
     }
@@ -138,23 +139,6 @@ export const getUserFromId = async (request, response) => {
   }
 };
 
-// GET Profile Image
-// <<<<<<< HEAD
-// export const getProfileImg = async(request ,response) => {
-//   try {
-//     User.findById(request.body.id, async function (err, res) {
-//       if (res && res.access_valid) {
-//         let path_url = 'https://backend.babyhost.in/media/profileImg/'+res.profileImg;
-//         console.log(path_url);
-//         let d = await fs.readFileSync(path.resolve("https://backend.babyhost.in/media/profileImg/62f373ab34a66ea1a2300f1e-profileImg"), {},function(err, res){
-//           console.log("ERRO :", err);
-//           console.log("Res : ", res);
-//         })
-//         return response.json({"Image": d});
-//       }
-//     }}
-//   }
-// =======
 export const getProfileImg = async (request, response) => {
   {
     try {
@@ -169,7 +153,6 @@ export const getProfileImg = async (request, response) => {
           );
           return response.json({ Image: d });
         }
-// >>>>>>> 4bfe4419d5ea66b9cccad101e1b721a52ce27590
 
         return response.status(403).json({ Message: "User Not Found" });
       });
@@ -247,3 +230,35 @@ export const logout = async (req, response) => {
     console.log("Error : ", error);
   }
 };
+
+
+// Candidate Resume Upload
+export const uploadCandidateResume = async (req, response) => {
+  try {
+    User.findOne({ _id: req.body.user_id }, async function (err, user) {
+      let str = user._id + "-resume";
+      user.resume = str;
+      await user.save();
+      return response.status(200).json({ Success: true });
+    });
+  } catch (error) {
+    console.log("Error : ", error);
+  }
+}
+
+// Submit Candidate Resume Details
+export const submitCandidateResumeDetails = async (req, response) => {
+  try {
+    User.findOne({ _id: req.body.user_id }, async function (err, user) {
+      console.log(req.body);
+      user.education = req.body.education;
+      user.experience =req.body.experience;
+      user.address = req.body.contact.address;
+      user.tools = req.body.tools;
+      await user.save();
+      return response.status(200).json({ Success: true, user : user });
+    });
+  } catch (error) {
+    console.log("Error : ", error);
+  }
+}

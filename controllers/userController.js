@@ -103,7 +103,6 @@ export const userSignup = async (request, response) => {
       user: newUser.id,
     });
 
-
     let html = `<div>Hi ${request.body.username}</div>,
     <div>Welcome to Value Matrix. It is a great pleasure to have you on board</div>. 
     <div>Our mission is to mission_statement .</div>
@@ -111,7 +110,7 @@ export const userSignup = async (request, response) => {
     <div>Value  Matrix</div>`;
 
     await sendGridMail.send({
-      to: request.body.mail,
+      to: request.body.email,
       from: "developervm171@gmail.com",
       subject: "Value Matrix Sign Up",
       html: html,

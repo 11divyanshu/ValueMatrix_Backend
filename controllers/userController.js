@@ -265,3 +265,20 @@ export const submitCandidateResumeDetails = async (req, response) => {
     console.log("Error : ", error);
   }
 }
+
+// Submit Company Resume Details
+export const submitCompanyDetails = async (req, response) => {
+  try {
+    User.findOne({ _id: req.body.user_id }, async function (err, user) {
+      console.log(req.body);
+      user.desc = req.body.about;
+      // user.experience =req.body.experience;
+      user.address = req.body.contact.address;
+      user.tools = req.body.tools;
+      await user.save();
+      return response.status(200).json({ Success: true, user : user });
+    });
+  } catch (error) {
+    console.log("Error : ", error);
+  }
+}

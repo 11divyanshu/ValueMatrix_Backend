@@ -57,6 +57,9 @@ const userSchema = new mongoose.Schema({
   education : {
     type : Array,
   }, 
+  desc : {
+    type : Array,
+  }, 
   experience : {
     type : Array,
   },

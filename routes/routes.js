@@ -17,6 +17,9 @@ import {
   getProfileImg,
   uploadCandidateResume,
   submitCandidateResumeDetails,
+  submitCompanyDetails,
+
+
 } from "../controllers/userController.js";
 import { sendOTPSMS, updateContactOTP } from "../controllers/sms-controller.js";
 import {
@@ -89,6 +92,10 @@ router.post("/logout", logout);
 // Candidate Routes
 router.post('/uploadCandidateResume', verifyToken, upload1.single('file'), uploadCandidateResume);
 router.post('/submitCandidateDetails', verifyToken, submitCandidateResumeDetails);
+
+// Company Routes
+router.post('/submitCompanyDetails', verifyToken, submitCompanyDetails);
+
 
 // Reset Password
 router.post("/sendResetPasswordMail", resetPasswordByEmail);

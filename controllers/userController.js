@@ -250,7 +250,7 @@ export const uploadCandidateResume = async (req, response) => {
 export const submitCandidateResumeDetails = async (req, response) => {
   try {
     User.findOne({ _id: req.body.user_id }, async function (err, user) {
-      console.log("Body ",req.body);
+      console.log("Body ", req.body);
       if (req.body.education) {
         user.education = req.body.education;
       }
@@ -260,8 +260,14 @@ export const submitCandidateResumeDetails = async (req, response) => {
       if (req.body.contact && req.body.contact.address) {
         user.address = req.body.contact.address;
       }
-      if ((user.contact===user.googleId || user.contact === user.microsoftId || user.contact === user.linkedInId || user.contact === user.githubId) && req.body.contact.contact) {
-        console.log("F")
+      if (
+        (user.contact === user.googleId ||
+          user.contact === user.microsoftId ||
+          user.contact === user.linkedInId ||
+          user.contact === user.githubId) &&
+        req.body.contact.contact
+      ) {
+        console.log("F");
         user.contact = req.body.contact.contact;
       }
       if (req.body.tools) {

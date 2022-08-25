@@ -78,7 +78,6 @@ export const userLogin = async (request, response) => {
 
 // Signup For User Using Email
 export const userSignup = async (request, response) => {
-  console.log("signup");
   try {
     let name = String(request.body.name).split(" ");
     let firstname = name[0];
@@ -97,7 +96,6 @@ export const userSignup = async (request, response) => {
 
     const newUser = new User(user1);
     await newUser.save();
-    console.log(newUser);
     const token = await axios.post(`${url}/generateToken`, {
       user: newUser.id,
     });
@@ -130,7 +128,7 @@ export const userSignup = async (request, response) => {
 export const getUserFromId = async (request, response) => {
   try {
     User.findById(request.body.id, async function (err, res) {
-      if (res && res.access_valid) {
+      if (res) {
         return response.status(200).json({ user: res });
       }
       response.status(403).json({ Message: "User Not Found" });
@@ -146,7 +144,6 @@ export const getProfileImg = async (request, response) => {
       User.findById(request.body.id, async function (err, res) {
         if (res && res.access_valid) {
           let path_url = "./media/profileImg/" + res.profileImg;
-          console.log(path_url);
           let d = await fs.readFileSync(
             path.resolve(path_url),
             {},
@@ -166,7 +163,6 @@ export const getProfileImg = async (request, response) => {
 // Update User Profile
 export const updateUserDetails = async (request, response) => {
   try {
-    console.log(request.body);
     let validate = await axios.post(
       `${url}/validateSignup`,
       request.body.updates
@@ -194,7 +190,6 @@ export const updateUserDetails = async (request, response) => {
       request.body.updates,
       { new: true }
     );
-    console.log(user1);
     response.status(200).json({ user: user1 });
   } catch (error) {
     console.log("Error, ", error);
@@ -217,7 +212,6 @@ export const updateProfileImage = async (req, response) => {
 
 // Logout
 export const logout = async (req, response) => {
-  console.log(req.body);
   try {
     await User.findOne({ _id: req.body.user_id }, function (err, res) {
       if (res) {
@@ -250,7 +244,6 @@ export const uploadCandidateResume = async (req, response) => {
 export const submitCandidateResumeDetails = async (req, response) => {
   try {
     User.findOne({ _id: req.body.user_id }, async function (err, user) {
-      console.log("Body ", req.body);
       if (req.body.education) {
         user.education = req.body.education;
       }
@@ -267,7 +260,6 @@ export const submitCandidateResumeDetails = async (req, response) => {
           user.contact === user.githubId) &&
         req.body.contact.contact
       ) {
-        console.log("F");
         user.contact = req.body.contact.contact;
       }
       if (req.body.tools) {
@@ -285,7 +277,6 @@ export const submitCandidateResumeDetails = async (req, response) => {
 export const submitCompanyDetails = async (req, response) => {
   try {
     User.findOne({ _id: req.body.user_id }, async function (err, user) {
-      console.log(req.body);
       user.desc = req.body.about;
       // user.experience =req.body.experience;
       user.address = req.body.contact.address;

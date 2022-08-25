@@ -18,15 +18,18 @@ import {
   uploadCandidateResume,
   submitCandidateResumeDetails,
   submitCompanyDetails,
-
-
 } from "../controllers/userController.js";
 import { sendOTPSMS, updateContactOTP } from "../controllers/sms-controller.js";
 import {
   getUserIdFromToken,
   tokenGenerator,
 } from "../controllers/token-controller.js";
-import { adminLogin } from "../controllers/adminController.js";
+import {
+  adminLogin,
+  companyList,
+  userList,
+  downloadResume
+} from "../controllers/adminController.js";
 import {
   getUserNotification,
   markNotiReadForUser,
@@ -69,17 +72,16 @@ var storage1 = multer.diskStorage({
   filename: (req, file, cb) => {
     console.log(req.body);
     cb(null, req.body.user_id + "-resume");
-  }
-})
+  },
+});
 var upload1 = multer({ storage: storage1 });
-
 
 // User Routes
 router.post("/userSignup", userSignup);
 router.post("/userLogin", userLogin);
 router.post("/validateSignup", vaildateSignupDetails);
 router.post("/getUserFromId", verifyToken, getUserFromId);
-router.post('/getProfileImage', verifyToken, getProfileImg);
+router.post("/getProfileImage", verifyToken, getProfileImg);
 router.post("/updateUserDetails", verifyToken, updateUserDetails);
 router.post(
   "/updateProfilePicture",
@@ -90,12 +92,20 @@ router.post(
 router.post("/logout", logout);
 
 // Candidate Routes
-router.post('/uploadCandidateResume', verifyToken, upload1.single('file'), uploadCandidateResume);
-router.post('/submitCandidateDetails', verifyToken, submitCandidateResumeDetails);
+router.post(
+  "/uploadCandidateResume",
+  verifyToken,
+  upload1.single("file"),
+  uploadCandidateResume
+);
+router.post(
+  "/submitCandidateDetails",
+  verifyToken,
+  submitCandidateResumeDetails
+);
 
 // Company Routes
-router.post('/submitCompanyDetails', verifyToken, submitCompanyDetails);
-
+router.post("/submitCompanyDetails", verifyToken, submitCompanyDetails);
 
 // Reset Password
 router.post("/sendResetPasswordMail", resetPasswordByEmail);
@@ -105,6 +115,9 @@ router.post("/resetPassword", resetPassword);
 
 // Admin Routes
 router.post("/adminLogin", adminLogin);
+router.post("/getCompanyList", verifyToken, companyList);
+router.post("/getUserList", verifyToken, userList);
+router.post("/downloadResume", verifyToken, downloadResume);
 
 // Sending mails
 router.post("/updateEmailOTP", verifyToken, UpdateEmailOTP);

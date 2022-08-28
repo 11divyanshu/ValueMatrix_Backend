@@ -9,7 +9,6 @@ import { Strategy as GitHubStrategy } from "passport-github";
 import {} from "dotenv/config";
 import axios from "axios";
 
-
 const url = process.env.BACKEND_URL;
 
 const userSchema = new mongoose.Schema({
@@ -48,30 +47,29 @@ const userSchema = new mongoose.Schema({
     required: true,
     default: null,
   },
-  address:{
+  address: {
     type: String,
   },
-  resume : {
-    type:  String
+  resume: {
+    type: String,
   },
-  education : {
-    type : Array,
-  }, 
-  desc : {
-    type : Array,
-  }, 
-  experience : {
-    type : Array,
+  education: {
+    type: Array,
+  },
+  desc: {
+    type: Array,
+  },
+  experience: {
+    type: Array,
   },
   tools: {
     type: Array,
-  }
-  ,
+  },
   profileImg: {
     type: String,
   },
   about: {
-    type: String,   
+    type: String,
   },
   timeRegistered: {
     type: Date,
@@ -99,7 +97,13 @@ const userSchema = new mongoose.Schema({
   },
   user_type: {
     type: String,
-    enum: ["Company", "User", "XI", "SuperXI"],
+    enum: ["Company", "User", "XI", "SuperXI", "Company_User"],
+  },
+  company_id: {
+    type: String,
+  },
+  permissions: {
+    type: Array,  
   },
   secret: {
     type: String,
@@ -116,8 +120,8 @@ const userSchema = new mongoose.Schema({
   },
   resetPassId: {
     type: String,
-    default : null,
-  }
+    default: null,
+  },
 });
 
 // Google Login
@@ -265,46 +269,48 @@ passport.use(
 
 // Github Auth
 
-passport.use(new GitHubStrategy({
-  clientID: process.env.GITHUB_CLIENT_ID,
-  clientSecret: process.env.GITHUB_CLIENT_SECRET,
-  callbackURL: `${url}/auth/github/callback`,
-},
-async function (accessToken, refreshToken, profile, done) {
-  let cont = true;
-  // console.log(profile);
-  let email = profile._json.email ? profile._json.email : profile.id;
-  let contact = profile._json.contact;
-  if (contact === null || contact === undefined) contact = profile.id;
-  let username = profile.username ? profile.username : profile.id;
-  await user
-    .findOne({ email: email }, async function (err, res) {
-      if (res) {
-        res.githubId = profile.id;
-        await res.save();
-        cont = false;
-        return done(err, res);
-      } else {
-        await user.findOrCreate(
-            {
-              githubId: profile.id,
-              username: username,
-              firstName: profile.displayName,
-              company:profile._json.company ? profile._json.company : "",
-              email: email,
-              about:profile._json.bio ? profile._json.bio : "",
-              contact:contact,
-            },
-            function (err, user) {
-              return done(err, user);
-            }
-          )
-         
-      }
-    })
-    .clone();
-}
-));
+passport.use(
+  new GitHubStrategy(
+    {
+      clientID: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      callbackURL: `${url}/auth/github/callback`,
+    },
+    async function (accessToken, refreshToken, profile, done) {
+      let cont = true;
+      // console.log(profile);
+      let email = profile._json.email ? profile._json.email : profile.id;
+      let contact = profile._json.contact;
+      if (contact === null || contact === undefined) contact = profile.id;
+      let username = profile.username ? profile.username : profile.id;
+      await user
+        .findOne({ email: email }, async function (err, res) {
+          if (res) {
+            res.githubId = profile.id;
+            await res.save();
+            cont = false;
+            return done(err, res);
+          } else {
+            await user.findOrCreate(
+              {
+                githubId: profile.id,
+                username: username,
+                firstName: profile.displayName,
+                company: profile._json.company ? profile._json.company : "",
+                email: email,
+                about: profile._json.bio ? profile._json.bio : "",
+                contact: contact,
+              },
+              function (err, user) {
+                return done(err, user);
+              }
+            );
+          }
+        })
+        .clone();
+    }
+  )
+);
 //Github Auth
 
 export default user;

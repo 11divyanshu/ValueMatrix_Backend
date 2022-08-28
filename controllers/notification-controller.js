@@ -76,7 +76,6 @@ export const getUserNotification = async (request, response) => {
         ],
       },
       function (err, res) {
-        console.log(res);
         if (res) {
           response.status(200).json({ notifications: res });
         } else response.json({ Error: "No Notification Found" });

@@ -50,6 +50,8 @@ import {
   resetPasswordByEmail,
   resetPasswordByUsername,
 } from "../controllers/passwordController.js";
+import { addCompanyUser } from "../controllers/companyController.js";
+import { addSkill, getSkills } from "../controllers/skillController.js";
 
 const router = express.Router();
 
@@ -106,6 +108,7 @@ router.post(
 
 // Company Routes
 router.post("/submitCompanyDetails", verifyToken, submitCompanyDetails);
+router.post("/addCompanyUser",verifyToken, addCompanyUser);
 
 // Reset Password
 router.post("/sendResetPasswordMail", resetPasswordByEmail);
@@ -150,5 +153,9 @@ router.post("/listJob", listJobs);
 router.post("/updateJobDetails", verifyToken, updateJob);
 router.post("/exportJobDetails", exportJobDetails);
 router.post("/getJobFromId", verifyToken, GetJobFromId);
+
+// Skills Routes
+router.post("/addSkills", verifyToken, addSkill);
+router.post("/getSkills", verifyToken, getSkills);
 
 export default router;

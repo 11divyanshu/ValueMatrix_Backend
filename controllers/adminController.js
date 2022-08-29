@@ -19,7 +19,7 @@ export const adminLogin = async (request, response) => {
         isAdmin: true,
       });
     }
-    if (user == null) { 
+    if (user == null) {
       user = await User.findOne({
         contact: request.body.username,
         isAdmin: true,
@@ -79,7 +79,7 @@ export const userList = async (request, response) => {
 };
 
 // Download Resume
-export const downloadResume = async(request, response) => {
+export const downloadResume = async (request, response) => {
   try {
     User.findOne({ _id: request.body.user_id }, async function (err, user) {
       let path_url = "./media/resume/" + user.resume;
@@ -89,9 +89,97 @@ export const downloadResume = async(request, response) => {
         function (err, res) {}
       );
       let url1 = url + "/media/resume/" + user.resume;
-      return response.json({ Resume: d, link : url1 });
+      return response.json({ Resume: d, link: url1 });
     }).clone();
   } catch (error) {
     console.log("Error : ", error);
   }
-}
+};
+
+// Add Admin User
+export const addAdminUser = async (request, response) => {
+  try {
+    if (
+      request.body.company_id === null ||
+      request.body.company_id === undefined
+    ) {
+      return response.json({
+        success: false,
+        message: "Company id is required",
+      });
+    }
+    await User.findOne({ _id: request.body.company_id }, function (err, res) {
+      if (err) {
+        console.log(err);
+        return response.status(401).json("Request User Not Found");
+      }
+      if (res && res.isAdmin === false) {
+        return response
+          .status(401)
+          .json("Request User Not Registered as a Company");
+        return;
+      }
+      if (
+        res &&
+        res.user_type === "Admin_User" &&
+        res.permissions[0] &&
+        res.permissions[0].admin_permissions.add_admin_user === false
+      ) {
+        return response
+          .status(401)
+          .json("You are not allowed to add admin user");
+      }
+    }).clone();
+    let user = await User.findOne({ email: request.body.email });
+    if (user) {
+      return response.json({
+        message: "User already exists",
+      });
+      return;
+    }
+    if (user == null) {
+      user = await User.findOne({ username: request.body.username });
+      if (user) {
+        return response.json({
+          message: "Username already exists",
+        });
+        return;
+      }
+    }
+    if (user == null) {
+      user = await User.findOne({ contact: request.body.contact });
+      if (user) {
+        return response.json({
+          message: "Contact already exists",
+        });
+        return;
+      }
+    }
+    let permission = {};
+    request.body.permission.forEach((i) => {
+      permission[i.id] = i.value;
+    });
+    let newUser = new User({
+      email: request.body.email,
+      firstName: request.body.firstName,
+      lastName: request.body.lastName,
+      username: request.body.username,
+      isAdmin : true,
+      contact: request.body.contact,
+      password: passwordHash.generate(request.body.password),
+      user_type: "Admin_User",
+      permissions: [
+        { company_permissions: null, admin_permissions: permission },
+      ],
+      company_id: request.body.company_id,
+    });
+    await newUser.save();
+    console.log(newUser);
+    return response.json({
+      message: "User added successfully",
+      user: newUser,
+    });
+  } catch (error) {
+    console.log("Error : ", error);
+  }
+};

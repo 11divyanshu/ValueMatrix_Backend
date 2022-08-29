@@ -97,7 +97,7 @@ const userSchema = new mongoose.Schema({
   },
   user_type: {
     type: String,
-    enum: ["Company", "User", "XI", "SuperXI", "Company_User"],
+    enum: ["Company", "User", "XI", "SuperXI", "Company_User", "Admin_User"],
   },
   company_id: {
     type: String,
@@ -112,7 +112,6 @@ const userSchema = new mongoose.Schema({
   access_token: {
     type: String,
     required: false,
-    unique: true,
   },
   access_valid: {
     type: Boolean,

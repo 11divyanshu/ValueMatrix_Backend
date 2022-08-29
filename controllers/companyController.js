@@ -73,7 +73,7 @@ export const addCompanyUser = async (request, response) => {
       contact: request.body.contact,
       password: passwordHash.generate(request.body.password),
       user_type: "Company_User",
-      permissions: [permission],
+      permissions: [{company_permissions:permission, admin_permissions: null}],
       company_id: request.body.company_id,
     });
     await newUser.save();

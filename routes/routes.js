@@ -28,7 +28,8 @@ import {
   adminLogin,
   companyList,
   userList,
-  downloadResume
+  downloadResume,
+  addAdminUser,
 } from "../controllers/adminController.js";
 import {
   getUserNotification,
@@ -108,7 +109,7 @@ router.post(
 
 // Company Routes
 router.post("/submitCompanyDetails", verifyToken, submitCompanyDetails);
-router.post("/addCompanyUser",verifyToken, addCompanyUser);
+router.post("/addCompanyUser", verifyToken, addCompanyUser);
 
 // Reset Password
 router.post("/sendResetPasswordMail", resetPasswordByEmail);
@@ -121,6 +122,7 @@ router.post("/adminLogin", adminLogin);
 router.post("/getCompanyList", verifyToken, companyList);
 router.post("/getUserList", verifyToken, userList);
 router.post("/downloadResume", verifyToken, downloadResume);
+router.post("/addAdminUser", verifyToken, addAdminUser);
 
 // Sending mails
 router.post("/updateEmailOTP", verifyToken, UpdateEmailOTP);

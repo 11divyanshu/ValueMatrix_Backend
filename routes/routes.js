@@ -44,6 +44,7 @@ import {
   listJobs,
   updateJob,
   GetJobFromId,
+  sendJobInvitations,
 } from "../controllers/job-controller.js";
 import {
   resetPassword,
@@ -155,6 +156,7 @@ router.post("/listJob", listJobs);
 router.post("/updateJobDetails", verifyToken, updateJob);
 router.post("/exportJobDetails", exportJobDetails);
 router.post("/getJobFromId", verifyToken, GetJobFromId);
+router.post("/sendJobInvitation", verifyToken, sendJobInvitations);
 
 // Skills Routes
 router.post("/addSkills", verifyToken, addSkill);

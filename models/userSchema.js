@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema({
     required: false,
     trim: true,
   },
+
   username: {
     type: String,
     required: true,
@@ -42,6 +43,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  
   contact: {
     type: String,
     unique: true,
@@ -60,7 +62,13 @@ const userSchema = new mongoose.Schema({
   desc : {
     type : Array,
   }, 
+  billing : {
+    type : Array,
+  },
   experience : {
+    type : Array,
+  },
+  associate : {
     type : Array,
   },
   tools: {

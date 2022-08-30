@@ -39,10 +39,23 @@ const jobSchema = new mongoose.Schema({
     // type: Company
     required: true,
   },
-  basicSalary: {
+  salary: {
     type: Number,
     required: false,
   },
+  
+  perks: {
+    type: String,
+    required: false,
+  },
+  eligibility: {
+    type: String,
+    required: false,
+  },
+  skills : {
+    type: Array,
+    required: false,
+  }
 });
 
 

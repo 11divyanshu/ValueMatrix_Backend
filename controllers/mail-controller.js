@@ -1,4 +1,3 @@
-import nodemailer from "nodemailer";
 import {} from "dotenv/config";
 import sendGridMail from "@sendgrid/mail";
 import axios from "axios";

@@ -43,7 +43,10 @@ const jobSchema = new mongoose.Schema({
     type: Number,
     required: false,
   },
-  
+  invitations:{
+    type: Array,
+    default :[],
+  },
   perks: {
     type: String,
     required: false,

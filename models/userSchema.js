@@ -108,7 +108,7 @@ const userSchema = new mongoose.Schema({
     type: String,
   },
   permissions: {
-    type: Array,  
+    type: Array,
   },
   secret: {
     type: String,
@@ -125,6 +125,14 @@ const userSchema = new mongoose.Schema({
   resetPassId: {
     type: String,
     default: null,
+  },
+  invite: {
+    type: Boolean,
+    default: false,
+  },
+  job_invitations: {
+    type: Array,
+    default: [],
   },
 });
 

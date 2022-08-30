@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema({
     required: false,
     trim: true,
   },
+
   username: {
     type: String,
     required: true,
@@ -41,6 +42,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  
   contact: {
     type: String,
     unique: true,
@@ -53,14 +55,17 @@ const userSchema = new mongoose.Schema({
   resume: {
     type: String,
   },
-  education: {
-    type: Array,
+  education : {
+    type : Array,
+  }, 
+  desc : {
+    type : Array,
+  }, 
+  billing : {
+    type : Array,
   },
-  desc: {
-    type: Array,
-  },
-  experience: {
-    type: Array,
+  experience : {
+    type : Array,
   },
   tools: {
     type: Array,

@@ -36,6 +36,7 @@ import {
   markNotiReadForUser,
   pushNotification,
   sendEmailNotification,
+  whatsappMessage
 } from "../controllers/notification-controller.js";
 import { sendOneSignalNotification } from "../controllers/oneSignal.js";
 import {
@@ -149,6 +150,9 @@ router.post(
 
 // Email Notifications
 router.post("/sendEmailNotification", verifyToken, sendEmailNotification);
+
+//trillio Whatsapp
+router.post("/sendWhatsappNotification", verifyToken, whatsappMessage);
 
 // Job
 router.post("/addJob", verifyToken, addJob);

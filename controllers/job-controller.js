@@ -43,7 +43,10 @@ export const addJob = async (request, response) => {
         jobType: request.body.jobType,
         validTill: request.body.validTill ? request.body.validTill : null,
         hiringOrganization: request.body.hiringOrganization,
-        basicSalary: request.body.basicSalary ? request.body.basicSalary : null,
+        salary: request.body.salary ? request.body.salary : null,
+        perks: request.body.perks ? request.body.perks : null,
+        eligibility: request.body.eligibility ? request.body.eligibility : null,
+        skills: request.body.skills ? request.body.skills : null,
       };
 
       const newJob = new Job(jobC);
@@ -81,18 +84,18 @@ export const listJobs = async (request, response) => {
 // Update Jobs
 export const updateJob = async (request, response) => {
   try {
-    let user1 = null;
-    user1 = res;
-    if (res === undefined || res === null || res.user_type !== "Company") {
-      response.status(403);
-      return;
-    }
+    // let user1 = null;
+    // user1 = request;
+    // if (request === undefined || request === null) {
+    //   response.status(403);
+    //   return;
+    // }
     await User.findOne({ _id: request.body.user_id }, function (err, res) {});
     let job = Job.findOne({ _id: request.body.job_id });
-    if (job.uploadBy !== user1) {
-      response.status(403);
-      return;
-    }
+    // if (job.uploadBy !== user1) {
+    //   response.status(403);
+    //   return;
+    // }
     let newJob = Job.findOneAndUpdate(
       { _id: request.body.job_id },
       request.body.updates

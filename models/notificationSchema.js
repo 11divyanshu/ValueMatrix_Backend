@@ -26,6 +26,10 @@ const notificationSchema = new mongoose.Schema({
         type: Array(String),
         default: []
     },
+    sendTo : {
+        type : Array(String),
+        default : [],
+    },
     type:{
         type: String,
         enum : ["Email", "Notification","OneSignal"],

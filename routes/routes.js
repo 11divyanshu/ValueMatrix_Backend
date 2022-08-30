@@ -18,15 +18,19 @@ import {
   uploadCandidateResume,
   submitCandidateResumeDetails,
   submitCompanyDetails,
-
-
 } from "../controllers/userController.js";
 import { sendOTPSMS, updateContactOTP } from "../controllers/sms-controller.js";
 import {
   getUserIdFromToken,
   tokenGenerator,
 } from "../controllers/token-controller.js";
-import { adminLogin } from "../controllers/adminController.js";
+import {
+  adminLogin,
+  companyList,
+  userList,
+  downloadResume,
+  addAdminUser,
+} from "../controllers/adminController.js";
 import {
   getUserNotification,
   markNotiReadForUser,
@@ -48,6 +52,8 @@ import {
   resetPasswordByEmail,
   resetPasswordByUsername,
 } from "../controllers/passwordController.js";
+import { addCompanyUser } from "../controllers/companyController.js";
+import { addSkill, getSkills } from "../controllers/skillController.js";
 
 const router = express.Router();
 
@@ -70,17 +76,16 @@ var storage1 = multer.diskStorage({
   filename: (req, file, cb) => {
     console.log(req.body);
     cb(null, req.body.user_id + "-resume");
-  }
-})
+  },
+});
 var upload1 = multer({ storage: storage1 });
-
 
 // User Routes
 router.post("/userSignup", userSignup);
 router.post("/userLogin", userLogin);
 router.post("/validateSignup", vaildateSignupDetails);
 router.post("/getUserFromId", verifyToken, getUserFromId);
-router.post('/getProfileImage', verifyToken, getProfileImg);
+router.post("/getProfileImage", verifyToken, getProfileImg);
 router.post("/updateUserDetails", verifyToken, updateUserDetails);
 router.post(
   "/updateProfilePicture",
@@ -91,12 +96,21 @@ router.post(
 router.post("/logout", logout);
 
 // Candidate Routes
-router.post('/uploadCandidateResume', verifyToken, upload1.single('file'), uploadCandidateResume);
-router.post('/submitCandidateDetails', verifyToken, submitCandidateResumeDetails);
+router.post(
+  "/uploadCandidateResume",
+  verifyToken,
+  upload1.single("file"),
+  uploadCandidateResume
+);
+router.post(
+  "/submitCandidateDetails",
+  verifyToken,
+  submitCandidateResumeDetails
+);
 
 // Company Routes
-router.post('/submitCompanyDetails', verifyToken, submitCompanyDetails);
-
+router.post("/submitCompanyDetails", verifyToken, submitCompanyDetails);
+router.post("/addCompanyUser", verifyToken, addCompanyUser);
 
 // Reset Password
 router.post("/sendResetPasswordMail", resetPasswordByEmail);
@@ -106,6 +120,10 @@ router.post("/resetPassword", resetPassword);
 
 // Admin Routes
 router.post("/adminLogin", adminLogin);
+router.post("/getCompanyList", verifyToken, companyList);
+router.post("/getUserList", verifyToken, userList);
+router.post("/downloadResume", verifyToken, downloadResume);
+router.post("/addAdminUser", verifyToken, addAdminUser);
 
 // Sending mails
 router.post("/updateEmailOTP", verifyToken, UpdateEmailOTP);
@@ -141,5 +159,9 @@ router.post("/listJob", listJobs);
 router.post("/updateJobDetails", verifyToken, updateJob);
 router.post("/exportJobDetails", exportJobDetails);
 router.post("/getJobFromId", verifyToken, GetJobFromId);
+
+// Skills Routes
+router.post("/addSkills", verifyToken, addSkill);
+router.post("/getSkills", verifyToken, getSkills);
 
 export default router;

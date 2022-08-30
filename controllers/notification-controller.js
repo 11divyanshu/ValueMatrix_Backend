@@ -79,26 +79,43 @@ export const whatsappMessage = async (request ,response)=>{
 // Push Notifications To Database
 export const pushNotification = async (request, response) => {
   try {
+    console.log(request.body);
     User.findOne({ _id: request.body.user_id }, function (err, res) {
       if (!res || !res.isAdmin) response.status(403);
     });
-    let forAll = null,
-      user_type = null;
-    if (request.body.forAll === "All") {
-      forAll = true;
-      user_type = ["All"];
+
+    if (request.body.emailList && request.body.emailList.length > 0) {
+      let query = User.find({ email: { $in: request.body.emailList } }).select(
+        "_id"
+      );
+      let userIds = await query.exec();
+
+      let noti = new Notification({
+        title: request.body.title,
+        message: request.body.message,
+        sendTo: userIds.map((user) => user.id),
+      });
+      await noti.save();
+      response.status(200).json({ message: "Notification Added" });
     } else {
-      forAll = false;
-      user_type = request.body.forAll;
+      let forAll = null,
+        user_type = null;
+      if (request.body.forAll === "All") {
+        forAll = true;
+        user_type = ["All"];
+      } else {
+        forAll = false;
+        user_type = request.body.forAll;
+      }
+      let noti = new Notification({
+        title: request.body.title,
+        message: request.body.message,
+        forAll: forAll,
+        user_type: user_type,
+      });
+      noti.save();
+      response.status(200).json({ Message: "Notification Added" });
     }
-    let noti = new Notification({
-      title: request.body.title,
-      message: request.body.message,
-      forAll: forAll,
-      user_type: user_type,
-    });
-    noti.save();
-    response.status(200).json({ Message: "Notification Added" });
   } catch (error) {
     console.log("Error : ", error);
   }
@@ -123,10 +140,15 @@ export const getUserNotification = async (request, response) => {
             timeCreated: { $gte: request.body.user.timeRegistered },
             type: "Notification",
           },
+          {
+            forAll: true,
+            sendTo: { $in: [request.body.user_id] },
+            type: "Notification",
+            hideFrom : { $ne: request.body.user_id },
+          },
         ],
       },
       function (err, res) {
-        console.log(res);
         if (res) {
           response.status(200).json({ notifications: res });
         } else response.json({ Error: "No Notification Found" });
@@ -137,7 +159,7 @@ export const getUserNotification = async (request, response) => {
   }
 };
 
-export const getAdminNotification = async(request, response)=>{
+export const getAdminNotification = async (request, response) => {
   try {
     Notification.find(
       {
@@ -166,8 +188,9 @@ export const getAdminNotification = async(request, response)=>{
     );
   } catch (error) {
     console.log("Error : ", error);
-  }s
-}
+  }
+  s;
+};
 
 // Mark Notification Read for User
 export const markNotiReadForUser = async (request, response) => {
@@ -197,55 +220,71 @@ export const sendEmailNotification = async (request, response) => {
         return;
       }
     });
-    
+
     let query = null;
-    switch (request.body.sendTo) {
-      case "All":
-        query = User.find({}).select("email");
-        break;
-      case "User":
-        query = User.find({ isAdmin: false }).select("email");
-        break;
-      case "Admin":
-        query = User.find({ isAdmin: true }).select("email");
-        break;
-    }
-    let noti = new Notification({
-        forAll: (request.body.sendTo === "All") ? true : false,
-        title : request.body.subject,
-        message: request.body.text,
-        user_type : request.body.sendTo,
-    })
-    await noti.save();
     let to = null;
-    await query.exec(async function (err, res) {
-      console.log("RES:", res);
-      if (err) {
-        response.json({ Error: "Cannot Send Mails" });
-        return;
+    if (request.body.emailList.length === 0) {
+      switch (request.body.sendTo) {
+        case "All":
+          query = User.find({}).select("email");
+          break;
+        case "User":
+          query = User.find({ isAdmin: false }).select("email");
+          break;
+        case "Admin":
+          query = User.find({ isAdmin: true }).select("email");
+          break;
       }
-      let email = [];
-      res.map((item) => email.push(item.email));
-      console.log(email);
-      await sendGridMail
-        .send({
-          to: email,
-          from: "developervm171@gmail.com",
-          subject: request.body.subject,
-          text: request.body.text,
-        })
-        .then(() => {
-          console.log("Sent");
-          return response
-            .status(200)
-            .json({ Message: "Emails Sent Successfully" });
-        })
-        .catch((err) => {
-          console.log(err);
-          console.log("Not Sent");
-          return response.status(401).json({ Error: "Email Not Sent" });
-        });
-    });
+      let noti = new Notification({
+        forAll: request.body.sendTo === "All" ? true : false,
+        title: request.body.subject,
+        message: request.body.text,
+        user_type: request.body.sendTo,
+      });
+      await noti.save();
+      await query.exec(async function (err, res) {
+        if (err) {
+          response.json({ Error: "Cannot Send Mails" });
+          return;
+        }
+        let email = [];
+        res.map((item) => email.push(item.email));
+        console.log(email);
+        await sendGridMail
+          .send({
+            to: email,
+            from: "developervm171@gmail.com",
+            subject: request.body.subject,
+            text: request.body.text,
+          })
+          .then(() => {
+            console.log("Sent");
+            return response
+              .status(200)
+              .json({ Message: "Emails Sent Successfully" });
+          })
+          .catch((err) => {
+            console.log(err);
+            console.log("Not Sent");
+            return response.status(401).json({ Error: "Email Not Sent" });
+          });
+      });
+    } else {
+      to = request.body.emailList;
+      let noti = new Notification({
+        forAll: false,
+        title: request.body.subject,
+        message: request.body.text,
+        sendTo: request.body.emailList,
+      });
+      await noti.save();
+      await sendGridMail.send({
+        to: to,
+        from: "developervm171@gmail.com",
+        subject: request.body.subject,
+        text: request.body.text,
+      });
+    }
   } catch (err) {
     console.log(err);
   }

@@ -7,6 +7,7 @@ import fs from "fs";
 import sendGridMail from "@sendgrid/mail";
 import FormData from "form-data";
 import path from "path";
+import job from "../models/jobSchema.js";
 
 const url = process.env.BACKEND_URL;
 const front_url = process.env.FRONTEND_URL;
@@ -86,3 +87,131 @@ export const addCompanyUser = async (request, response) => {
     console.log("Error : ", error);
   }
 };
+
+
+
+export const filterCompany = async(request , response)=>{
+
+try {
+  
+//   console.log(request.params.time)
+//   console.log(request.params.vacancy)
+// console.log(request.body)
+
+
+let currentDate = new Date().toISOString();
+console.log(currentDate)
+// if(request.params.time === "One"){  
+
+//   job.find({},'request.body')
+//     .then(data =>
+//     {
+//         console.log(data);
+
+//     })
+//     .catch(err => console.log(err))
+
+// }
+
+// if(request.params.time === "Two"){  
+
+//   let query =  job.find(
+//     {
+        
+//         validTill: { $lte: currentDate },
+//     },
+//     'request.body').select(
+//       "_id"
+//     ).clone()
+//     .then(data =>
+//     {
+//         // console.log(data);
+//     })
+//     .catch(err => console.log(err))
+
+//     let userIds = await query.exec();
+//     console.log(userIds)
+
+// }
+
+// if(request.params.time === "Three"){  
+
+//   job.find(
+//     {
+        
+//         validTill: { $gte: currentDate },
+//     },
+//     'request.body').clone()
+//     .then(data =>
+//     {
+//         console.log(data);
+//     })
+//     .catch(err => console.log(err))
+    
+    
+    
+    
+    
+//   }
+  
+  let test= request.params.vacancy;
+
+let query = null;
+switch (request.params.time) {
+  case "One":
+    query = job.find({});
+    break;
+  case "Two":
+    query = job.find({ validTill: { $gte: currentDate } , })
+    break;
+  case "Three":
+    query = job.find({validTill: { $lte: currentDate }, }) 
+    break;
+}
+if(query){
+
+
+await query.exec(async function (err, res) {
+  // console.log("RES:", res);
+ let data = [];
+ data = res;
+ 
+  if(test === "true"){
+    let jobs = [];
+   data.map((item , index)=>{
+    // console.log(index ,"---" ,item)
+
+    if(item.location === "Loc" ){
+      jobs.push(item)
+    }
+   })
+   console.log("res1",jobs)
+   return response.json({ jobs });
+
+    
+  }else{
+    console.log("res2:",res)
+let jobs=[]
+jobs=res;
+  return response.json({jobs})
+  }
+  if (err) {
+    // response.json({ Error: "Cannot Send Mails" });
+    return;
+  }
+
+
+
+
+  
+  // res.map((item) => contact.push(item._id));
+  // console.log(contact);})
+
+})
+}
+
+
+} catch (error) {
+  console.log(error)
+}
+}

@@ -57,7 +57,7 @@ import {
   resetPasswordByEmail,
   resetPasswordByUsername,
 } from "../controllers/passwordController.js";
-import { addCompanyUser } from "../controllers/companyController.js";
+import { addCompanyUser, filterCompany } from "../controllers/companyController.js";
 import { addSkill, getSkills } from "../controllers/skillController.js";
 
 const router = express.Router();
@@ -120,6 +120,7 @@ router.post("/handleCandidateJobInvitation", verifyToken, handleCandidateJobInvi
 // Company Routes
 router.post("/submitCompanyDetails", verifyToken, submitCompanyDetails);
 router.post("/addCompanyUser", verifyToken, addCompanyUser);
+router.post("/filterCompany/:time/:vacancy" , filterCompany);
 
 // Reset Password
 router.post("/sendResetPasswordMail", resetPasswordByEmail);

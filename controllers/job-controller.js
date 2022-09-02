@@ -85,22 +85,48 @@ export const listJobs = async (request, response) => {
 export const updateJob = async (request, response) => {
   try {
     // let user1 = null;
-    // user1 = request;
-    // if (request === undefined || request === null) {
+    // user1 = res;
+    // if (res === undefined || res === null || res.user_type !== "Company") {
     //   response.status(403);
     //   return;
     // }
-    await User.findOne({ _id: request.body.user_id }, function (err, res) {});
-    let job = Job.findOne({ _id: request.body.job_id });
-    // if (job.uploadBy !== user1) {
-    //   response.status(403);
-    //   return;
-    // }
-    let newJob = Job.findOneAndUpdate(
-      { _id: request.body.job_id },
-      request.body.updates
-    );
-    response.status(200).json({ job: newJob });
+  //  await User.findOne({ _id: request.body.uploadBy }, function (err, res) {});
+
+
+
+    // let job = await Job.findOne({ _id: request.body._id }, function (err, res) {
+    //   // if (res.uploadBy !== request.body.uploadBy) {
+    //   //   response.status(403);
+    //   //   return;
+    //   // }
+
+
+    // }).clone();
+
+    
+
+ 
+    
+
+    let newJob = await Job.findOne(
+      { _id: request.body._id }, async function (err, user) {
+        
+        user.jobTitle = request.body.jobTitle;
+        user.jobType = request.body.jobType;
+        user.jobDesc = request.body.jobDesc;
+        user.location = request.body.location;
+        user.hiringOrganization = request.body.hiringOrganization;
+        user.eligibility = request.body.eligibility;
+        user.perks = request.body.perks;
+        user.salary = request.body.salary;
+        user.skills = request.body.skills;
+        await user.save();
+        return response.status(200).json({ Success: true });
+      }).clone();
+     
+      
+    
+  
   } catch (error) {
     console.log("Error : ", error);
   }

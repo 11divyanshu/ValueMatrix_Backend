@@ -2,6 +2,8 @@ import User from "../models/userSchema.js";
 import axios from "axios";
 import passwordHash from "password-hash";
 import {} from "dotenv/config";
+import Job from "../models/jobSchema.js";
+import Interview from "../models/interviewApplicationSchema.js";
 import multer from "multer";
 import fs from "fs";
 import sendGridMail from "@sendgrid/mail";
@@ -286,5 +288,129 @@ export const submitCompanyDetails = async (req, response) => {
     });
   } catch (error) {
     console.log("Error : ", error);
+  }
+};
+
+// Get User From Reset Pass ID
+export const getUserInviteFromResetPassId = async (request, response) => {
+  try {
+    User.findOne(
+      { resetPassId: request.body.reset_id },
+      async function (err, res) {
+        if (res) {
+          return response.status(200).json({ user_invite: res.invite });
+        }
+        response.status(403).json({ Message: "User Not Found" });
+      }
+    );
+  } catch (error) {
+    console.log("Error :", error);
+  }
+};
+
+// Set Profile
+export const setProfile = async (request, response) => {
+  try {
+    User.findOne(
+      { resetPassId: request.body.reset_pass_id },
+      async function (err, user) {
+        console.log(user);
+        if (
+          user.resetPassId &&
+          user.resetPassId === request.body.reset_pass_id
+        ) {
+          user.username = request.body.username;
+          user.password = passwordHash.generate(request.body.password);
+          const token = await axios.post(`${url}/generateToken`, {
+            user: user.id,
+          });
+          const access_token = token.data.token;
+          user.access_token = access_token;
+          user.access_valid = true;
+          user.invite = false;
+          await user.save();
+          return response
+            .status(200)
+            .json({ Success: true, access_token: access_token });
+        }
+        return response.status(403);
+      }
+    );
+  } catch (error) {
+    console.log("Error : ", error);
+  }
+};
+
+// Get Job Invitations
+export const getJobInvitations = async (request, response) => {
+  try {
+    await User.findOne(
+      { _id: request.body.user_id },
+      async function (err, user) {
+        if (user) {
+          let jobInvites = await Job.find({
+            _id: { $in: user.job_invitations },
+          }).clone();
+          console.log(user);
+          console.log(jobInvites);
+          return response.status(200).json({ jobInvites: jobInvites });
+        }
+        return response.status(403);
+      }
+    ).clone();
+  } catch (error) {
+    console.log("Error : ", error);
+  }
+};
+
+// Handle Candidate Job Invitation
+export const handleCandidateJobInvitation = async (request, response) => {
+  try {
+    await Job.findOne({ _id: request.body.job_id }, async function (err, job) {
+      if (job) {
+        await User.findOne(
+          { _id: request.body.user_id },
+          async function (err, user) {
+            console.log("User : ", user);
+            console.log("Job : ", job);
+            if (user) {
+              if (request.body.accept) {
+                let e = user.job_invitations.filter(
+                  (item) => item !== request.body.job_id
+                );
+                user.job_invitations = e;
+                let d = job.applicants ? job.applicants : [];
+                d.push(user._id);
+                job.applicants = d;
+                let newInterview = new Interview({
+                  job: request.body.job_id,
+                  applicant: user._id,
+                });
+                await newInterview.save();
+                await user.save();
+                await job.save();
+                return response.status(200).json({ Success: true });
+              } else {
+                user.job_invitations = user.job_invitations.filter(
+                  (item) => item !== request.body.job_id
+                );
+                let d = job.invitations_declined
+                  ? job.invitations_declined
+                  : [];
+                d.push(user._id);
+                job.invitations_declined = d;
+                await job.save();
+                await user.save();
+                return response.status(200).json({ Success: true });
+              }
+            }
+            return response.status(403);
+          }
+        ).clone();
+      }
+      return response.status(403);
+    });
+  } catch (err) {
+    console.log(err);
   }
 };

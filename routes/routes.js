@@ -18,6 +18,10 @@ import {
   uploadCandidateResume,
   submitCandidateResumeDetails,
   submitCompanyDetails,
+  getUserInviteFromResetPassId,
+  setProfile,
+  getJobInvitations,
+  handleCandidateJobInvitation,
 } from "../controllers/userController.js";
 import { sendOTPSMS, updateContactOTP } from "../controllers/sms-controller.js";
 import {
@@ -36,7 +40,7 @@ import {
   markNotiReadForUser,
   pushNotification,
   sendEmailNotification,
-  whatsappMessage
+  whatsappMessage,
 } from "../controllers/notification-controller.js";
 import { sendOneSignalNotification } from "../controllers/oneSignal.js";
 import {
@@ -95,6 +99,8 @@ router.post(
   updateProfileImage
 );
 router.post("/logout", logout);
+router.post("/getUserInviteFromResetPassId", getUserInviteFromResetPassId);
+router.post("/setProfile", setProfile);
 
 // Candidate Routes
 router.post(
@@ -108,6 +114,8 @@ router.post(
   verifyToken,
   submitCandidateResumeDetails
 );
+router.post("/getJobInvitations", verifyToken, getJobInvitations);
+router.post("/handleCandidateJobInvitation", verifyToken, handleCandidateJobInvitation);
 
 // Company Routes
 router.post("/submitCompanyDetails", verifyToken, submitCompanyDetails);

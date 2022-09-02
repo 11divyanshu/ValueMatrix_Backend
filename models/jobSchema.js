@@ -14,10 +14,10 @@ const jobSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
- uploadBy: {
+  uploadBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: user
-  }, 
+    ref: user,
+  },
   location: {
     type: String,
     required: true,
@@ -25,11 +25,10 @@ const jobSchema = new mongoose.Schema({
   jobType: {
     type: String,
     required: true,
-    enum:['Internship', 'Full-Time','Part-Time','Freelancing']
+    enum: ["Internship", "Full-Time", "Part-Time", "Freelancing"],
   },
   applicants: {
-    type: Array(mongoose.Schema.Types.Array.ObjectId),
-    ref: user
+    type: Array,
   },
   validTill: {
     type: Date,
@@ -43,9 +42,13 @@ const jobSchema = new mongoose.Schema({
     type: Number,
     required: false,
   },
-  invitations:{
+  invitations: {
     type: Array,
-    default :[],
+    default: [],
+  },
+  invitations_declined: {
+    type: Array,
+    default: [],
   },
   perks: {
     type: String,
@@ -55,7 +58,7 @@ const jobSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  skills : {
+  skills: {
     type: Array,
     required: false,
   },
@@ -64,7 +67,6 @@ const jobSchema = new mongoose.Schema({
    
   }
 });
-
 
 const job = mongoose.model("job", jobSchema);
 export default job;

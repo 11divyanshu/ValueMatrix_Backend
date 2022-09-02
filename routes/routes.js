@@ -112,7 +112,7 @@ router.post(
 // Company Routes
 router.post("/submitCompanyDetails", verifyToken, submitCompanyDetails);
 router.post("/addCompanyUser", verifyToken, addCompanyUser);
-router.post("/filterCompany/:time/:vacancy" , filterCompany);
+router.post("/filterCompany/:time/:vacancy/:id" , filterCompany);
 
 // Reset Password
 router.post("/sendResetPasswordMail", resetPasswordByEmail);
@@ -157,7 +157,7 @@ router.post("/sendWhatsappNotification", verifyToken, whatsappMessage);
 
 // Job
 router.post("/addJob", verifyToken, addJob);
-router.post("/listJob", listJobs);
+router.post("/listJob/:id", listJobs);
 router.post("/updateJobDetails", verifyToken, updateJob);
 router.post("/exportJobDetails", exportJobDetails);
 router.post("/getJobFromId", verifyToken, GetJobFromId);

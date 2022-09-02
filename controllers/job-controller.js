@@ -41,6 +41,7 @@ export const addJob = async (request, response) => {
         uploadBy: res.id,
         location: request.body.location,
         jobType: request.body.jobType,
+        reqApp: request.body.reqApp,
         validTill: request.body.validTill ? request.body.validTill : null,
         hiringOrganization: request.body.hiringOrganization,
         salary: request.body.salary ? request.body.salary : null,
@@ -70,7 +71,8 @@ export const addJob = async (request, response) => {
 // List Jobs
 export const listJobs = async (request, response) => {
   try {
-    await Job.find({})
+    console.log(request.params);
+    await Job.find({ uploadBy: request.params.id})
       .sort({ createTime: -1 })
       .exec(async function (err, res) {
         await response.status(200).json({ jobs: res });
@@ -80,6 +82,9 @@ export const listJobs = async (request, response) => {
     console.log(error);
   }
 };
+
+
+
 
 // Update Jobs
 export const updateJob = async (request, response) => {
@@ -114,6 +119,7 @@ export const updateJob = async (request, response) => {
         user.jobTitle = request.body.jobTitle;
         user.jobType = request.body.jobType;
         user.jobDesc = request.body.jobDesc;
+        user.reqApp = request.body.reqApp;
         user.location = request.body.location;
         user.hiringOrganization = request.body.hiringOrganization;
         user.eligibility = request.body.eligibility;
@@ -125,7 +131,6 @@ export const updateJob = async (request, response) => {
       }).clone();
      
       
-    
   
   } catch (error) {
     console.log("Error : ", error);

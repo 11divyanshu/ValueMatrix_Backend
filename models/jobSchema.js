@@ -58,6 +58,10 @@ const jobSchema = new mongoose.Schema({
   skills : {
     type: Array,
     required: false,
+  },
+  reqApp:{
+    type:Number,
+   
   }
 });
 

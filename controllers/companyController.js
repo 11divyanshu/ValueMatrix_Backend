@@ -100,7 +100,7 @@ try {
 
 
 let currentDate = new Date().toISOString();
-console.log(currentDate)
+// console.log(currentDate)
 // if(request.params.time === "One"){  
 
 //   job.find({},'request.body')
@@ -155,17 +155,20 @@ console.log(currentDate)
 //   }
   
   let test= request.params.vacancy;
-
+let id = request.body
+// console.log(id);
 let query = null;
 switch (request.params.time) {
   case "One":
-    query = job.find({});
+    query = job.find({uploadBy: request.params.id});
     break;
   case "Two":
-    query = job.find({ validTill: { $gte: currentDate } , })
+    query = job.find({ $and:
+      [ {uploadBy: request.params.id },{ validTill: { $gte: currentDate } }]})
     break;
   case "Three":
-    query = job.find({validTill: { $lte: currentDate }, }) 
+    query = job.find({$and:
+      [ {uploadBy: request.params.id },{ validTill: { $lte: currentDate } }] }) 
     break;
 }
 if(query){
@@ -174,6 +177,7 @@ if(query){
 await query.exec(async function (err, res) {
   // console.log("RES:", res);
  let data = [];
+ 
  data = res;
  
   if(test === "true"){
@@ -185,12 +189,12 @@ await query.exec(async function (err, res) {
       jobs.push(item)
     }
    })
-   console.log("res1",jobs)
+  //  console.log("res1",jobs)
    return response.json({ jobs });
 
     
   }else{
-    console.log("res2:",res)
+    // console.log("res2:",res)
 let jobs=[]
 jobs=res;
   return response.json({jobs})

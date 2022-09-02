@@ -173,8 +173,15 @@ export const exportJobDetails = async (request, response) => {
 // Get Job From Id
 export const GetJobFromId = async (request, response) => {
   try {
-    await Job.findOne({ _id: request.body.job_id }, function (err, res) {
-      if (res) response.status(200).json({ job: res });
+    await Job.findOne({ _id: request.body.job_id }, async function (err, res) {
+      let applicants = [],
+        declined = [],
+        invited = [];
+      applicants = await User.find({ _id: { $in: res.applicants } });
+      declined = await User.find({ _id: { $in: res.invitations_declined } });
+      invited = await User.find({ _id: { $in: res.invitations } });
+      if (res)
+        response.status(200).json({ job: res, applicants, declined, invited });
     });
   } catch (error) {}
 };
@@ -194,8 +201,8 @@ export const sendJobInvitations = async (request, response) => {
         res.status(403).json({ Message: "Not Authorized" });
       }
       await Job.findOne({ _id: job_id }, async function (err1, res1) {
-        let invitations = [];
-        candidates.forEach((candidate) => {
+        let invitations = res1.invitations ? res1.invitations : [];
+        await candidates.forEach((candidate, index) => {
           User.findOne(
             {
               $or: [
@@ -209,27 +216,31 @@ export const sendJobInvitations = async (request, response) => {
             },
             async function (error, result) {
               if (result) {
-                let i = result.job_invitions ? result.job_invitations : [];
-                i.push(job_id);
-                invitations.push(result._id);
-                await User.findOneAndUpdate(
-                  { _id: result._id },
-                  { job_invitations: i }
-                );
-                let noti = new Notification({
-                  forAll: false,
-                  title: "Job Invitation - " + res1.jobTitle,
-                  message:
-                    "You have been invited for the job " +
-                    res1.jobTitle +
-                    " by " +
-                    res.username,
-                  sendTo: [result._id],
-                  type: "Notification",
-                });
-                await noti.save();
+                if (!result.job_invitations.includes(result._id)) {
+                  let i = result.job_invitations ? result.job_invitations : [];
+                  i.push(job_id);
+                  invitations.push(result._id);
+                  console.log(invitations);
+                  result.job_invitations = i;
+                  await result.save();
+                  await User.findOneAndUpdate(
+                    { _id: result._id },
+                    { job_invitations: i }
+                  );
+                  let noti = new Notification({
+                    forAll: false,
+                    title: "Job Invitation - " + res1.jobTitle,
+                    message:
+                      "You have been invited for the job " +
+                      res1.jobTitle +
+                      " by " +
+                      res.username,
+                    sendTo: [result._id],
+                    type: "Notification",
+                  });
+                  await noti.save();
 
-                let html = `<h1>Job Invitation</h1>
+                  let html = `<h1>Job Invitation</h1>
               <br/>
               <p>
                 You have been invited for the job <b>${res1.jobTitle}</b> by <b>${res.username}</b>
@@ -238,13 +249,18 @@ export const sendJobInvitations = async (request, response) => {
               <a href="${frontendUrl}/user/jobInvitations
               " target="_blank">${frontendUrl}/user/jobInvitations</a>`;
 
-                await sendGridMail.send({
-                  to: result.email,
-                  from: "developervm171@gmail.com",
-                  subject: `Job Invitation by ${res.username} - Value Matrix`,
-                  html: html,
-                });
-                console.log("Email sent to : ", result.email);
+                  await sendGridMail.send({
+                    to: result.email,
+                    from: "developervm171@gmail.com",
+                    subject: `Job Invitation by ${res.username} - Value Matrix`,
+                    html: html,
+                  });
+                  console.log("Email sent to : ", result.email);
+                  if (index === candidates.length - 1) {
+                    res1.invitations = invitations;
+                    await res1.save();
+                  }
+                }
               } else {
                 let id = v4();
                 let pass = generatePassword();
@@ -264,6 +280,7 @@ export const sendJobInvitations = async (request, response) => {
                 });
                 await newUser.save();
                 invitations.push(newUser._id);
+                console.log(invitations);
                 let htmltext = `<h1>Invitation to join Job Portal</h1><br/><p>You have been invited for the job interview for <b>${res1.jobTitle}</b> by <b>${res.username}</b>.
               </p>
               <br/>
@@ -279,14 +296,17 @@ export const sendJobInvitations = async (request, response) => {
                   html: htmltext,
                 });
                 console.log("Email sent to : ", candidate.Email);
+                if (index === candidates.length - 1) {
+                  res1.invitations = invitations;
+                  await res1.save();
+                }
               }
             }
           ).clone();
         });
-        res1.invitations = invitations;
-        await res1.save();
       }).clone();
     }).clone();
+    return response.status(200).json({ Message: "Invitations Sent" });
   } catch (err) {
     console.log("Error : ", err);
   }

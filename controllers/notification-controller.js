@@ -2,25 +2,27 @@ import Notification from "../models/notificationSchema.js";
 import User from "../models/userSchema.js";
 import {} from "dotenv/config";
 import sendGridMail from "@sendgrid/mail";
-import twilio  from 'twilio';
-// const accountSid = 'ACf7a405cd8ab7420880319015e48606da'; 
-// const authToken = '[Redacted]'; 
-// const client = require('twilio')(accountSid, authToken); 
- 
-// client.messages 
-//       .create({ 
-//          body: 'Your appointment is coming up on July 21 at 3PM', 
-//          from: 'whatsapp:+14155238886',       
-//          to: 'whatsapp:+919617949056' 
-//        }) 
-//       .then(message => console.log(message.sid)) 
+import twilio from "twilio";
+
+// const accountSid = 'ACf7a405cd8ab7420880319015e48606da';
+// const authToken = '[Redacted]';
+// const client = require('twilio')(accountSid, authToken);
+
+// client.messages
+//       .create({
+//          body: 'Your appointment is coming up on July 21 at 3PM',
+//          from: 'whatsapp:+14155238886',
+//          to: 'whatsapp:+919617949056'
+//        })
+//       .then(message => console.log(message.sid))
 //       .done();
+
 const accountSid = process.env.TRILLIO_ACCOUNT_SID;
 const authToken = process.env.TRILLIO_AUTH_TOKEN;
 
 const client = new twilio(accountSid, authToken);
 
-export const whatsappMessage = async (request ,response)=>{
+export const whatsappMessage = async (request, response) => {
   try {
     User.findOne({ _id: request.body.user_id }, function (err, res) {
       if (!res || !res.isAdmin) response.status(403);
@@ -37,44 +39,33 @@ export const whatsappMessage = async (request ,response)=>{
         query = User.find({ isAdmin: true }).select("contact");
         break;
     }
-    if(query){
-
-
-   
-
-    await query.exec(async function (err, res) {
-      console.log("RES:", res);
-      if (err) {
-        response.json({ Error: "Cannot Send Mails" });
-        return;
-      }
-      let contact = [];
-      res.map((item) => contact.push(item.contact));
-      console.log(contact);})
-
+    if (query) {
+      await query.exec(async function (err, res) {
+        console.log("RES:", res);
+        if (err) {
+          response.json({ Error: "Cannot Send Mails" });
+          return;
+        }
+        let contact = [];
+        res.map((item) => contact.push(item.contact));
+        console.log(contact);
+      });
     }
 
-
-    
-
-
-    client.messages 
-      .create({ 
-         body: request.body.contents, 
-         from: 'whatsapp:+14155238886',       
-         to: `whatsapp:+91${request.body.contactList}`
-       }) 
-      .then(message => console.log(message.sid)) 
+    client.messages
+      .create({
+        body: request.body.contents,
+        from: "whatsapp:+14155238886",
+        to: `whatsapp:+91${request.body.contactList}`,
+      })
+      .then((message) => console.log(message.sid))
       .done();
-  
+
     response.status(200).json({ Message: "Notification Added" });
   } catch (error) {
     console.log("Error : ", error);
   }
-
-}
-
-
+};
 
 // Push Notifications To Database
 export const pushNotification = async (request, response) => {
@@ -124,36 +115,34 @@ export const pushNotification = async (request, response) => {
 // Get Notifications For User
 export const getUserNotification = async (request, response) => {
   try {
-    Notification.find(
-      {
-        $or: [
-          {
-            forAll: true,
-            hideFrom: { $ne: request.body.user_id },
-            timeCreated: { $gte: request.body.user.timeRegistered },
-            type: "Notification",
-          },
-          {
-            forAll: false,
-            user_type: request.body.user.user_type,
-            hideFrom: { $ne: request.body.user_id },
-            timeCreated: { $gte: request.body.user.timeRegistered },
-            type: "Notification",
-          },
-          {
-            forAll: true,
-            sendTo: { $in: [request.body.user_id] },
-            type: "Notification",
-            hideFrom : { $ne: request.body.user_id },
-          },
-        ],
-      },
-      function (err, res) {
+    Notification.find({
+      $or: [
+        {
+          forAll: true,
+          hideFrom: { $ne: request.body.user_id },
+          timeCreated: { $gte: request.body.user.timeRegistered },
+          type: "Notification",
+        },
+        {
+          forAll: false,
+          user_type: request.body.user.user_type,
+          hideFrom: { $ne: request.body.user_id },
+          timeCreated: { $gte: request.body.user.timeRegistered },
+          type: "Notification",
+        },
+        {
+          sendTo: { $in: [request.body.user_id] },
+          type: "Notification",
+          hideFrom: { $ne: request.body.user_id },
+        },
+      ],
+    })
+      .sort({ timeCreated: -1 })
+      .exec(function (err, res) {
         if (res) {
           response.status(200).json({ notifications: res });
         } else response.json({ Error: "No Notification Found" });
-      }
-    );
+      });
   } catch (error) {
     console.log("Error : ", error);
   }
@@ -289,7 +278,3 @@ export const sendEmailNotification = async (request, response) => {
     console.log(err);
   }
 };
-
-
-
-

@@ -245,7 +245,10 @@ export const uploadCandidateResume = async (req, response) => {
 // Submit Candidate Resume Details
 export const submitCandidateResumeDetails = async (req, response) => {
   try {
-    User.findOne({ _id: req.body.user_id }, async function (err, user) {
+    await User.findOne({ _id: req.body.user_id }, async function (err, user) {
+      console.log(user);
+      if(user === null)
+        return response.status(403);
       if (req.body.education) {
         user.education = req.body.education;
       }
@@ -267,9 +270,11 @@ export const submitCandidateResumeDetails = async (req, response) => {
       if (req.body.tools) {
         user.tools = req.body.tools;
       }
+      console.log("Saving User");
       await user.save();
+      console.log("Saved");
       return response.status(200).json({ Success: true, user: user });
-    });
+    }).clone();
   } catch (error) {
     console.log("Error : ", error);
   }

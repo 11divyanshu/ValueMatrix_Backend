@@ -71,8 +71,7 @@ export const addJob = async (request, response) => {
 // List Jobs
 export const listJobs = async (request, response) => {
   try {
-    console.log(request.params);
-    await Job.find({ uploadBy: request.params.id})
+    await Job.find({ uploadBy: request.params.id })
       .sort({ createTime: -1 })
       .exec(async function (err, res) {
         await response.status(200).json({ jobs: res });
@@ -83,9 +82,6 @@ export const listJobs = async (request, response) => {
   }
 };
 
-
-
-
 // Update Jobs
 export const updateJob = async (request, response) => {
   try {
@@ -95,9 +91,7 @@ export const updateJob = async (request, response) => {
     //   response.status(403);
     //   return;
     // }
-  //  await User.findOne({ _id: request.body.uploadBy }, function (err, res) {});
-
-
+    //  await User.findOne({ _id: request.body.uploadBy }, function (err, res) {});
 
     // let job = await Job.findOne({ _id: request.body._id }, function (err, res) {
     //   // if (res.uploadBy !== request.body.uploadBy) {
@@ -105,17 +99,11 @@ export const updateJob = async (request, response) => {
     //   //   return;
     //   // }
 
-
     // }).clone();
 
-    
-
- 
-    
-
     let newJob = await Job.findOne(
-      { _id: request.body._id }, async function (err, user) {
-        
+      { _id: request.body._id },
+      async function (err, user) {
         user.jobTitle = request.body.jobTitle;
         user.jobType = request.body.jobType;
         user.jobDesc = request.body.jobDesc;
@@ -128,10 +116,8 @@ export const updateJob = async (request, response) => {
         user.skills = request.body.skills;
         await user.save();
         return response.status(200).json({ Success: true });
-      }).clone();
-     
-      
-  
+      }
+    ).clone();
   } catch (error) {
     console.log("Error : ", error);
   }

@@ -3,7 +3,7 @@ import User from "../models/userSchema.js";
 
 export const getSkills = async (req, res) => {
   try {
-    const skills = await Skill.find();
+    const skills = await Skill.find().sort();
     return res.status(200).json(skills);
   } catch (error) {
     return res.status(404).json({ message: error.message });

@@ -23,6 +23,7 @@ import {
   setProfile,
   getJobInvitations,
   handleCandidateJobInvitation,
+  fetchCountry,
 } from "../controllers/userController.js";
 
 import { sendOTPSMS, updateContactOTP } from "../controllers/sms-controller.js";
@@ -55,6 +56,7 @@ import {
   updateJob,
   GetJobFromId,
   sendJobInvitations,
+  listJobsCandidate,
 } from "../controllers/job-controller.js";
 import {
   resetPassword,
@@ -110,6 +112,7 @@ router.post(
 router.post("/logout", logout);
 router.post("/getUserInviteFromResetPassId", getUserInviteFromResetPassId);
 router.post("/setProfile", setProfile);
+router.post("/fetchCountry", fetchCountry);
 
 // Candidate Routes
 router.post(
@@ -179,6 +182,7 @@ router.post("/sendWhatsappNotification", verifyToken, whatsappMessage);
 // Job
 router.post("/addJob", verifyToken, addJob);
 router.post("/listJob/:id", listJobs);
+router.post("/listJobCandidate/:id", listJobsCandidate);
 router.post("/updateJobDetails", verifyToken, updateJob);
 router.post("/exportJobDetails", exportJobDetails);
 router.post("/getJobFromId", verifyToken, GetJobFromId);
@@ -196,3 +200,5 @@ router.post("/addSkills", verifyToken, addSkill);
 router.post("/getSkills", verifyToken, getSkills);
 
 export default router;
+
+

@@ -1,4 +1,5 @@
 import User from "../models/userSchema.js";
+import Country from "../models/countrySchema.js";
 import axios from "axios";
 import passwordHash from "password-hash";
 import {} from "dotenv/config";
@@ -9,6 +10,7 @@ import fs from "fs";
 import sendGridMail from "@sendgrid/mail";
 import FormData from "form-data";
 import path from "path";
+
 
 const url = process.env.BACKEND_URL;
 const front_url = process.env.FRONTEND_URL;
@@ -139,6 +141,30 @@ export const getUserFromId = async (request, response) => {
     console.log("Error :", error);
   }
 };
+
+// Get country
+export const fetchCountry = async (request, response) => {
+  try {
+    // let res = await country.find({});
+    // console.log("hii");
+    // console.log(res);
+  await Country.find(function (err, countries) {
+      if (err) return console.error(err);
+      console.log(countries);
+    
+      return response.status(200).json({countries});
+    }).clone();
+
+
+  } catch (error) {
+    console.log("Error :", error);
+  }
+};
+
+
+
+
+
 
 export const getProfileImg = async (request, response) => {
   {

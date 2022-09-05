@@ -94,65 +94,11 @@ export const filterCompany = async(request , response)=>{
 
 try {
   
-//   console.log(request.params.time)
-//   console.log(request.params.vacancy)
-// console.log(request.body)
+
 
 
 let currentDate = new Date().toISOString();
-// console.log(currentDate)
-// if(request.params.time === "One"){  
 
-//   job.find({},'request.body')
-//     .then(data =>
-//     {
-//         console.log(data);
-
-//     })
-//     .catch(err => console.log(err))
-
-// }
-
-// if(request.params.time === "Two"){  
-
-//   let query =  job.find(
-//     {
-        
-//         validTill: { $lte: currentDate },
-//     },
-//     'request.body').select(
-//       "_id"
-//     ).clone()
-//     .then(data =>
-//     {
-//         // console.log(data);
-//     })
-//     .catch(err => console.log(err))
-
-//     let userIds = await query.exec();
-//     console.log(userIds)
-
-// }
-
-// if(request.params.time === "Three"){  
-
-//   job.find(
-//     {
-        
-//         validTill: { $gte: currentDate },
-//     },
-//     'request.body').clone()
-//     .then(data =>
-//     {
-//         console.log(data);
-//     })
-//     .catch(err => console.log(err))
-    
-    
-    
-    
-    
-//   }
   
   let test= request.params.vacancy;
 let id = request.body

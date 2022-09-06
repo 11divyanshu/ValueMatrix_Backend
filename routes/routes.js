@@ -200,5 +200,3 @@ router.post("/addSkills", verifyToken, addSkill);
 router.post("/getSkills", verifyToken, getSkills);
 
 export default router;
-
-

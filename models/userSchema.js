@@ -172,6 +172,7 @@ passport.use(
               firstName: profile.name.givenName,
               lastName: profile.name.familyname,
               email: profile.emails[0].value,
+              user_type : "User",
               contact: profile.id,
             });
           } else if (res) {
@@ -223,6 +224,7 @@ passport.use(
                   lastName: profile.name.familyname,
                   email: email,
                   contact: contact,
+                  user_type : "User",
                 },
                 function (err, user) {
                   return done(err, user);
@@ -266,6 +268,7 @@ passport.use(
                 lastName: profile.name.familyName,
                 email: email,
                 contact: contact,
+                user_type : "User",
               },
               function (err, res) {
                 return done(err, res);
@@ -290,7 +293,7 @@ passport.use(
     },
     async function (accessToken, refreshToken, profile, done) {
       let cont = true;
-      // console.log(profile);
+      //console.log(profile);
       let email = profile._json.email ? profile._json.email : profile.id;
       let contact = profile._json.contact;
       if (contact === null || contact === undefined) contact = profile.id;
@@ -307,6 +310,7 @@ passport.use(
               {
                 githubId: profile.id,
                 username: username,
+                user_type : "User",
                 firstName: profile.displayName,
                 company: profile._json.company ? profile._json.company : "",
                 email: email,

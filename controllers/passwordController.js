@@ -29,7 +29,7 @@ export const resetPasswordByEmail = async (request, response) => {
         let html = `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
     <div style="margin:50px auto;width:70%;padding:20px 0">
       <div style="border-bottom:1px solid #eee">
-        <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">TDP Reset Password</a>
+        <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Value Matrix Reset Password</a>
       </div>
       <p style="font-size:1.1em">Hi, ${res.firstName}</p>
       <p style="font-size:1.1em">There was a request to change your password!      </p>
@@ -64,6 +64,23 @@ export const resetPassword = async (request, response) => {
         res.password = password;
         res.resetPassId = null;
         await res.save();
+        let html = `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
+        <div style="margin:50px auto;width:70%;padding:20px 0">
+          <div style="border-bottom:1px solid #eee">
+            <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Value Matrix Reset Password</a>
+          </div>
+          <p style="font-size:1.1em">Hi, ${res.firstName}</p>
+          <p style="font-size:1.1em">Your Password has been reset.</p>
+          <br/>
+        </div>
+      </div>`;
+
+        await sendGridMail.send({
+          to: res.email,
+          from: "developervm171@gmail.com",
+          subject: "Reset Password",
+          html: html,
+        });
         return response.status(200).json({});
       }
     );
@@ -120,11 +137,11 @@ export const resetPasswordByUsername = async (request, response) => {
         let id = v4();
         res.resetPassId = id;
         await res.save();
-        
+
         let html = `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
   <div style="margin:50px auto;width:70%;padding:20px 0">
     <div style="border-bottom:1px solid #eee">
-      <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">TDP Reset Password</a>
+      <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Value Matrix Reset Password</a>
     </div>
     <p style="font-size:1.1em">Hi, ${res.firstName}</p>
     <p style="font-size:1.1em">There was a request to change your password!      </p>

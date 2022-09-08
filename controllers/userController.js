@@ -2,6 +2,7 @@ import User from "../models/userSchema.js";
 import Country from "../models/countrySchema.js";
 import axios from "axios";
 import passwordHash from "password-hash";
+import v4 from "uuid/v4.js";
 import {} from "dotenv/config";
 import Job from "../models/jobSchema.js";
 import Interview from "../models/interviewApplicationSchema.js";
@@ -83,10 +84,11 @@ export const userLogin = async (request, response) => {
 // Signup For User Using Email
 export const userSignup = async (request, response) => {
   try {
+    console.log(request.body);
     let name = String(request.body.name).split(" ");
     let firstname = name[0];
     let lastname = name.slice(1).join(" ");
-
+    let temp_acc = v4();
     let password = passwordHash.generate(request.body.password);
     let user1 = {
       username: request.body.username,
@@ -96,6 +98,7 @@ export const userSignup = async (request, response) => {
       lastname: lastname,
       password: password,
       user_type: request.body.user_type,
+      access_token : temp_acc,
     };
 
     const newUser = new User(user1);
@@ -103,6 +106,9 @@ export const userSignup = async (request, response) => {
     const token = await axios.post(`${url}/generateToken`, {
       user: newUser.id,
     });
+    console.log(token);
+    newUser.access_token = token.data.token;
+    await newUser.save();
 
     let html = `<div>Hi ${request.body.username}</div>,
     <div>Welcome to Value Matrix. It is a great pleasure to have you on board</div>. 

@@ -67,6 +67,9 @@ const userSchema = new mongoose.Schema({
   experience : {
     type : Array,
   },
+  associate: {
+    type: Array
+  },
   tools: {
     type: Array,
   },

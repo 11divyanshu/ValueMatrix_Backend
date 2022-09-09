@@ -183,6 +183,7 @@ export const getProfileImg = async (request, response) => {
             {},
             function (err, res) {}
           );
+          console.log(d);
           return response.json({ Image: d });
         }
 
@@ -289,6 +290,9 @@ export const submitCandidateResumeDetails = async (req, response) => {
       }
       if (req.body.contact && req.body.contact.address) {
         user.address = req.body.contact.address;
+      }
+      if(req.body.associate ){
+        user.associate = req.body.associate;
       }
       if (
         (user.contact === user.googleId ||

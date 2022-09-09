@@ -168,10 +168,6 @@ export const fetchCountry = async (request, response) => {
 };
 
 
-
-
-
-
 export const getProfileImg = async (request, response) => {
   {
     try {
@@ -183,7 +179,6 @@ export const getProfileImg = async (request, response) => {
             {},
             function (err, res) {}
           );
-          console.log(d);
           return response.json({ Image: d });
         }
 
@@ -279,7 +274,7 @@ export const uploadCandidateResume = async (req, response) => {
 export const submitCandidateResumeDetails = async (req, response) => {
   try {
     await User.findOne({ _id: req.body.user_id }, async function (err, user) {
-      console.log(user);
+      
       if(user === null)
         return response.status(403);
       if (req.body.education) {
@@ -306,9 +301,9 @@ export const submitCandidateResumeDetails = async (req, response) => {
       if (req.body.tools) {
         user.tools = req.body.tools;
       }
-      console.log("Saving User");
+      
       await user.save();
-      console.log("Saved");
+      
       return response.status(200).json({ Success: true, user: user });
     }).clone();
   } catch (error) {
@@ -355,7 +350,7 @@ export const setProfile = async (request, response) => {
     User.findOne(
       { resetPassId: request.body.reset_pass_id },
       async function (err, user) {
-        console.log(user);
+        
         if (
           user.resetPassId &&
           user.resetPassId === request.body.reset_pass_id
@@ -392,8 +387,6 @@ export const getJobInvitations = async (request, response) => {
           let jobInvites = await Job.find({
             _id: { $in: user.job_invitations },
           }).clone();
-          console.log(user);
-          console.log(jobInvites);
           return response.status(200).json({ jobInvites: jobInvites });
         }
         return response.status(403);
@@ -412,8 +405,6 @@ export const handleCandidateJobInvitation = async (request, response) => {
         await User.findOne(
           { _id: request.body.user_id },
           async function (err, user) {
-            console.log("User : ", user);
-            console.log("Job : ", job);
             if (user) {
               if (request.body.accept) {
                 let e = user.job_invitations.filter(

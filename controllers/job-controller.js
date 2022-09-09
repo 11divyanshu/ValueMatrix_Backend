@@ -34,7 +34,7 @@ export const addJob = async (request, response) => {
         response.status(404).json({ Message: "Admin Not Found" });
         return;
       }
-
+      console.log(request.body.skills);
       let jobC = {
         jobTitle: request.body.jobTitle,
         jobDesc: request.body.jobDesc,

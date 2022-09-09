@@ -6,6 +6,7 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as MicrosoftStrategy } from "passport-microsoft";
 import { Strategy as LinkedInStrategy } from "passport-linkedin-oauth2";
 import { Strategy as GitHubStrategy } from "passport-github";
+import v4 from "uuid/v4.js";
 import {} from "dotenv/config";
 import axios from "axios";
 
@@ -169,6 +170,7 @@ passport.use(
         .findOne({ email: profile.emails[0].value }, async function (err, res) {
           let user1 = null;
           if (res === null) {
+            var id = v4();
             user1 = await user.create({
               googleId: profile.id,
               username: profile.id,
@@ -177,6 +179,7 @@ passport.use(
               email: profile.emails[0].value,
               user_type : "User",
               contact: profile.id,
+              access_token : id,
             });
           } else if (res) {
             res.googleId = profile.id;
@@ -213,6 +216,7 @@ passport.use(
       await user
         .findOne({ email: email }, async function (err, res) {
           if (res) {
+            let id = v4();
             res.microsoftId = profile.id;
             await res.save();
             cont = false;
@@ -228,6 +232,7 @@ passport.use(
                   email: email,
                   contact: contact,
                   user_type : "User",
+                  access_token : id,
                 },
                 function (err, user) {
                   return done(err, user);
@@ -260,6 +265,7 @@ passport.use(
         .findOne({ email: email }, async function (err, res) {
           if (res) {
             res.linkedInId = profile.id;
+            let id = v4();
             await res.save();
             return done(err, res);
           } else {
@@ -271,6 +277,7 @@ passport.use(
                 lastName: profile.name.familyName,
                 email: email,
                 contact: contact,
+                access_token : id,
                 user_type : "User",
               },
               function (err, res) {
@@ -309,6 +316,7 @@ passport.use(
             cont = false;
             return done(err, res);
           } else {
+            let id = v4();
             await user.findOrCreate(
               {
                 githubId: profile.id,
@@ -317,6 +325,7 @@ passport.use(
                 firstName: profile.displayName,
                 company: profile._json.company ? profile._json.company : "",
                 email: email,
+                access_token : id,
                 about: profile._json.bio ? profile._json.bio : "",
                 contact: contact,
               },

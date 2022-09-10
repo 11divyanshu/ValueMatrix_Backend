@@ -182,7 +182,7 @@ router.post("/sendWhatsappNotification", verifyToken, whatsappMessage);
 // Job
 router.post("/addJob", verifyToken, addJob);
 router.post("/listJob/:id", listJobs);
-router.post("/listJobCandidate/:id", listJobsCandidate);
+router.post("/listJobCandidate", listJobsCandidate);
 router.post("/updateJobDetails", verifyToken, updateJob);
 router.post("/exportJobDetails", exportJobDetails);
 router.post("/getJobFromId", verifyToken, GetJobFromId);

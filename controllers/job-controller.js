@@ -81,14 +81,16 @@ export const listJobs = async (request, response) => {
     console.log(error);
   }
 };
+
 export const listJobsCandidate = async (request, response) => {
   try {
     let currentDate = new Date().toISOString();
 
-    console.log(request.params);
-    await Job.find({ validTill: { $lte: currentDate } })
+    // console.log(request.params);
+    await Job.find({ validTill: { $gte: currentDate } })
       .sort({ createTime: -1 })
       .exec(async function (err, res) {
+        console.log(res);
         await response.status(200).json({ jobs: res });
         return;
       });

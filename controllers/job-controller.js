@@ -117,7 +117,7 @@ export const updateJob = async (request, response) => {
     //   // }
 
     // }).clone();
-
+  
     let newJob = await Job.findOne(
       { _id: request.body._id },
       async function (err, user) {
@@ -164,11 +164,6 @@ export const exportJobDetails = async (request, response) => {
         if (err) console.log("wrtieFileSync Error : ", err);
       });
       await response.download(filename);
-      //   fs.unlink(filename, (err) => {
-      //     if (err) {
-      //       console.log("Error deleting file : ", err);
-      //     }
-      //   });
 
       // Getting Canditates
       let candidateArr = res.applicants;
@@ -192,11 +187,6 @@ export const exportJobDetails = async (request, response) => {
             }
           );
           await response.download(filename);
-          //   fs.unlink(filename, (err) => {
-          //     if (err) {
-          //       console.log("Error deleting file : ", err);
-          //     }
-          //   });
         }
       });
     });
@@ -206,16 +196,21 @@ export const exportJobDetails = async (request, response) => {
 
 // Get Job From Id
 export const GetJobFromId = async (request, response) => {
+  console.log(request.body.job_id);
   try {
     await Job.findOne({ _id: request.body.job_id }, async function (err, res) {
       let applicants = [],
         declined = [],
         invited = [];
-      applicants = await User.find({ _id: { $in: res.applicants } });
-      declined = await User.find({ _id: { $in: res.invitations_declined } });
-      invited = await User.find({ _id: { $in: res.invitations } });
-      if (res)
+      console.log(res);
+      if (res) {
+        applicants = await User.find({ _id: { $in: res.applicants } });
+        declined = await User.find({ _id: { $in: res.invitations_declined } });
+        invited = await User.find({ _id: { $in: res.invitations } });
         response.status(200).json({ job: res, applicants, declined, invited });
+      }
+      else
+      response.status(403).json("Data Not Found");
     });
   } catch (error) {}
 };

@@ -196,13 +196,11 @@ export const exportJobDetails = async (request, response) => {
 
 // Get Job From Id
 export const GetJobFromId = async (request, response) => {
-  console.log(request.body.job_id);
   try {
     await Job.findOne({ _id: request.body.job_id }, async function (err, res) {
       let applicants = [],
         declined = [],
         invited = [];
-      console.log(res);
       if (res) {
         applicants = await User.find({ _id: { $in: res.applicants } });
         declined = await User.find({ _id: { $in: res.invitations_declined } });
@@ -218,7 +216,6 @@ export const GetJobFromId = async (request, response) => {
 // Send Invitations To Users
 export const sendJobInvitations = async (request, response) => {
   try {
-    console.log(request.body);
     let job_id = request.body.job_id;
     let candidates = request.body.candidates;
     let user_id = request.body.user_id;
@@ -249,7 +246,6 @@ export const sendJobInvitations = async (request, response) => {
                   let i = result.job_invitations ? result.job_invitations : [];
                   i.push(job_id);
                   invitations.push(result._id);
-                  console.log(invitations);
                   result.job_invitations = i;
                   await result.save();
                   await User.findOneAndUpdate(
@@ -284,7 +280,7 @@ export const sendJobInvitations = async (request, response) => {
                     subject: `Job Invitation by ${res.username} - Value Matrix`,
                     html: html,
                   });
-                  console.log("Email sent to : ", result.email);
+
                   if (index === candidates.length - 1) {
                     res1.invitations = invitations;
                     await res1.save();
@@ -309,7 +305,6 @@ export const sendJobInvitations = async (request, response) => {
                 });
                 await newUser.save();
                 invitations.push(newUser._id);
-                console.log(invitations);
                 let htmltext = `<h1>Invitation to join Job Portal</h1><br/><p>You have been invited for the job interview for <b>${res1.jobTitle}</b> by <b>${res.username}</b>.
               </p>
               <br/>
@@ -324,7 +319,6 @@ export const sendJobInvitations = async (request, response) => {
                   subject: `Job Invitation by ${res.username} - Value Matrix`,
                   html: htmltext,
                 });
-                console.log("Email sent to : ", candidate.Email);
                 if (index === candidates.length - 1) {
                   res1.invitations = invitations;
                   await res1.save();

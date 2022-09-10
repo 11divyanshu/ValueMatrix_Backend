@@ -29,7 +29,7 @@ export const resetPasswordByEmail = async (request, response) => {
         let html = `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
     <div style="margin:50px auto;width:70%;padding:20px 0">
       <div style="border-bottom:1px solid #eee">
-        <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">TDP Reset Password</a>
+        <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Value Matrix Reset Password</a>
       </div>
       <p style="font-size:1.1em">Hi, ${res.firstName}</p>
       <p style="font-size:1.1em">There was a request to change your password!      </p>
@@ -39,19 +39,14 @@ export const resetPasswordByEmail = async (request, response) => {
     </div>
   </div>`;
 
-        await sendGridMail
-          .send({
-            to: request.body.contact,
-            from: "developervm171@gmail.com",
-            subject: "Reset Password",
-            html: html,
-          })
-          .then(() => {
-            response.status(200);
-          })
-          .catch(() => {
-            response.status(401).json({ Error: "Email Not Found" });
-          });
+        await sendGridMail.send({
+          to: request.body.contact,
+          from: "developervm171@gmail.com",
+          subject: "Reset Password",
+          html: html,
+        });
+
+        return response.status(200).json({ Message: "Mail Sent" });
       }
     ).clone();
   } catch (error) {
@@ -69,7 +64,24 @@ export const resetPassword = async (request, response) => {
         res.password = password;
         res.resetPassId = null;
         await res.save();
-        response.status(200).json({});
+        let html = `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
+        <div style="margin:50px auto;width:70%;padding:20px 0">
+          <div style="border-bottom:1px solid #eee">
+            <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Value Matrix Reset Password</a>
+          </div>
+          <p style="font-size:1.1em">Hi, ${res.firstName}</p>
+          <p style="font-size:1.1em">Your Password has been reset.</p>
+          <br/>
+        </div>
+      </div>`;
+
+        await sendGridMail.send({
+          to: res.email,
+          from: "developervm171@gmail.com",
+          subject: "Reset Password",
+          html: html,
+        });
+        return response.status(200).json({});
       }
     );
   } catch (error) {
@@ -81,7 +93,7 @@ export const resetPasswordByContact = async (request, response) => {
   try {
     user.findOne({ contact: request.body.contact }, async function (err, res) {
       if (res === null || res === undefined) {
-        response.json({ Error: "Contact Not Registered !" });
+        return response.status(404).json({ Error: "Contact Not Registered !" });
       }
 
       let id = v4();
@@ -125,11 +137,11 @@ export const resetPasswordByUsername = async (request, response) => {
         let id = v4();
         res.resetPassId = id;
         await res.save();
-        console.log(res.email);
+
         let html = `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
   <div style="margin:50px auto;width:70%;padding:20px 0">
     <div style="border-bottom:1px solid #eee">
-      <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">TDP Reset Password</a>
+      <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Value Matrix Reset Password</a>
     </div>
     <p style="font-size:1.1em">Hi, ${res.firstName}</p>
     <p style="font-size:1.1em">There was a request to change your password!      </p>
@@ -147,8 +159,7 @@ export const resetPasswordByUsername = async (request, response) => {
             html: html,
           })
           .then(() => {
-            console.log("D");
-            return response.status(200);
+            return response.status(200).json({});
           })
           .catch(() => {
             return response.status(401).json({ Error: "Email Not Found" });

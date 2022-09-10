@@ -6,8 +6,6 @@ const url = process.env.BACKEND_URL;
 
 sendGridMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-
-
 // OTP For Sign Up
 export const sendOTPEmail = async (req, res) => {
   try {
@@ -29,20 +27,15 @@ export const sendOTPEmail = async (req, res) => {
           <hr style="border:none;border-top:1px solid #eee" />
         </div>
       </div>`;
+    
+    await sendGridMail.send({
+      to: req.body.mail,
+      from: "developervm171@gmail.com",
+      subject: "Value Matrix OTP",
+      html: html,
+    });
 
-    await sendGridMail
-      .send({
-        to: req.body.mail,
-        from: "developervm171@gmail.com",
-        subject: "Value Matrix OTP",
-        html: html,
-      })
-      .then(() => {
-        return res.status(200).json({ otp: OTP });
-      })
-      .catch(() => {
-        return res.status(401).json({ Error: "Email Not Sent" });
-      });
+    return res.status(200).json({ otp: OTP });
   } catch (err) {
     console.log(err);
   }

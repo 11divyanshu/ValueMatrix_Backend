@@ -2,6 +2,7 @@ import User from "../models/userSchema.js";
 import Country from "../models/countrySchema.js";
 import axios from "axios";
 import passwordHash from "password-hash";
+import v4 from "uuid/v4.js";
 import {} from "dotenv/config";
 import Job from "../models/jobSchema.js";
 import Interview from "../models/interviewApplicationSchema.js";
@@ -83,10 +84,11 @@ export const userLogin = async (request, response) => {
 // Signup For User Using Email
 export const userSignup = async (request, response) => {
   try {
+    console.log(request.body);
     let name = String(request.body.name).split(" ");
     let firstname = name[0];
     let lastname = name.slice(1).join(" ");
-
+    let temp_acc = v4();
     let password = passwordHash.generate(request.body.password);
     let user1 = {
       username: request.body.username,
@@ -96,6 +98,7 @@ export const userSignup = async (request, response) => {
       lastname: lastname,
       password: password,
       user_type: request.body.user_type,
+      access_token : temp_acc,
     };
 
     const newUser = new User(user1);
@@ -103,6 +106,9 @@ export const userSignup = async (request, response) => {
     const token = await axios.post(`${url}/generateToken`, {
       user: newUser.id,
     });
+    console.log(token);
+    newUser.access_token = token.data.token;
+    await newUser.save();
 
     let html = `<div>Hi ${request.body.username}</div>,
     <div>Welcome to Value Matrix. It is a great pleasure to have you on board</div>. 
@@ -160,10 +166,6 @@ export const fetchCountry = async (request, response) => {
     console.log("Error :", error);
   }
 };
-
-
-
-
 
 
 export const getProfileImg = async (request, response) => {
@@ -271,7 +273,10 @@ export const uploadCandidateResume = async (req, response) => {
 // Submit Candidate Resume Details
 export const submitCandidateResumeDetails = async (req, response) => {
   try {
-    User.findOne({ _id: req.body.user_id }, async function (err, user) {
+    await User.findOne({ _id: req.body.user_id }, async function (err, user) {
+      
+      if(user === null)
+        return response.status(403);
       if (req.body.education) {
         user.education = req.body.education;
       }
@@ -280,6 +285,9 @@ export const submitCandidateResumeDetails = async (req, response) => {
       }
       if (req.body.contact && req.body.contact.address) {
         user.address = req.body.contact.address;
+      }
+      if(req.body.associate ){
+        user.associate = req.body.associate;
       }
       if (
         (user.contact === user.googleId ||
@@ -293,9 +301,11 @@ export const submitCandidateResumeDetails = async (req, response) => {
       if (req.body.tools) {
         user.tools = req.body.tools;
       }
+      
       await user.save();
+      
       return response.status(200).json({ Success: true, user: user });
-    });
+    }).clone();
   } catch (error) {
     console.log("Error : ", error);
   }
@@ -340,7 +350,7 @@ export const setProfile = async (request, response) => {
     User.findOne(
       { resetPassId: request.body.reset_pass_id },
       async function (err, user) {
-        console.log(user);
+        
         if (
           user.resetPassId &&
           user.resetPassId === request.body.reset_pass_id
@@ -377,8 +387,6 @@ export const getJobInvitations = async (request, response) => {
           let jobInvites = await Job.find({
             _id: { $in: user.job_invitations },
           }).clone();
-          console.log(user);
-          console.log(jobInvites);
           return response.status(200).json({ jobInvites: jobInvites });
         }
         return response.status(403);
@@ -397,8 +405,6 @@ export const handleCandidateJobInvitation = async (request, response) => {
         await User.findOne(
           { _id: request.body.user_id },
           async function (err, user) {
-            console.log("User : ", user);
-            console.log("Job : ", job);
             if (user) {
               if (request.body.accept) {
                 let e = user.job_invitations.filter(

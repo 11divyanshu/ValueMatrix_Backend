@@ -6,6 +6,7 @@ import {
   sendOTPEmail,
   UpdateEmailOTP,
 } from "../controllers/mail-controller.js";
+
 import {
   userSignup,
   userLogin,
@@ -24,11 +25,14 @@ import {
   handleCandidateJobInvitation,
   fetchCountry,
 } from "../controllers/userController.js";
+
 import { sendOTPSMS, updateContactOTP } from "../controllers/sms-controller.js";
+
 import {
   getUserIdFromToken,
   tokenGenerator,
 } from "../controllers/token-controller.js";
+
 import {
   adminLogin,
   companyList,
@@ -36,6 +40,7 @@ import {
   downloadResume,
   addAdminUser,
 } from "../controllers/adminController.js";
+
 import {
   getUserNotification,
   markNotiReadForUser,
@@ -59,8 +64,12 @@ import {
   resetPasswordByEmail,
   resetPasswordByUsername,
 } from "../controllers/passwordController.js";
-import { addCompanyUser, filterCompany } from "../controllers/companyController.js";
+import {
+  addCompanyUser,
+  filterCompany,
+} from "../controllers/companyController.js";
 import { addSkill, getSkills } from "../controllers/skillController.js";
+import { getUserInterviewApplications } from "../controllers/interviewApplication-controller.js";
 
 const router = express.Router();
 
@@ -118,12 +127,16 @@ router.post(
   submitCandidateResumeDetails
 );
 router.post("/getJobInvitations", verifyToken, getJobInvitations);
-router.post("/handleCandidateJobInvitation", verifyToken, handleCandidateJobInvitation);
+router.post(
+  "/handleCandidateJobInvitation",
+  verifyToken,
+  handleCandidateJobInvitation
+);
 
 // Company Routes
 router.post("/submitCompanyDetails", verifyToken, submitCompanyDetails);
 router.post("/addCompanyUser", verifyToken, addCompanyUser);
-router.post("/filterCompany/:time/:vacancy/:id" , filterCompany);
+router.post("/filterCompany/:time/:vacancy/:id", filterCompany);
 
 // Reset Password
 router.post("/sendResetPasswordMail", resetPasswordByEmail);
@@ -175,10 +188,15 @@ router.post("/exportJobDetails", exportJobDetails);
 router.post("/getJobFromId", verifyToken, GetJobFromId);
 router.post("/sendJobInvitation", verifyToken, sendJobInvitations);
 
+// Interview Applications
+router.post(
+  "/getUserInterviewApplications",
+  verifyToken,
+  getUserInterviewApplications
+);
+
 // Skills Routes
 router.post("/addSkills", verifyToken, addSkill);
 router.post("/getSkills", verifyToken, getSkills);
 
 export default router;
-
-

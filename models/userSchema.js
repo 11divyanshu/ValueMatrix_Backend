@@ -6,6 +6,7 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as MicrosoftStrategy } from "passport-microsoft";
 import { Strategy as LinkedInStrategy } from "passport-linkedin-oauth2";
 import { Strategy as GitHubStrategy } from "passport-github";
+import v4 from "uuid/v4.js";
 import {} from "dotenv/config";
 import axios from "axios";
 
@@ -66,6 +67,9 @@ const userSchema = new mongoose.Schema({
   },
   experience : {
     type : Array,
+  },
+  associate: {
+    type: Array
   },
   tools: {
     type: Array,
@@ -166,13 +170,16 @@ passport.use(
         .findOne({ email: profile.emails[0].value }, async function (err, res) {
           let user1 = null;
           if (res === null) {
+            var id = v4();
             user1 = await user.create({
               googleId: profile.id,
               username: profile.id,
               firstName: profile.name.givenName,
               lastName: profile.name.familyname,
               email: profile.emails[0].value,
+              user_type : "User",
               contact: profile.id,
+              access_token : id,
             });
           } else if (res) {
             res.googleId = profile.id;
@@ -209,6 +216,7 @@ passport.use(
       await user
         .findOne({ email: email }, async function (err, res) {
           if (res) {
+            let id = v4();
             res.microsoftId = profile.id;
             await res.save();
             cont = false;
@@ -223,6 +231,8 @@ passport.use(
                   lastName: profile.name.familyname,
                   email: email,
                   contact: contact,
+                  user_type : "User",
+                  access_token : id,
                 },
                 function (err, user) {
                   return done(err, user);
@@ -255,6 +265,7 @@ passport.use(
         .findOne({ email: email }, async function (err, res) {
           if (res) {
             res.linkedInId = profile.id;
+            let id = v4();
             await res.save();
             return done(err, res);
           } else {
@@ -266,6 +277,8 @@ passport.use(
                 lastName: profile.name.familyName,
                 email: email,
                 contact: contact,
+                access_token : id,
+                user_type : "User",
               },
               function (err, res) {
                 return done(err, res);
@@ -290,7 +303,7 @@ passport.use(
     },
     async function (accessToken, refreshToken, profile, done) {
       let cont = true;
-      // console.log(profile);
+      //console.log(profile);
       let email = profile._json.email ? profile._json.email : profile.id;
       let contact = profile._json.contact;
       if (contact === null || contact === undefined) contact = profile.id;
@@ -303,13 +316,16 @@ passport.use(
             cont = false;
             return done(err, res);
           } else {
+            let id = v4();
             await user.findOrCreate(
               {
                 githubId: profile.id,
                 username: username,
+                user_type : "User",
                 firstName: profile.displayName,
                 company: profile._json.company ? profile._json.company : "",
                 email: email,
+                access_token : id,
                 about: profile._json.bio ? profile._json.bio : "",
                 contact: contact,
               },

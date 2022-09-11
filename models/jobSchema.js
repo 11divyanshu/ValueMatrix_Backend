@@ -65,8 +65,14 @@ const jobSchema = new mongoose.Schema({
   reqApp:{
     type:Number,
    
+  },
+  archived:{
+    type:Boolean,
+    default: false,
   }
 });
+
+
 
 const job = mongoose.model("job", jobSchema);
 export default job;

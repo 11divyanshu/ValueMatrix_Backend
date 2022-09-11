@@ -57,6 +57,7 @@ import {
   GetJobFromId,
   sendJobInvitations,
   listJobsCandidate,
+  archiveJob,
 } from "../controllers/job-controller.js";
 import {
   resetPassword,
@@ -187,6 +188,7 @@ router.post("/updateJobDetails", verifyToken, updateJob);
 router.post("/exportJobDetails", exportJobDetails);
 router.post("/getJobFromId", verifyToken, GetJobFromId);
 router.post("/sendJobInvitation", verifyToken, sendJobInvitations);
+router.post("/archiveJob", archiveJob);
 
 // Interview Applications
 router.post(

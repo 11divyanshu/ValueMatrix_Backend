@@ -48,6 +48,7 @@ export const addJob = async (request, response) => {
         perks: request.body.perks ? request.body.perks : null,
         eligibility: request.body.eligibility ? request.body.eligibility : null,
         skills: request.body.skills ? request.body.skills : null,
+        archived:false,
       };
 
       const newJob = new Job(jobC);
@@ -67,7 +68,6 @@ export const addJob = async (request, response) => {
     console.log("Error : ", error);
   }
 };
-
 // List Jobs
 export const listJobs = async (request, response) => {
   try {
@@ -80,6 +80,7 @@ export const listJobs = async (request, response) => {
   } catch (error) {
     console.log(error);
   }
+  
 };
 
 export const listJobsCandidate = async (request, response) => {
@@ -139,6 +140,26 @@ export const updateJob = async (request, response) => {
     console.log("Error : ", error);
   }
 };
+
+
+
+export const archiveJob = async(request , response) => {
+  try {
+    console.log(request.body)
+    let newJob = await Job.findOne(
+      { _id: request.body._id },
+      async function (err, user) {
+        
+        console.log(user);
+        user.archived = request.body.archived;
+        await user.save();
+        return response.status(200).json({ Success: true });
+      }
+    ).clone();
+  } catch (error) {
+    console.log("Error : ", error);
+  }
+}
 
 // Export JobDetails
 export const exportJobDetails = async (request, response) => {

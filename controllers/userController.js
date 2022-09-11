@@ -273,6 +273,7 @@ export const uploadCandidateResume = async (req, response) => {
 // Submit Candidate Resume Details
 export const submitCandidateResumeDetails = async (req, response) => {
   try {
+    console.log(req.body);
     await User.findOne({ _id: req.body.user_id }, async function (err, user) {
       
       if(user === null)
@@ -293,13 +294,15 @@ export const submitCandidateResumeDetails = async (req, response) => {
         (user.contact === user.googleId ||
           user.contact === user.microsoftId ||
           user.contact === user.linkedInId ||
-          user.contact === user.githubId) &&
+          user.contact === user.githubId) && req.body.contact &&
         req.body.contact.contact
       ) {
         user.contact = req.body.contact.contact;
       }
       if (req.body.tools) {
-        user.tools = req.body.tools;
+        tools = user.tools ? user.tools : [];
+        tools = tools.concat(req.body.tools);
+        user.tools = tools;
       }
       
       await user.save();

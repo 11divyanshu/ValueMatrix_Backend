@@ -118,7 +118,7 @@ export const updateJob = async (request, response) => {
     //   // }
 
     // }).clone();
-
+  
     let newJob = await Job.findOne(
       { _id: request.body._id },
       async function (err, user) {
@@ -185,11 +185,6 @@ export const exportJobDetails = async (request, response) => {
         if (err) console.log("wrtieFileSync Error : ", err);
       });
       await response.download(filename);
-      //   fs.unlink(filename, (err) => {
-      //     if (err) {
-      //       console.log("Error deleting file : ", err);
-      //     }
-      //   });
 
       // Getting Canditates
       let candidateArr = res.applicants;
@@ -213,11 +208,6 @@ export const exportJobDetails = async (request, response) => {
             }
           );
           await response.download(filename);
-          //   fs.unlink(filename, (err) => {
-          //     if (err) {
-          //       console.log("Error deleting file : ", err);
-          //     }
-          //   });
         }
       });
     });
@@ -232,11 +222,14 @@ export const GetJobFromId = async (request, response) => {
       let applicants = [],
         declined = [],
         invited = [];
-      applicants = await User.find({ _id: { $in: res.applicants } });
-      declined = await User.find({ _id: { $in: res.invitations_declined } });
-      invited = await User.find({ _id: { $in: res.invitations } });
-      if (res)
+      if (res) {
+        applicants = await User.find({ _id: { $in: res.applicants } });
+        declined = await User.find({ _id: { $in: res.invitations_declined } });
+        invited = await User.find({ _id: { $in: res.invitations } });
         response.status(200).json({ job: res, applicants, declined, invited });
+      }
+      else
+      response.status(403).json("Data Not Found");
     });
   } catch (error) {}
 };
@@ -244,7 +237,6 @@ export const GetJobFromId = async (request, response) => {
 // Send Invitations To Users
 export const sendJobInvitations = async (request, response) => {
   try {
-    console.log(request.body);
     let job_id = request.body.job_id;
     let candidates = request.body.candidates;
     let user_id = request.body.user_id;
@@ -275,7 +267,6 @@ export const sendJobInvitations = async (request, response) => {
                   let i = result.job_invitations ? result.job_invitations : [];
                   i.push(job_id);
                   invitations.push(result._id);
-                  console.log(invitations);
                   result.job_invitations = i;
                   await result.save();
                   await User.findOneAndUpdate(
@@ -310,7 +301,7 @@ export const sendJobInvitations = async (request, response) => {
                     subject: `Job Invitation by ${res.username} - Value Matrix`,
                     html: html,
                   });
-                  console.log("Email sent to : ", result.email);
+
                   if (index === candidates.length - 1) {
                     res1.invitations = invitations;
                     await res1.save();
@@ -335,7 +326,6 @@ export const sendJobInvitations = async (request, response) => {
                 });
                 await newUser.save();
                 invitations.push(newUser._id);
-                console.log(invitations);
                 let htmltext = `<h1>Invitation to join Job Portal</h1><br/><p>You have been invited for the job interview for <b>${res1.jobTitle}</b> by <b>${res.username}</b>.
               </p>
               <br/>
@@ -350,7 +340,6 @@ export const sendJobInvitations = async (request, response) => {
                   subject: `Job Invitation by ${res.username} - Value Matrix`,
                   html: htmltext,
                 });
-                console.log("Email sent to : ", candidate.Email);
                 if (index === candidates.length - 1) {
                   res1.invitations = invitations;
                   await res1.save();

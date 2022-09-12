@@ -71,6 +71,8 @@ import {
 } from "../controllers/companyController.js";
 import { addSkill, getSkills } from "../controllers/skillController.js";
 import { getUserInterviewApplications, getXIEvaluationList } from "../controllers/interviewApplication-controller.js";
+import Routes from "twilio/lib/rest/Routes.js";
+import { addEvaluationQuestion } from "../controllers/evaulationQuestion-controller.js";
 
 const router = express.Router();
 
@@ -206,5 +208,8 @@ router.post(
   "/listXIEvaluation",verifyToken,
   getXIEvaluationList
 );
+
+// Evaluation Question Routes
+router.post("/addEvaluationQuestions", verifyToken, addEvaluationQuestion);
 
 export default router;

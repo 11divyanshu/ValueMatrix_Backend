@@ -48,9 +48,10 @@ export const addJob = async (request, response) => {
         perks: request.body.perks ? request.body.perks : null,
         eligibility: request.body.eligibility ? request.body.eligibility : null,
         skills: request.body.skills ? request.body.skills : null,
+        questions: request.body.questions ? request.body.questions : [],
         archived:false,
       };
-
+      console.log(jobC);
       const newJob = new Job(jobC);
       await newJob.save();
       console.log("D");
@@ -68,6 +69,7 @@ export const addJob = async (request, response) => {
     console.log("Error : ", error);
   }
 };
+
 // List Jobs
 export const listJobs = async (request, response) => {
   try {

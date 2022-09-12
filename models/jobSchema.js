@@ -69,6 +69,11 @@ const jobSchema = new mongoose.Schema({
   archived:{
     type:Boolean,
     default: false,
+  },
+  questions:{
+    type:Array,
+    required: false,
+    default : []  
   }
 });
 

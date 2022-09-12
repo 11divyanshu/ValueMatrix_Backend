@@ -23,8 +23,15 @@ export const getUserInterviewApplications = async (request, response) => {
                 return response.status(500).json({ message: "Error Occured" });
             }
             else {
-                let job = await Job.findOne({ _id: res.job }).select({ jobTitle: 1, hiringOrgainzation: 1, });
-                return response.status(200).json({ message: "Success", data: res, job: job });
+                // let job = await Job.findOne({ _id: res.job }).select({ jobTitle: 1, hiringOrgainzation: 1, });
+                // return response.status(200).json({ message: "Success", data: res, job: job });
+                let data = [];
+                for(let i=0; i<res.length; i++){
+                    let job = await Job.findOne({_id :res[i].job}, function(err,res1){
+                        data.push({...res1,...res[i]});
+                    }).clone()
+                }
+                return response.status(200).json({message : "Success", data :data});
             }
         })
     } catch (err) {

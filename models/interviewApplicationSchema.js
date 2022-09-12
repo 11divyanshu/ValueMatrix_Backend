@@ -37,6 +37,9 @@ const interviewApplicationSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  interviewers: {
+    type: Array,
+  },
 });
 
 const InterviewApplication = mongoose.model(

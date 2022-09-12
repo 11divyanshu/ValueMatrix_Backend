@@ -70,7 +70,7 @@ import {
   filterCompany,
 } from "../controllers/companyController.js";
 import { addSkill, getSkills } from "../controllers/skillController.js";
-import { getUserInterviewApplications } from "../controllers/interviewApplication-controller.js";
+import { getUserInterviewApplications, getXIEvaluationList } from "../controllers/interviewApplication-controller.js";
 
 const router = express.Router();
 
@@ -200,5 +200,11 @@ router.post(
 // Skills Routes
 router.post("/addSkills", verifyToken, addSkill);
 router.post("/getSkills", verifyToken, getSkills);
+
+// XI Routes
+router.post(
+  "/listXIEvaluation",verifyToken,
+  getXIEvaluationList
+);
 
 export default router;

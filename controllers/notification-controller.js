@@ -70,7 +70,6 @@ export const whatsappMessage = async (request, response) => {
 // Push Notifications To Database
 export const pushNotification = async (request, response) => {
   try {
-    console.log(request.body);
     User.findOne({ _id: request.body.user_id }, function (err, res) {
       if (!res || !res.isAdmin) response.status(403);
     });

@@ -101,7 +101,7 @@ export const resetPasswordByContact = async (request, response) => {
       await res.save();
 
       console.log(res);
-      let text = `We have received a request to reset password. Open this link in browser : ${url}/resetPassword/${id}`;
+      let text = `Reset Password : ${url}/resetPassword/${id}`;
 
       req.query({
         authorization: fastsms_api,

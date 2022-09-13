@@ -300,7 +300,7 @@ export const submitCandidateResumeDetails = async (req, response) => {
         user.contact = req.body.contact.contact;
       }
       if (req.body.tools) {
-        tools = user.tools ? user.tools : [];
+        let tools = user.tools ? user.tools : [];
         tools = tools.concat(req.body.tools);
         user.tools = tools;
       }

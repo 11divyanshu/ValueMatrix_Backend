@@ -70,7 +70,7 @@ import {
   filterCompany,
 } from "../controllers/companyController.js";
 import { addSkill, getSkills } from "../controllers/skillController.js";
-import { getUserInterviewApplications, getXIEvaluationList } from "../controllers/interviewApplication-controller.js";
+import { getInterviewApplication, getUserInterviewApplications, getXIEvaluationList } from "../controllers/interviewApplication-controller.js";
 import Routes from "twilio/lib/rest/Routes.js";
 import { addEvaluationQuestion } from "../controllers/evaulationQuestion-controller.js";
 
@@ -208,7 +208,7 @@ router.post(
   "/listXIEvaluation",verifyToken,
   getXIEvaluationList
 );
-
+router.post("/getInterviewApplication", verifyToken, getInterviewApplication);
 // Evaluation Question Routes
 router.post("/addEvaluationQuestions", verifyToken, addEvaluationQuestion);
 

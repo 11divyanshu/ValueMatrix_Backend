@@ -83,6 +83,8 @@ export const pushNotification = async (request, response) => {
       let noti = new Notification({
         title: request.body.title,
         message: request.body.message,
+        forAll : false,
+        
         sendTo: userIds.map((user) => user.id),
       });
       await noti.save();

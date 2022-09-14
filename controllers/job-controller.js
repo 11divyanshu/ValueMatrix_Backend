@@ -120,7 +120,6 @@ export const updateJob = async (request, response) => {
     //   // }
 
     // }).clone();
-  
     let newJob = await Job.findOne(
       { _id: request.body._id },
       async function (err, user) {
@@ -134,6 +133,7 @@ export const updateJob = async (request, response) => {
         user.perks = request.body.perks;
         user.salary = request.body.salary;
         user.skills = request.body.skills;
+        user.questions = request.body.questions;
         await user.save();
         return response.status(200).json({ Success: true });
       }

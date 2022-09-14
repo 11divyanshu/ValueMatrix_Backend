@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const countrySchema = new mongoose.Schema({
 
     country:{
-        type:Array,
+        type:Object,
     }
 });
 

@@ -4,6 +4,8 @@ import passwordHash from "password-hash";
 import {} from "dotenv/config";
 import fs from "fs";
 import path from "path";
+import Country from "../models/countrySchema.js";
+
 const url = process.env.BACKEND_URL;
 
 // Admin Login
@@ -183,3 +185,34 @@ export const addAdminUser = async (request, response) => {
     console.log("Error : ", error);
   }
 };
+
+// add Tax ID 
+
+export const addTaxId = async (request, response)=>{
+ try {
+  console.log(request.body);
+
+//  await Country.insert({country : request.body.data})
+var user = new Country({
+  country : request.body.data
+});
+
+user.save(function (err, results) {
+
+  console.log(results._id);
+
+  
+});
+
+  await Country.find(function (err, countries) {
+
+    if (err) return console.error(err);
+    console.log(countries);
+  
+    return response.status(200).json({countries});
+  }).clone();
+  
+ } catch (error) {
+  console.log(error);
+ }
+}

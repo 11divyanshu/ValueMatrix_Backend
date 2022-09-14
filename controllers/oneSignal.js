@@ -28,7 +28,6 @@ export const sendOneSignalNotification = async (request, response) => {
 
     var req = https.request(options, function (res) {
       res.on("data", function (data) {
-        
       });
     });
 

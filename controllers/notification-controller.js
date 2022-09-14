@@ -272,6 +272,7 @@ export const sendEmailNotification = async (request, response) => {
         subject: request.body.subject,
         text: request.body.text,
       });
+      response.status(200).json({ Message: "Emails Sent Successfully"});
     }
   } catch (err) {
     console.log(err);

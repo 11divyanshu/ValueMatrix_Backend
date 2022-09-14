@@ -197,9 +197,12 @@ var user = new Country({
   country : request.body.data
 });
 
-user.save(async function (err, results) {
+user.save(function (err, results) {
 
   console.log(results._id);
+
+  
+});
 
   await Country.find(function (err, countries) {
 
@@ -208,9 +211,6 @@ user.save(async function (err, results) {
   
     return response.status(200).json({countries});
   }).clone();
-
-});
-
   
  } catch (error) {
   console.log(error);

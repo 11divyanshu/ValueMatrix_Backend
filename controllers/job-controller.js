@@ -325,6 +325,7 @@ export const sendJobInvitations = async (request, response) => {
                   address: candidate.Address ? candidate.Address : null,
                   resetPassId: reset_pass_id,
                   job_invitations: [job_id],
+                  skills: res1.skills ? res1.skills : [],
                 });
                 await newUser.save();
                 invitations.push(newUser._id);

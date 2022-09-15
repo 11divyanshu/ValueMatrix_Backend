@@ -39,7 +39,8 @@ const jobSchema = new mongoose.Schema({
     required: true,
   },
   salary: {
-    type: Number,
+    type: Array,
+    // [currency, min,max]
     required: false,
   },
   invitations: {

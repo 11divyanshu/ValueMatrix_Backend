@@ -96,6 +96,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  linkedInUrl:{
+    type: String,
+    required: false,
+  },
   microsoftId: {
     type: String,
     required: false,

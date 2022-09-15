@@ -233,6 +233,7 @@ export const updateProfileImage = async (req, response) => {
       let str = user._id + "-profileImg";
       user.profileImg = str;
       await user.save();
+      console.log(user);
       return response.status(200).json({ Success: true });
     });
   } catch (error) {
@@ -337,7 +338,7 @@ export const getUserInviteFromResetPassId = async (request, response) => {
       { resetPassId: request.body.reset_id },
       async function (err, res) {
         if (res) {
-          return response.status(200).json({ user_invite: res.invite });
+          return response.status(200).json({ user_invite: res.invite, email : res.email, contact: res.contact });
         }
         response.status(403).json({ Message: "User Not Found" });
       }

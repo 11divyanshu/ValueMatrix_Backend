@@ -78,6 +78,10 @@ app.get(
     const token = await getToken(req.user);
     res.cookie("access_token", token.data.token, {origin: domain});
     let type = req.user.user_type;
+    if(req.user.invite){
+      res.redirect(`${url}/setProfile/${req.user.resetPassId}`)
+      return;
+    }
     let url1 = null;
     if (type === "Company") url1= `${url}/company`;
     else if (type === "XI") url1 = `${url}/XI`;
@@ -108,6 +112,10 @@ app.get(
     const token = await getToken(req.user);
     await res.cookie("access_token", token.data.token, {origin: domain});
     let type = req.user.user_type;
+    if(req.user.invite){
+      res.redirect(`${url}/setProfile/${req.user.resetPassId}`)
+      return;
+    }
     let url1 = null;
     if (type === "Company") url1= `${url}/company`;
     else if (type === "XI") url1 = `${url}/XI`;
@@ -138,6 +146,10 @@ app.get(
   async function (req, res) {
     const token = await getToken(req.user);
     await res.cookie("access_token", token.data.token, {origin: domain});
+    if(req.user.invite){
+      res.redirect(`${url}/setProfile/${req.user.resetPassId}`)
+      return;
+    }
     let url1 = null;
     let type = req.user.user_type;
     if (type === "Company") url1= `${url}/company`;

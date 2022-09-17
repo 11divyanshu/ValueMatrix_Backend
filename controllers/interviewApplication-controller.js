@@ -138,3 +138,49 @@ export const getInterviewApplication = async (request, response) => {
     return response.status(500).json(error.message);
   }
 };
+
+
+export const updateEvaluation = async(request, response) => {
+  try{
+    let updates =request.body.updates;
+    let xi_id = request.body.user_id;
+    await InterviewApplication.findOne({_id : request.body.application_id}, async function(err, res){
+      if(res.evaluations && res.evaluations[xi_id]){
+        let r = res.evaluations[xi_id];
+        if(updates.candidate_rating){
+          r.candidate_rating = updates.candidate_rating;
+        }
+        if(updates.feedback){
+          r.feedback = updates.feedback;
+        }
+        if(updates.status){
+          r.status = updates.status;
+        }
+        if(updates.questions){
+          r.questions = updates.questions;
+        }
+        let tempEv = res.evaluations;
+        tempEv[xi_id] = r;
+        InterviewApplication.update({_id : request.body.application_id}, {"$set":{
+          evaluations : tempEv
+        }})
+        res.evaluations = tempEv;
+        await res.save();
+      }
+      else{
+        let r = {};
+        r.candidate_rating = updates.candidate_rating ? updates.candidate_rating : 0;
+        r.feedback = updates.feedback ? updates.feedback : "";
+        r.status = updates.status ? updates.status : "Pending";
+        r.questions = updates.questions ? updates.questions : [];
+        if(!res.evaluations)
+          res.evaluations = {};
+        res.evaluations[xi_id] = r;
+        await res.save();
+      }
+      return response.status(200).json({message : "Success"});
+    }).clone();
+  }catch(error){
+    response.status(500).json({message: error.message});
+  }
+}

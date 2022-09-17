@@ -64,6 +64,8 @@ export const userLogin = async (request, response) => {
     if (user) {
       correctuser = passwordHash.verify(request.body.password, user.password);
     }
+    console.log(request.body.username);
+    console.log(request.body);
     if (user && correctuser) {
       const token = await axios.post(`${url}/generateToken`, { user: user.id });
       const access_token = token.data.token;

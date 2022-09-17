@@ -154,12 +154,13 @@ export const fetchCountry = async (request, response) => {
     // let res = await country.find({});
     // console.log("hii");
     // console.log(res);
-  await Country.find(function (err, countries) {
+    await Country.find({}).collation({ locale: "en" }).sort({ country: 1 }).exec(function (err, countries) {
+
       if (err) return console.error(err);
       console.log(countries);
-    
-      return response.status(200).json({countries});
-    }).clone();
+
+      return response.status(200).json({ countries });
+    })
 
 
   } catch (error) {

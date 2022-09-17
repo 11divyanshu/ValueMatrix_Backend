@@ -39,7 +39,9 @@ import {
   userList,
   downloadResume,
   addAdminUser,
-  addTaxId
+  addTaxId,
+  findAndUpdateTax,
+  findAndDeleteTax,
 } from "../controllers/adminController.js";
 
 import {
@@ -155,6 +157,8 @@ router.post("/getUserList", verifyToken, userList);
 router.post("/downloadResume", verifyToken, downloadResume);
 router.post("/addAdminUser", verifyToken, addAdminUser);
 router.post("/addTaxId", verifyToken, addTaxId);
+router.post("/updateTaxId/:id", verifyToken, findAndUpdateTax);
+router.post("/deleteTaxId/:id", verifyToken, findAndDeleteTax);
 
 // Sending mails
 router.post("/updateEmailOTP", verifyToken, UpdateEmailOTP);

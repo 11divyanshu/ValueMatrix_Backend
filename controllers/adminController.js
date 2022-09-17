@@ -1,7 +1,7 @@
 import User from "../models/userSchema.js";
 import axios from "axios";
 import passwordHash from "password-hash";
-import {} from "dotenv/config";
+import { } from "dotenv/config";
 import fs from "fs";
 import path from "path";
 import Country from "../models/countrySchema.js";
@@ -88,7 +88,7 @@ export const downloadResume = async (request, response) => {
       let d = await fs.readFileSync(
         path.resolve(path_url),
         {},
-        function (err, res) {}
+        function (err, res) { }
       );
       let url1 = url + "/media/resume/" + user.resume;
       return response.json({ Resume: d, link: url1 });
@@ -166,7 +166,7 @@ export const addAdminUser = async (request, response) => {
       firstName: request.body.firstName,
       lastName: request.body.lastName,
       username: request.body.username,
-      isAdmin : true,
+      isAdmin: true,
       contact: request.body.contact,
       password: passwordHash.generate(request.body.password),
       user_type: "Admin_User",
@@ -188,31 +188,82 @@ export const addAdminUser = async (request, response) => {
 
 // add Tax ID 
 
-export const addTaxId = async (request, response)=>{
- try {
-  console.log(request.body);
+export const addTaxId = async (request, response) => {
+  try {
+    console.log(request.body);
 
-//  await Country.insert({country : request.body.data})
-var user = new Country({
-  country : request.body.data
-});
+    //  await Country.insert({country : request.body.data})
+    var user = new Country({
+      country: request.body.data.country,
+      tax_id: request.body.data.tax_id,
+    });
 
-user.save(function (err, results) {
+    user.save(async function (err, results) {
 
-  console.log(results._id);
+      console.log(results._id);
+      await Country.find({}).collation({ locale: "en" }).sort({ country: 1 }).exec(function (err, countries) {
 
+        if (err) return console.error(err);
+        // console.log(countries);
   
-});
+        return response.status(200).json({ countries });
+      })
 
-  await Country.find(function (err, countries) {
+    });
 
-    if (err) return console.error(err);
-    console.log(countries);
-  
-    return response.status(200).json({countries});
-  }).clone();
-  
- } catch (error) {
+  }catch (error) {
   console.log(error);
- }
+}
+}
+
+export const findAndUpdateTax = async (request, response) => {
+  try {
+
+    let tax_id = request.params.id;
+    console.log(tax_id);
+    console.log(request.body);
+  
+    Country.findOne({ _id: tax_id }, async function (err, countries) {
+      countries.country = request.body.data.country;
+      countries.tax_id = request.body.data.tax_id;
+      await countries.save();
+
+      await Country.find({}).collation({ locale: "en" }).sort({ country: 1 }).exec(function (err, countries) {
+
+        if (err) return console.error(err);
+        // console.log(countries);
+  
+         return response.status(200).json({ countries });
+      })
+      // return response.status(200).json({ Success: true, country: country });
+    });
+   
+  } catch (error) {
+    
+  }
+}
+
+export const findAndDeleteTax = async (request, response) => {
+  try {
+
+    let tax_id = request.params.id;
+    console.log(tax_id);
+    
+    Country.findOneAndDelete({_id: tax_id},async function(err ,res){
+console.log("delete");
+      await Country.find({}).collation({ locale: "en" }).sort({ country: 1 }).exec(function (err, countries) {
+
+        if (err) return console.error(err);
+        console.log(countries);
+  
+         return response.status(200).json({ countries });
+      })
+
+    });
+
+  }catch(err){
+    console.log(err);
+
+
+  }
 }

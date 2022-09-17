@@ -1,9 +1,16 @@
 import mongoose from "mongoose";
 
 const countrySchema = new mongoose.Schema({
-
+ 
     country:{
-        type:Object,
+        type:String,
+        required:true,
+    },
+    tax_id:{
+        type:String,
+        unique:true,
+        required:true,
+        
     }
 });
 

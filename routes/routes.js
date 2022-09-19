@@ -73,10 +73,10 @@ import {
   filterCompany,
 } from "../controllers/companyController.js";
 import { addSkill, getSkills } from "../controllers/skillController.js";
-import { getInterviewApplication, getUserInterviewApplications, getXIEvaluationList, updateEvaluation } from "../controllers/interviewApplication-controller.js";
+import { getInterviewApplication, getUserInterviewApplications, getXIEvaluationList, updateEvaluation ,getXIEvaluatedReports} from "../controllers/interviewApplication-controller.js";
 import Routes from "twilio/lib/rest/Routes.js";
 import { addEvaluationQuestion } from "../controllers/evaulationQuestion-controller.js";
-import { addCompanyList, addUniversityList, getCompanyList } from "../controllers/dbListDataController.js";
+import { addCompanyList, addUniversityList, getCompanyList,getSchoolList } from "../controllers/dbListDataController.js";
 
 const router = express.Router();
 
@@ -215,6 +215,10 @@ router.post(
   "/listXIEvaluation",verifyToken,
   getXIEvaluationList
 );
+router.post(
+  "/listXIEvaluatedReports",verifyToken,
+  getXIEvaluatedReports
+);
 router.post("/getInterviewApplication", verifyToken, getInterviewApplication);
 router.post("/updateEvaluation", verifyToken,updateEvaluation);
 
@@ -226,5 +230,6 @@ router.post("/addEvaluationQuestions", verifyToken, addEvaluationQuestion);
 router.post("/addCompanyList", verifyToken,addCompanyList);
 router.get("/getCompanyList", getCompanyList);
 router.post("/addUniversityList", verifyToken, addUniversityList);
+router.get("/getSchoolList", getSchoolList);
 
 export default router;

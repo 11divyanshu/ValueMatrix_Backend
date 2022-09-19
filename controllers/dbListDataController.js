@@ -24,6 +24,7 @@ export const getCompanyList = async (req, res) => {
 };
 
 
+
 // University Data
 export const addUniversityList = async(req,res)=>{
   try{
@@ -38,3 +39,14 @@ export const addUniversityList = async(req,res)=>{
     res.status(500).json({message:err.message})
   }
 }
+
+export const getSchoolList = async (req, res) => {
+  try {
+    const schoolList = await UniversityList.find();
+    // console.log(schoolList);
+    res.status(200).json(schoolList);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+

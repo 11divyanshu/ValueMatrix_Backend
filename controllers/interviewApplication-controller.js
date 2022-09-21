@@ -68,21 +68,22 @@ export const getXIEvaluationList = async (request, response) => {
               jobDescription: result.jobDescription,
               jobType: result.jobType,
             };
+            await User.findOne(
+              { _id: item.applicant },
+              async function (err, result) {
+                r.applicant = {
+                  _id: result._id,
+                  firstName: result.firstName,
+                  lastname: result.lastname,
+                  contact: result.contact,
+                  email: result.email,
+                  username: result.username,
+                };
+              }
+            ).clone();
           }).clone();
-          await User.findOne(
-            { _id: item.applicant },
-            async function (err, result) {
-              r.applicant = {
-                _id: result._id,
-                firstName: result.firstName,
-                lastname: result.lastname,
-                contact: result.contact,
-                email: result.email,
-                username: result.username,
-              };
-            }
-          ).clone();
-           console.log(r);
+
+          console.log(r);
           jobs.push(r);
         });
         setTimeout(() => {
@@ -113,69 +114,53 @@ export const getXIEvaluatedReports = async (request, response) => {
         // console.log(err);
         return response.status(500).json({ message: "Error Occured" });
       } else {
-        //  console.log(res);
         await res.forEach(async (item, index) => {
 
-          //  console.log(item);
+
+          if (item.evaluations[u_id]) {
+
+            let r = { application: item };
+            await Job.findOne({ _id: item.job }, async function (err, result) {
+              r.job = {
+                _id: result._id,
+                jobTitle: result.jobTitle,
+                hiringOrganization: result.hiringOrganization,
+                jobLocation: result.jobLocation,
+                jobDescription: result.jobDescription,
+                jobType: result.jobType,
+              };
+
+              await User.findOne(
+                { _id: item.applicant },
+                async function (err, result) {
+                  r.applicant = {
+                    _id: result._id,
+                    firstName: result.firstName,
+                    lastname: result.lastname,
+                    contact: result.contact,
+                    email: result.email,
+                    username: result.username,
+                  };
+                }
+              ).clone();
+            }).clone();
 
 
+            jobs.push(r);
+            console.log(jobs);
+            //   }
+          }
 
-          // let j = item.evaluations;
-          // console.log(Object.entries(jobs));
-
-          // let data = Object.entries(j);
-          // for (var i = 0; i < data.length; i++) {
-          //   if (data[i][0] == u_id) {
-
-if(item.evaluations[u_id]){
-
-              let r = { application: item };
-          await Job.findOne({ _id: item.job }, async function (err, result) {
-            r.job = {
-              _id: result._id,
-              jobTitle: result.jobTitle,
-              hiringOrganization: result.hiringOrganization,
-              jobLocation: result.jobLocation,
-              jobDescription: result.jobDescription,
-              jobType: result.jobType,
-            };
-
-            await User.findOne(
-              { _id: item.applicant },
-              async function (err, result) {
-                r.applicant = {
-                  _id: result._id,
-                  firstName: result.firstName,
-                  lastname: result.lastname,
-                  contact: result.contact,
-                  email: result.email,
-                  username: result.username,
-                };
-              }
-            ).clone();
-          }).clone();
-
-       
-          jobs.push(r);
-          console.log(jobs);
-          //   }
-           }
-
-          // console.log(r);
-          // jobs.push(r);
 
         });
-          
-
-
-
-
-      if(jobs){
+   
+   
+        if (jobs) {
           setTimeout(() => {
 
             return response.status(200).json({ jobs });
           }, 2000);
-        
+
         }
       }
     }
@@ -188,7 +173,7 @@ if(item.evaluations[u_id]){
 export const getInterviewApplication = async (request, response) => {
   try {
     let id = request.body.id;
-    console.log(request.body);
+    // console.log(request.body);
     await InterviewApplication.findOne({ _id: id }).exec(async function (
       err,
       res
@@ -219,9 +204,62 @@ export const getInterviewApplication = async (request, response) => {
               email: result.email,
               username: result.username,
             };
+
           }).clone();
+
+
+          console.log(data);
         }
         return response.status(200).json({ message: "Success", data: data });
+      }
+    });
+  } catch (error) {
+    return response.status(500).json(error.message);
+  }
+};
+export const getCandidateEvaluation = async (request, response) => {
+  try {
+    let id = request.body.id;
+    console.log(request.body);
+    await InterviewApplication.findOne({ applicant: id }).exec(async function (
+      err,
+      res
+    ) {
+      if (err) {
+        return response.status(500).json({ message: "Error Occured" });
+      } else {
+        // let data = { application: res };
+        
+
+          let j = res.evaluations;
+          let data=[]
+          if(j){
+
+          
+          // console.log(Object.entries(j));
+
+          let eva = Object.entries(j);
+          for (var i = 0; i < eva.length; i++) {
+            await User.findOne({ _id: eva[i][0] }, function (err, result) {
+            let applicant = {
+                _id: result._id,
+                firstName: result.firstName,
+                lastname: result.lastname,
+                contact: result.contact,
+                email: result.email,
+                username: result.username,
+                evaluations: eva[i] ? eva[i][1] : null,
+              };
+              data.push(applicant);
+
+            
+  
+            }).clone();
+           }
+          }
+
+      
+       return response.status(200).json({ message: "Success", data: data });
       }
     });
   } catch (error) {
@@ -232,6 +270,7 @@ export const getInterviewApplication = async (request, response) => {
 
 export const updateEvaluation = async (request, response) => {
   try {
+    console.log(request.body);
     let updates = request.body.updates;
     let xi_id = request.body.user_id;
     await InterviewApplication.findOne({ _id: request.body.application_id }, async function (err, res) {
@@ -249,17 +288,20 @@ export const updateEvaluation = async (request, response) => {
         if (updates.questions) {
           r.questions = updates.questions;
         }
+        // console.log(r);
         let tempEv = res.evaluations;
         tempEv[xi_id] = r;
-        InterviewApplication.updateOne({ _id: request.body.application_id }, {
-          "$set": {
+        console.log(tempEv);
+        InterviewApplication.findByIdAndUpdate(request.body.application_id, {
+          $set: {
             evaluations: tempEv
           }
+        }, function (err, doc) {
+          console.log(doc);
         })
         res.evaluations = tempEv;
         await res.save();
         return response.status(200).json({ message: "Success" });
-
       }
       else {
         let r = {};

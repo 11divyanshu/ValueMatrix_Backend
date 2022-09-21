@@ -12,6 +12,7 @@ import {
   userLogin,
   vaildateSignupDetails,
   getUserFromId,
+  getUser,
   updateUserDetails,
   logout,
   updateProfileImage,
@@ -73,7 +74,7 @@ import {
   filterCompany,
 } from "../controllers/companyController.js";
 import { addSkill, getSkills } from "../controllers/skillController.js";
-import { getInterviewApplication, getUserInterviewApplications, getXIEvaluationList, updateEvaluation ,getXIEvaluatedReports} from "../controllers/interviewApplication-controller.js";
+import { getInterviewApplication, getUserInterviewApplications, getXIEvaluationList, updateEvaluation ,getXIEvaluatedReports,getCandidateEvaluation} from "../controllers/interviewApplication-controller.js";
 import Routes from "twilio/lib/rest/Routes.js";
 import { addEvaluationQuestion } from "../controllers/evaulationQuestion-controller.js";
 import { addCompanyList, addUniversityList, getCompanyList,getSchoolList } from "../controllers/dbListDataController.js";
@@ -108,6 +109,7 @@ router.post("/userSignup", userSignup);
 router.post("/userLogin", userLogin);
 router.post("/validateSignup", vaildateSignupDetails);
 router.post("/getUserFromId", verifyToken, getUserFromId);
+router.post("/getUser", verifyToken, getUser);
 router.post("/getProfileImage", verifyToken, getProfileImg);
 router.post("/updateUserDetails", verifyToken, updateUserDetails);
 router.post(
@@ -144,6 +146,8 @@ router.post(
 router.post("/submitCompanyDetails", verifyToken, submitCompanyDetails);
 router.post("/addCompanyUser", verifyToken, addCompanyUser);
 router.post("/filterCompany/:time/:vacancy/:id", filterCompany);
+router.post("/getCandidateEvaluation", verifyToken, getCandidateEvaluation);
+
 
 // Reset Password
 router.post("/sendResetPasswordMail", resetPasswordByEmail);

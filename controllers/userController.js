@@ -141,6 +141,21 @@ export const getUserFromId = async (request, response) => {
   try {
     User.findById(request.body.id, async function (err, res) {
       if (res) {
+        console.log(res);
+        return response.status(200).json({ user: res });
+      }
+      response.status(403).json({ Message: "User Not Found" });
+    });
+  } catch (error) {
+    console.log("Error :", error);
+  }
+};
+export const getUser = async (request, response) => {
+  try {
+    
+    User.findById(request.body.id, async function (err, res) {
+      if (res) {
+        console.log(res);
         return response.status(200).json({ user: res });
       }
       response.status(403).json({ Message: "User Not Found" });

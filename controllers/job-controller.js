@@ -9,6 +9,7 @@ import json2xls from "json2xls";
 import v4 from "uuid/v4.js";
 import sendGridMail from "@sendgrid/mail";
 import axios from "axios";
+import InterviewApplication from "../models/interviewApplicationSchema.js";
 
 const url = process.env.BACKEND_URL;
 const frontendUrl = process.env.FRONTEND_URL;
@@ -93,7 +94,7 @@ export const listJobsCandidate = async (request, response) => {
     await Job.find({ validTill: { $gte: currentDate } })
       .sort({ createTime: -1 })
       .exec(async function (err, res) {
-        console.log(res);
+        // console.log(res);
         await response.status(200).json({ jobs: res });
         return;
       });
@@ -147,12 +148,12 @@ export const updateJob = async (request, response) => {
 
 export const archiveJob = async(request , response) => {
   try {
-    console.log(request.body)
+    // console.log(request.body)
     let newJob = await Job.findOne(
       { _id: request.body._id },
       async function (err, user) {
         
-        console.log(user);
+        // console.log(user);
         user.archived = request.body.archived;
         await user.save();
         return response.status(200).json({ Success: true });
@@ -224,8 +225,30 @@ export const GetJobFromId = async (request, response) => {
       let applicants = [],
         declined = [],
         invited = [];
+        
       if (res) {
-        applicants = await User.find({ _id: { $in: res.applicants } });
+        await User.find({ _id: { $in: res.applicants } },async function(err ,res){
+
+
+              res.map((result)=>{
+                 InterviewApplication.findOne({ applicant: result._id }, async function (err, res) {
+                  // console.log(res);
+
+                let data = {
+                  _id: result._id,
+                  firstName: result.firstName,
+                  lastname: result.lastname,
+                  contact: result.contact,
+                  email: result.email,
+                  username: result.username,
+                  status: res.status
+                };
+                applicants.push(data);
+              })
+              
+              })
+        }).clone();
+        // console.log(applicants);
         declined = await User.find({ _id: { $in: res.invitations_declined } });
         invited = await User.find({ _id: { $in: res.invitations } });
         response.status(200).json({ job: res, applicants, declined, invited });

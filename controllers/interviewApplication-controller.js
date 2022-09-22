@@ -249,7 +249,9 @@ export const getCandidateEvaluation = async (request, response) => {
                 email: result.email,
                 username: result.username,
                 evaluations: eva[i] ? eva[i][1] : null,
+                job:res._id,
               };
+              console.log(applicant);
               data.push(applicant);
 
             
@@ -274,13 +276,16 @@ export const updateEvaluation = async (request, response) => {
     let updates = request.body.updates;
     let xi_id = request.body.user_id;
     await InterviewApplication.findOne({ _id: request.body.application_id }, async function (err, res) {
-      if (res.evaluations && res.evaluations[xi_id]) {
+      if (res && res.evaluations && res.evaluations[xi_id]) {
         let r = res.evaluations[xi_id];
         if (updates.candidate_rating) {
           r.candidate_rating = updates.candidate_rating;
         }
         if (updates.feedback) {
           r.feedback = updates.feedback;
+        }
+        if (updates.concern) {
+          r.concern = updates.concern;
         }
         if (updates.status) {
           r.status = updates.status;
@@ -307,9 +312,10 @@ export const updateEvaluation = async (request, response) => {
         let r = {};
         r.candidate_rating = updates.candidate_rating ? updates.candidate_rating : 0;
         r.feedback = updates.feedback ? updates.feedback : "";
+        r.concern = updates.concern ? updates.concern : "";
         r.status = updates.status ? updates.status : "Pending";
         r.questions = updates.questions ? updates.questions : [];
-        if (!res.evaluations)
+        if (!res && !res.evaluations)
           res.evaluations = {};
         res.evaluations[xi_id] = r;
         await res.save();

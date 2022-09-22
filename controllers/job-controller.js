@@ -227,11 +227,11 @@ export const GetJobFromId = async (request, response) => {
         invited = [];
         
       if (res) {
-        await User.find({ _id: { $in: res.applicants } },async function(err ,res){
+        await User.find({ _id: { $in: res.applicants } },function(err ,res){
 
 
               res.map((result)=>{
-                 InterviewApplication.findOne({ applicant: result._id }, async function (err, res) {
+                 InterviewApplication.findOne({ applicant: result._id }, function (err, res) {
                   // console.log(res);
 
                 let data = {
@@ -241,7 +241,7 @@ export const GetJobFromId = async (request, response) => {
                   contact: result.contact,
                   email: result.email,
                   username: result.username,
-                  status: res.status
+                  status: res.status,
                 };
                 applicants.push(data);
               })

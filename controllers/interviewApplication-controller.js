@@ -293,6 +293,9 @@ export const updateEvaluation = async (request, response) => {
         if (updates.questions) {
           r.questions = updates.questions;
         }
+        if (updates.skills) {
+          r.skills = updates.skills;
+        }
         // console.log(r);
         let tempEv = res.evaluations;
         tempEv[xi_id] = r;
@@ -306,7 +309,7 @@ export const updateEvaluation = async (request, response) => {
         })
         res.evaluations = tempEv;
         await res.save();
-        return response.status(200).json({ message: "Success" });
+        return response.status(200).json({ message: "Success", evaluations: res.evaluations[xi_id] });
       }
       else {
         let r = {};
@@ -315,14 +318,33 @@ export const updateEvaluation = async (request, response) => {
         r.concern = updates.concern ? updates.concern : "";
         r.status = updates.status ? updates.status : "Pending";
         r.questions = updates.questions ? updates.questions : [];
+        r.skills = updates.skills ? updates.skills : [];
         if (!res && !res.evaluations)
           res.evaluations = {};
         res.evaluations[xi_id] = r;
         await res.save();
-        return response.status(200).json({ message: "Success" });
+        return response.status(200).json({ message: "Success" , evaluations: r});
       }
     }).clone();
   } catch (error) {
     response.status(500).json({ message: error.message });
   }
 }
+
+// export const updateSkills = async (request,response)=>{
+//   try {
+//   console.log(request.body);
+//     let user1 = await InterviewApplication.findOne(
+//       { applicant: request.body.user_id },async function(err,user){
+
+      
+//       user.tools = request.body.updates.tools;
+//         await user.save();
+//         console.log(user);
+//       }
+//     );
+//     response.status(200).json({user: user1});
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }

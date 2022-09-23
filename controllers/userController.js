@@ -11,6 +11,7 @@ import fs from "fs";
 import sendGridMail from "@sendgrid/mail";
 import FormData from "form-data";
 import path from "path";
+import InterviewApplication from "../models/interviewApplicationSchema.js";
 
 
 const url = process.env.BACKEND_URL;
@@ -243,24 +244,6 @@ export const updateUserDetails = async (request, response) => {
     console.log("Error, ", error);
   }
 };
-
-export const updateSkills = async (request,response)=>{
-  try {
-  console.log(request.body);
-    let user1 = await User.findOne(
-      { _id: request.body.user_id },async function(err,user){
-
-      
-      user.tools = request.body.updates.tools;
-        await user.save();
-        console.log(user);
-      }
-    );
-    response.status(200).json({user: user1});
-  } catch (error) {
-    console.log(error);
-  }
-}
 
 
 // Update Profile Picture

@@ -14,7 +14,7 @@ import {
   getUserFromId,
   getUser,
   updateUserDetails,
-  updateSkills,
+  
   logout,
   updateProfileImage,
   getProfileImg,
@@ -113,7 +113,6 @@ router.post("/getUserFromId", verifyToken, getUserFromId);
 router.post("/getUser", verifyToken, getUser);
 router.post("/getProfileImage", verifyToken, getProfileImg);
 router.post("/updateUserDetails", verifyToken, updateUserDetails);
-router.post("/updateSkills", verifyToken, updateSkills);
 router.post(
   "/updateProfilePicture",
   verifyToken,

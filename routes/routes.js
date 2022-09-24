@@ -80,6 +80,15 @@ import Routes from "twilio/lib/rest/Routes.js";
 import { addEvaluationQuestion } from "../controllers/evaulationQuestion-controller.js";
 import { addCompanyList, addUniversityList, getCompanyList,getSchoolList } from "../controllers/dbListDataController.js";
 
+
+import {
+  addCandidate,
+  listCandidate,
+  findAndDeleteCandidate,
+  findAndUpdateCandidate
+} from "../controllers/candidateController.js";
+
+
 const router = express.Router();
 
 // Profile Image Upload
@@ -236,5 +245,15 @@ router.post("/addCompanyList", verifyToken,addCompanyList);
 router.get("/getCompanyList", getCompanyList);
 router.post("/addUniversityList", verifyToken, addUniversityList);
 router.get("/getSchoolList", getSchoolList);
+
+// Candidate Routes
+router.post("/addCandidate",addCandidate);
+router.get("/getCandidateList",listCandidate);
+router.delete("/deleteCandidate/:id",findAndDeleteCandidate);
+router.put("/updateCandidate/:id",findAndUpdateCandidate);
+
+
+
+
 
 export default router;

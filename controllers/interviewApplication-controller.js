@@ -68,7 +68,9 @@ export const getXIEvaluationList = async (request, response) => {
               jobDescription: result.jobDescription,
               jobType: result.jobType,
             };
-            await User.findOne(
+
+
+           await User.findOne(
               { _id: item.applicant },
               async function (err, result) {
                 r.applicant = {
@@ -83,7 +85,7 @@ export const getXIEvaluationList = async (request, response) => {
             ).clone();
           }).clone();
 
-          console.log(r);
+          // console.log(r);
           jobs.push(r);
         });
         setTimeout(() => {
@@ -147,7 +149,7 @@ export const getXIEvaluatedReports = async (request, response) => {
 
 
             jobs.push(r);
-            console.log(jobs);
+            // console.log(jobs);
             //   }
           }
 
@@ -193,7 +195,14 @@ export const getInterviewApplication = async (request, response) => {
             salary: result.salary,
             questions: result.questions,
           };
+
+
+
+
+
+
         }).clone();
+
         while (data.applicant == undefined) {
           await User.findOne({ _id: res.applicant }, function (err, result) {
             data.applicant = {
@@ -208,7 +217,7 @@ export const getInterviewApplication = async (request, response) => {
           }).clone();
 
 
-          console.log(data);
+          // console.log(data);
         }
         return response.status(200).json({ message: "Success", data: data });
       }
@@ -251,7 +260,7 @@ export const getCandidateEvaluation = async (request, response) => {
                 evaluations: eva[i] ? eva[i][1] : null,
                 job:res._id,
               };
-              console.log(applicant);
+              // console.log(applicant);
               data.push(applicant);
 
             
@@ -276,7 +285,9 @@ export const updateEvaluation = async (request, response) => {
     let updates = request.body.updates;
     let xi_id = request.body.user_id;
     await InterviewApplication.findOne({ _id: request.body.application_id }, async function (err, res) {
+
       if (res && res.evaluations && res.evaluations[xi_id]) {
+        // console.log(res);
         let r = res.evaluations[xi_id];
         if (updates.candidate_rating) {
           r.candidate_rating = updates.candidate_rating;
@@ -296,16 +307,65 @@ export const updateEvaluation = async (request, response) => {
         if (updates.skills) {
           r.skills = updates.skills;
         }
-        // console.log(r);
+         console.log(r.skills);
         let tempEv = res.evaluations;
         tempEv[xi_id] = r;
-        console.log(tempEv);
+        // console.log(tempEv);
+        let tempSkills =[];
+e
+
+        User.findById(res.applicant,async function(err , user){
+          tempSkills = user.tools;
+  r.skills.map((item)=>{
+let status = false;
+   
+ user.tools.map((skills,index)=>{
+    console.log(index);
+    if(skills._id == item._id){
+      user.tools[index].lastEvaluated = item.proficiency;
+      console.log(user.tools);
+      status =true;
+    }
+  });
+
+if(status === false){
+  user.tools.push(item);
+}
+
+  })
+
+
+
+
+  console.log(user);
+  user.markModified('tools');
+ await user.save();
+ 
+
+})
+
+
+
+// User.findByIdAndUpdate(res.applicant , {
+//   $set: {
+//     tools: tempSkills
+//   }}, function (err, doc) {
+//     // console.log(doc);
+//   }).clone();
+  
+
+
+
+
+
+
+
         InterviewApplication.findByIdAndUpdate(request.body.application_id, {
           $set: {
             evaluations: tempEv
           }
         }, function (err, doc) {
-          console.log(doc);
+          // console.log(doc);
         })
         res.evaluations = tempEv;
         await res.save();

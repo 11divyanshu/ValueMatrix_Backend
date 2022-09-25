@@ -12,19 +12,24 @@ export const addCandidate = async (req, res) => {
       req.body[i].candidate_id = CandidadeCount + i;
     }
     let newCandidate = await Candidate.insertMany(req.body);
-    return res.json({
-      message: "Candidate added successfully",
-      candidate: newCandidate,
-    });
+    // console.log(newCandidate);
+   
+    const CandidateList = await Candidate.find({ isDeleted: false, company_id:req.body[0].company_id });
+    res.status(200).json(CandidateList);
   } catch (error) {
     console.log("Error : ", error);
     res.status(500).json({ message: error.message });
   }
 };
 
+
+
+
 export const listCandidate = async (req, res) => {
   try {
-    const CandidateList = await Candidate.find({ isDeleted: false, company_id:req.query.company_id });
+   
+    const CandidateList = await Candidate.find({ isDeleted: false, company_id:req.query.id });
+    // console.log(CandidateList);
     if ( CandidateList.length == 0) {
       return res.json({
         success: false,
@@ -37,6 +42,8 @@ export const listCandidate = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
 
 
 

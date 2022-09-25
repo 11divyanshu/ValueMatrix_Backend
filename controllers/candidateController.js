@@ -1,3 +1,6 @@
+
+import mongoose from "mongoose";
+
 import User from "../models/userSchema.js";
 import Candidate from "../models/candidate_info.js";
 
@@ -35,6 +38,9 @@ export const listCandidate = async (req, res) => {
   }
 };
 
+
+
+
 export const findAndDeleteCandidate = async (req, res) => {
   try {
     let candidateId = req.params.id;
@@ -47,7 +53,15 @@ export const findAndDeleteCandidate = async (req, res) => {
         res.status(200).json(CandidateList);
       }
     );
-  } catch (err) {
+   
+      let company_id = req.body.company_id;
+      console.log(req.body);
+      const CandidateList = await Candidate.find({company_id:company_id, isDeleted: false }).clone();
+      console.log(CandidateList);
+      res.status(200).json(CandidateList);
+   
+   
+  } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
@@ -64,7 +78,7 @@ export const findAndUpdateCandidate = async (req, res) => {
         res.status(200).json(CandidateList);
       }
     );
-  } catch (err) {
+  } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };

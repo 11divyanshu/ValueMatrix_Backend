@@ -41,7 +41,7 @@ export const whatsappMessage = async (request, response) => {
     }
     if (query) {
       await query.exec(async function (err, res) {
-        console.log("RES:", res);
+       // console.log("RES:", res);
         if (err) {
           response.json({ Error: "Cannot Send Mails" });
           return;

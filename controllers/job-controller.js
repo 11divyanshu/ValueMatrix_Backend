@@ -31,12 +31,12 @@ function generatePassword() {
 export const addJob = async (request, response) => {
   try {
     User.findOne({ _id: request.body.user_id }, async function (err, res) {
-      console.log(request.body);
+      //console.log(request.body);
       if (res === null || res === undefined) {
         response.status(404).json({ Message: "Admin Not Found" });
         return;
       }
-      console.log(request.body.skills);
+      //console.log(request.body.skills);
       let jobC = {
         jobTitle: request.body.jobTitle,
         jobDesc: request.body.jobDesc,
@@ -53,10 +53,10 @@ export const addJob = async (request, response) => {
         questions: request.body.questions ? request.body.questions : [],
         archived: false,
       };
-      console.log(jobC);
+     // console.log(jobC);
       const newJob = new Job(jobC);
       await newJob.save();
-      console.log("D");
+     // console.log("D");
       if (newJob) {
         let candidateList = request.body.candidateList.map((a) => a.email);
         let asd = await Candidate.updateMany(

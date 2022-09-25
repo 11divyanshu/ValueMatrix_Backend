@@ -27,7 +27,7 @@ export const addSkill = async (req, res) => {
     //   skills.push(skill.skill);
     // });
     let reqSkill = req.body.skills;
-    console.log(reqSkill[0]);
+   // console.log(reqSkill[0]);
     reqSkill.map(async (el) => {
       // if (!skills.includes(el)) {
       const skill = new Skill({

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import user from "./userSchema.js";
 
 const candidateSchema = new mongoose.Schema({
   candidate_id: {
@@ -17,9 +18,12 @@ const candidateSchema = new mongoose.Schema({
   },
   email: {
     type: String,
+    unique:true
   },
   phoneNo: {
     type: String,
+    unique:true
+
   },
   isDeleted: {
     type: Boolean,

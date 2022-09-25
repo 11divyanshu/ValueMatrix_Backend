@@ -65,8 +65,8 @@ export const userLogin = async (request, response) => {
     if (user) {
       correctuser = passwordHash.verify(request.body.password, user.password);
     }
-    console.log(request.body.username);
-    console.log(request.body);
+   // console.log(request.body.username);
+   // console.log(request.body);
     if (user && correctuser) {
       const token = await axios.post(`${url}/generateToken`, { user: user.id });
       const access_token = token.data.token;
@@ -87,7 +87,7 @@ export const userLogin = async (request, response) => {
 // Signup For User Using Email
 export const userSignup = async (request, response) => {
   try {
-    console.log(request.body);
+   // console.log(request.body);
     let name = String(request.body.name).split(" ");
     let firstname = name[0];
     let lastname = name.slice(1).join(" ");
@@ -175,7 +175,7 @@ export const fetchCountry = async (request, response) => {
     await Country.find({}).collation({ locale: "en" }).sort({ country: 1 }).exec(function (err, countries) {
 
       if (err) return console.error(err);
-      console.log(countries);
+      //console.log(countries);
 
       return response.status(200).json({ countries });
     })

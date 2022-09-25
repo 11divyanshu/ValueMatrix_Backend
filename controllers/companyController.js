@@ -65,7 +65,7 @@ export const addCompanyUser = async (request, response) => {
     request.body.permission.forEach((i) => {
       permission[i.id] = i.value;
     });
-    console.log(permission);
+    //console.log(permission);
     let newUser = new User({
       email: request.body.email,
       firstName: request.body.firstName,
@@ -78,7 +78,7 @@ export const addCompanyUser = async (request, response) => {
       company_id: request.body.company_id,
     });
     await newUser.save();
-    console.log(newUser);
+    //console.log(newUser);
     return response.json({
       message: "User added successfully",
       user: newUser,

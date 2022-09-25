@@ -7,8 +7,7 @@ const candidateSchema = new mongoose.Schema({
     default: 0
   },
   company_id: {
-    type: String,
-    required: true,
+    type: String
   },
   firstName: {
     type: String,
@@ -25,7 +24,11 @@ const candidateSchema = new mongoose.Schema({
   isDeleted: {
     type: Boolean,
     default: false
-  }
+  },
+  jobId: {
+    type: String,
+    default:""
+  },
 });
 
 const candidate_info = new mongoose.model("Candidate_info", candidateSchema);

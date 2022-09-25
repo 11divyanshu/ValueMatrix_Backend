@@ -3,28 +3,12 @@ import Candidate from "../models/candidate_info.js";
 
 export const addCandidate = async (req, res) => {
   try {
-    if (req.body.company_id === null || req.body.company_id === undefined) {
-      return res.json({
-        success: false,
-        message: "Company id is required",
-      });
+    const CandidadeCount = await Candidate.count(req.body);
+    for (let i = 0; i < req.body.length; i++) {
+      console.log(req.body[i]);
+      req.body[i].candidate_id = CandidadeCount + i;
     }
-
-    await User.findOne({ _id: req.body.company_id }, function (err, res) {
-      if (err) {
-        console.log(err);
-        return res.status(401).json("req User Not Found");
-      }
-      console.log(res.user_type);
-      if (res && res.user_type !== "Company") {
-        return res.status(401).json("req User Not Registered as a Company");
-        return;
-      }
-    }).clone();
-
-    let newCandidate = new Candidate(req.body);
-    await newCandidate.save();
-    console.log(newCandidate);
+    let newCandidate = await Candidate.insertMany(req.body);
     return res.json({
       message: "Candidate added successfully",
       candidate: newCandidate,
@@ -37,7 +21,13 @@ export const addCandidate = async (req, res) => {
 
 export const listCandidate = async (req, res) => {
   try {
-    const CandidateList = await Candidate.find({ isDeleted: false });
+    const CandidateList = await Candidate.find({ isDeleted: false, company_id:req.query.company_id });
+    if ( CandidateList.length == 0) {
+      return res.json({
+        success: false,
+        message: "Candidates not found",
+      });
+    }
     res.status(200).json(CandidateList);
   } catch (error) {
     console.log("Error in listCandidate: ", error);
@@ -53,9 +43,7 @@ export const findAndDeleteCandidate = async (req, res) => {
       { candidate_id: candidateId },
       { isDeleted: true },
       async function (err, resonse) {
-        console.log(resonse);
         const CandidateList = await Candidate.find({ isDeleted: false });
-        console.log("CandidateList",CandidateList);
         res.status(200).json(CandidateList);
       }
     );
@@ -80,3 +68,27 @@ export const findAndUpdateCandidate = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const eligibleCandidateList = async (req, res) => {
+  try {
+    let userList = await User.aggregate([
+      { $match: { "tools._id": { $in: req.body.skills } } },
+      { $project: { email: "$email", _id: false } },
+    ]);
+
+    userList = userList.map((a) => a.email);
+    const candidateList = await Candidate.aggregate([
+      { $match: { email: { $in: userList }, company_id: req.body.company_id } },
+    ]);
+    if (userList.length == 0 || candidateList.length == 0) {
+      return res.json({
+        success: false,
+        message: "Candidates not found",
+      });
+    }
+    res.status(200).json(candidateList);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+

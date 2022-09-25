@@ -85,7 +85,8 @@ import {
   addCandidate,
   listCandidate,
   findAndDeleteCandidate,
-  findAndUpdateCandidate
+  findAndUpdateCandidate,
+  eligibleCandidateList
 } from "../controllers/candidateController.js";
 
 
@@ -204,7 +205,7 @@ router.post("/sendEmailNotification", verifyToken, sendEmailNotification);
 router.post("/sendWhatsappNotification", verifyToken, whatsappMessage);
 
 // Job
-router.post("/addJob", verifyToken, addJob);
+router.post("/addJob", addJob);
 router.post("/listJob/:id", listJobs);
 router.post("/listJobCandidate", listJobsCandidate);
 router.post("/updateJobDetails", verifyToken, updateJob);
@@ -251,6 +252,9 @@ router.post("/addCandidate",addCandidate);
 router.get("/getCandidateList",listCandidate);
 router.delete("/deleteCandidate/:id",findAndDeleteCandidate);
 router.put("/updateCandidate/:id",findAndUpdateCandidate);
+router.post("/eligibleCandidateList",eligibleCandidateList);
+
+
 
 
 

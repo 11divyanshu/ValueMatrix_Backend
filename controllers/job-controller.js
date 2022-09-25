@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Job from "../models/jobSchema.js";
 import User from "../models/userSchema.js";
+import Candidate from "../models/candidate_info.js";
 import Notification from "../models/notificationSchema.js";
 import {} from "dotenv/config.js";
 import fs from "fs";
@@ -50,13 +51,19 @@ export const addJob = async (request, response) => {
         eligibility: request.body.eligibility ? request.body.eligibility : null,
         skills: request.body.skills ? request.body.skills : null,
         questions: request.body.questions ? request.body.questions : [],
-        archived:false,
+        archived: false,
       };
       console.log(jobC);
       const newJob = new Job(jobC);
       await newJob.save();
       console.log("D");
       if (newJob) {
+        let candidateList = request.body.candidateList.map((a) => a.email);
+        let asd = await Candidate.updateMany(
+          { email: { $in: candidateList } },
+          { jobId: newJob._id.valueOf() }
+        );
+
         response
           .status(200)
           .json({ Message: "Job Added Successfully", job: newJob });
@@ -83,7 +90,6 @@ export const listJobs = async (request, response) => {
   } catch (error) {
     console.log(error);
   }
-  
 };
 
 export const listJobsCandidate = async (request, response) => {
@@ -144,15 +150,12 @@ export const updateJob = async (request, response) => {
   }
 };
 
-
-
-export const archiveJob = async(request , response) => {
+export const archiveJob = async (request, response) => {
   try {
     // console.log(request.body)
     let newJob = await Job.findOne(
       { _id: request.body._id },
       async function (err, user) {
-        
         // console.log(user);
         user.archived = request.body.archived;
         await user.save();
@@ -162,7 +165,7 @@ export const archiveJob = async(request , response) => {
   } catch (error) {
     console.log("Error : ", error);
   }
-}
+};
 
 // Export JobDetails
 export const exportJobDetails = async (request, response) => {
@@ -225,14 +228,14 @@ export const GetJobFromId = async (request, response) => {
       let applicants = [],
         declined = [],
         invited = [];
-        
+
       if (res) {
-        await User.find({ _id: { $in: res.applicants } },function(err ,res){
-
-
-              res.map((result)=>{
-                 InterviewApplication.findOne({ applicant: result._id }, function (err, res) {
-                  // console.log(res);
+        await User.find({ _id: { $in: res.applicants } }, function (err, res) {
+          res.map((result) => {
+            InterviewApplication.findOne(
+              { applicant: result._id },
+              function (err, res) {
+                // console.log(res);
 
                 let data = {
                   _id: result._id,
@@ -244,17 +247,15 @@ export const GetJobFromId = async (request, response) => {
                   status: res.status,
                 };
                 applicants.push(data);
-              })
-              
-              })
+              }
+            );
+          });
         }).clone();
         // console.log(applicants);
         declined = await User.find({ _id: { $in: res.invitations_declined } });
         invited = await User.find({ _id: { $in: res.invitations } });
         response.status(200).json({ job: res, applicants, declined, invited });
-      }
-      else
-      response.status(403).json("Data Not Found");
+      } else response.status(403).json("Data Not Found");
     });
   } catch (error) {}
 };
@@ -381,4 +382,3 @@ export const sendJobInvitations = async (request, response) => {
     console.log("Error : ", err);
   }
 };
-

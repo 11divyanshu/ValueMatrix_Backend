@@ -86,7 +86,9 @@ import {
   listCandidate,
   findAndDeleteCandidate,
   findAndUpdateCandidate,
-  eligibleCandidateList
+  eligibleCandidateList,
+  saveCandidateReport,
+  eligibleJobsForCandidate
 } from "../controllers/candidateController.js";
 
 
@@ -253,6 +255,8 @@ router.post("/getCandidateList",listCandidate);
 router.post("/deleteCandidate/:id",findAndDeleteCandidate);
 router.put("/updateCandidate/:id",findAndUpdateCandidate);
 router.post("/eligibleCandidateList",eligibleCandidateList);
+router.get("/saveCandidateReport",saveCandidateReport);
+router.get("/eligibleJobsForCandidate",eligibleJobsForCandidate);
 
 
 

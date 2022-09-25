@@ -23,7 +23,7 @@ const candidateSchema = new mongoose.Schema({
   phoneNo: {
     type: String,
     unique:true
-
+    
   },
   isDeleted: {
     type: Boolean,

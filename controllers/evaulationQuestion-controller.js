@@ -4,7 +4,7 @@ import EvaulationQuestion from "../models/evaluationQuestionSchema.js";
 
 export const addEvaluationQuestion = async (req, response) => {
   try {
-    console.log(req.body);
+    //console.log(req.body);
     await User.findOne({ _id: req.body.user_id }, function (err, res) {
       if (!res) return res.status(400).json({ message: "User not found" });
       if (res.isAdmin === false)

@@ -1,8 +1,14 @@
+
+import mongoose from "mongoose";
+
 import User from "../models/userSchema.js";
 import Candidate from "../models/candidate_info.js";
 
 export const addCandidate = async (req, res) => {
   try {
+
+console.log(req.body);
+
     if (req.body.company_id === null || req.body.company_id === undefined) {
       return res.json({
         success: false,
@@ -24,11 +30,11 @@ export const addCandidate = async (req, res) => {
 
     let newCandidate = new Candidate(req.body);
     await newCandidate.save();
-    console.log(newCandidate);
-    return res.json({
-      message: "Candidate added successfully",
-      candidate: newCandidate,
-    });
+    // console.log(newCandidate);
+   
+    const CandidateList = await Candidate.find({company_id:req.body.company_id, isDeleted: false });
+    console.log("CandidateList",CandidateList);
+    res.status(200).json(CandidateList);
   } catch (error) {
     console.log("Error : ", error);
     res.status(500).json({ message: error.message });
@@ -37,7 +43,10 @@ export const addCandidate = async (req, res) => {
 
 export const listCandidate = async (req, res) => {
   try {
-    const CandidateList = await Candidate.find({ isDeleted: false });
+     console.log("in");
+    let company_id = req.body.id;
+    const CandidateList = await Candidate.find({company_id:company_id, isDeleted: false });
+    // console.log(CandidateList);
     res.status(200).json(CandidateList);
   } catch (error) {
     console.log("Error in listCandidate: ", error);
@@ -45,21 +54,26 @@ export const listCandidate = async (req, res) => {
   }
 };
 
+
+
+
 export const findAndDeleteCandidate = async (req, res) => {
   try {
     let candidateId = req.params.id;
-
-    Candidate.findOneAndUpdate(
-      { candidate_id: candidateId },
-      { isDeleted: true },
-      async function (err, resonse) {
-        console.log(resonse);
-        const CandidateList = await Candidate.find({ isDeleted: false });
-        console.log("CandidateList",CandidateList);
-        res.status(200).json(CandidateList);
-      }
+// console.log(candidateId);
+    const candidate = await Candidate.findOneAndUpdate(
+      { _id: candidateId },
+      { isDeleted: true }
     );
-  } catch (err) {
+   
+      let company_id = req.body.company_id;
+      console.log(req.body);
+      const CandidateList = await Candidate.find({company_id:company_id, isDeleted: false }).clone();
+      console.log(CandidateList);
+      res.status(200).json(CandidateList);
+   
+   
+  } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
@@ -76,7 +90,7 @@ export const findAndUpdateCandidate = async (req, res) => {
         res.status(200).json(CandidateList);
       }
     );
-  } catch (err) {
+  } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };

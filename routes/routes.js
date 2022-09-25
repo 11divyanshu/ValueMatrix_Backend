@@ -108,7 +108,7 @@ var storage1 = multer.diskStorage({
     cb(null, "media/resume");
   },
   filename: (req, file, cb) => {
-    console.log(req.body);
+   // console.log(req.body);
     cb(null, req.body.user_id + "-resume");
   },
 });
@@ -247,9 +247,9 @@ router.post("/addUniversityList", verifyToken, addUniversityList);
 router.get("/getSchoolList", getSchoolList);
 
 // Candidate Routes
-router.post("/addCandidate",addCandidate);
-router.get("/getCandidateList",listCandidate);
-router.delete("/deleteCandidate/:id",findAndDeleteCandidate);
+router.post("/addCandidate",verifyToken,addCandidate);
+router.post("/getCandidateList",listCandidate);
+router.post("/deleteCandidate/:id",findAndDeleteCandidate);
 router.put("/updateCandidate/:id",findAndUpdateCandidate);
 
 

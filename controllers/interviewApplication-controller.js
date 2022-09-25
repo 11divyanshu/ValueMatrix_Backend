@@ -229,7 +229,7 @@ export const getInterviewApplication = async (request, response) => {
 export const getCandidateEvaluation = async (request, response) => {
   try {
     let id = request.body.id;
-    console.log(request.body);
+    //console.log(request.body);
     await InterviewApplication.findOne({ applicant: id }).exec(async function (
       err,
       res
@@ -281,7 +281,7 @@ export const getCandidateEvaluation = async (request, response) => {
 
 export const updateEvaluation = async (request, response) => {
   try {
-    console.log(request.body);
+    //console.log(request.body);
     let updates = request.body.updates;
     let xi_id = request.body.user_id;
     await InterviewApplication.findOne({ _id: request.body.application_id }, async function (err, res) {
@@ -307,7 +307,7 @@ export const updateEvaluation = async (request, response) => {
         if (updates.skills) {
           r.skills = updates.skills;
         }
-         console.log(r.skills);
+        // console.log(r.skills);
         let tempEv = res.evaluations;
         tempEv[xi_id] = r;
         // console.log(tempEv);
@@ -320,10 +320,10 @@ e
 let status = false;
    
  user.tools.map((skills,index)=>{
-    console.log(index);
+   // console.log(index);
     if(skills._id == item._id){
       user.tools[index].lastEvaluated = item.proficiency;
-      console.log(user.tools);
+      //console.log(user.tools);
       status =true;
     }
   });
@@ -337,7 +337,7 @@ if(status === false){
 
 
 
-  console.log(user);
+ // console.log(user);
   user.markModified('tools');
  await user.save();
  

@@ -1,8 +1,8 @@
-
 import mongoose from "mongoose";
 
 import User from "../models/userSchema.js";
 import Candidate from "../models/candidate_info.js";
+import Jobs from "../models/jobSchema.js";
 
 export const addCandidate = async (req, res) => {
   try {
@@ -24,8 +24,11 @@ export const addCandidate = async (req, res) => {
 
 export const listCandidate = async (req, res) => {
   try {
-    const CandidateList = await Candidate.find({ isDeleted: false, company_id:req.query.company_id });
-    if ( CandidateList.length == 0) {
+    const CandidateList = await Candidate.find({
+      isDeleted: false,
+      company_id: req.query.company_id,
+    });
+    if (CandidateList.length == 0) {
       return res.json({
         success: false,
         message: "Candidates not found",
@@ -37,9 +40,6 @@ export const listCandidate = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
-
 
 export const findAndDeleteCandidate = async (req, res) => {
   try {
@@ -53,14 +53,15 @@ export const findAndDeleteCandidate = async (req, res) => {
         res.status(200).json(CandidateList);
       }
     );
-   
-      let company_id = req.body.company_id;
-      console.log(req.body);
-      const CandidateList = await Candidate.find({company_id:company_id, isDeleted: false }).clone();
-      console.log(CandidateList);
-      res.status(200).json(CandidateList);
-   
-   
+
+    let company_id = req.body.company_id;
+    console.log(req.body);
+    const CandidateList = await Candidate.find({
+      company_id: company_id,
+      isDeleted: false,
+    }).clone();
+    console.log(CandidateList);
+    res.status(200).json(CandidateList);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -106,3 +107,43 @@ export const eligibleCandidateList = async (req, res) => {
   }
 };
 
+export const saveCandidateReport = async (req, res) => {
+  try {
+    const data = await Candidate.aggregate([
+      { $match: { company_id: req.query.company_id } },
+      {
+        $lookup: {
+          from: "interviewapplications",
+          localField: "_id",
+          foreignField: "applicant",
+          as: "interviewapplications",
+        },
+      },
+      {
+        $lookup: {
+          from: "jobs",
+          localField: "interviewapplications.job",
+          foreignField: "_id",
+          as: "jobs",
+        },
+      },
+    ]);
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const eligibleJobsForCandidate = async (req, res) => {
+  try {
+    let skills = await User.findOne(req.query, { "tools._id": 1 });
+    skills = skills.tools.map((a) => a._id);
+    let jobs = await Jobs.aggregate([
+      { $match: { "skills._id": { $in:skills} } },
+    ]);
+
+    res.status(200).json(jobs);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

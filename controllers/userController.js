@@ -1,4 +1,5 @@
 import User from "../models/userSchema.js";
+import Candidate from "../models/candidate_info.js";
 import Country from "../models/countrySchema.js";
 import axios from "axios";
 import passwordHash from "password-hash";
@@ -12,7 +13,6 @@ import sendGridMail from "@sendgrid/mail";
 import FormData from "form-data";
 import path from "path";
 import InterviewApplication from "../models/interviewApplicationSchema.js";
-
 
 const url = process.env.BACKEND_URL;
 const front_url = process.env.FRONTEND_URL;
@@ -65,8 +65,8 @@ export const userLogin = async (request, response) => {
     if (user) {
       correctuser = passwordHash.verify(request.body.password, user.password);
     }
-   // console.log(request.body.username);
-   // console.log(request.body);
+    // console.log(request.body.username);
+    // console.log(request.body);
     if (user && correctuser) {
       const token = await axios.post(`${url}/generateToken`, { user: user.id });
       const access_token = token.data.token;
@@ -87,7 +87,8 @@ export const userLogin = async (request, response) => {
 // Signup For User Using Email
 export const userSignup = async (request, response) => {
   try {
-   // console.log(request.body);
+    // console.log(request.body);
+    const candidate = await Candidate.findOne({ email: request.body.email });
     let name = String(request.body.name).split(" ");
     let firstname = name[0];
     let lastname = name.slice(1).join(" ");
@@ -101,7 +102,8 @@ export const userSignup = async (request, response) => {
       lastname: lastname,
       password: password,
       user_type: request.body.user_type,
-      access_token : temp_acc,
+      access_token: temp_acc,
+      job_invitations: candidate ? [candidate.jobId] : [],
     };
 
     const newUser = new User(user1);
@@ -114,7 +116,7 @@ export const userSignup = async (request, response) => {
     await newUser.save();
 
     let html = `<div>Hi ${request.body.username}</div>,
-    <div>Welcome to Value Matrix. It is a great pleasure to have you on board</div>. 
+    <div>Welcome to Value Matrix. It is a great pleasure to have you on board</div>.
     <div>Our mission is to mission_statement .</div>
     <div>Regards,</div>
     <div>Value  Matrix</div>`;
@@ -153,7 +155,6 @@ export const getUserFromId = async (request, response) => {
 };
 export const getUser = async (request, response) => {
   try {
-    
     User.findById(request.body.id, async function (err, res) {
       if (res) {
         console.log(res);
@@ -172,20 +173,19 @@ export const fetchCountry = async (request, response) => {
     // let res = await country.find({});
     // console.log("hii");
     // console.log(res);
-    await Country.find({}).collation({ locale: "en" }).sort({ country: 1 }).exec(function (err, countries) {
+    await Country.find({})
+      .collation({ locale: "en" })
+      .sort({ country: 1 })
+      .exec(function (err, countries) {
+        if (err) return console.error(err);
+        //console.log(countries);
 
-      if (err) return console.error(err);
-      //console.log(countries);
-
-      return response.status(200).json({ countries });
-    })
-
-
+        return response.status(200).json({ countries });
+      });
   } catch (error) {
     console.log("Error :", error);
   }
 };
-
 
 export const getProfileImg = async (request, response) => {
   {
@@ -245,7 +245,6 @@ export const updateUserDetails = async (request, response) => {
   }
 };
 
-
 // Update Profile Picture
 export const updateProfileImage = async (req, response) => {
   try {
@@ -296,9 +295,7 @@ export const submitCandidateResumeDetails = async (req, response) => {
   try {
     console.log(req.body);
     await User.findOne({ _id: req.body.user_id }, async function (err, user) {
-      
-      if(user === null)
-        return response.status(403);
+      if (user === null) return response.status(403);
       if (req.body.education) {
         user.education = req.body.education;
       }
@@ -308,14 +305,15 @@ export const submitCandidateResumeDetails = async (req, response) => {
       if (req.body.contact && req.body.contact.address) {
         user.address = req.body.contact.address;
       }
-      if(req.body.associate ){
+      if (req.body.associate) {
         user.associate = req.body.associate;
       }
       if (
         (user.contact === user.googleId ||
           user.contact === user.microsoftId ||
           user.contact === user.linkedInId ||
-          user.contact === user.githubId) && req.body.contact &&
+          user.contact === user.githubId) &&
+        req.body.contact &&
         req.body.contact.contact
       ) {
         user.contact = req.body.contact.contact;
@@ -325,9 +323,9 @@ export const submitCandidateResumeDetails = async (req, response) => {
         tools = tools.concat(req.body.tools);
         user.tools = tools;
       }
-      
+
       await user.save();
-      
+
       return response.status(200).json({ Success: true, user: user });
     }).clone();
   } catch (error) {
@@ -358,7 +356,11 @@ export const getUserInviteFromResetPassId = async (request, response) => {
       { resetPassId: request.body.reset_id },
       async function (err, res) {
         if (res) {
-          return response.status(200).json({ user_invite: res.invite, email : res.email, contact: res.contact });
+          return response.status(200).json({
+            user_invite: res.invite,
+            email: res.email,
+            contact: res.contact,
+          });
         }
         response.status(403).json({ Message: "User Not Found" });
       }
@@ -374,7 +376,6 @@ export const setProfile = async (request, response) => {
     User.findOne(
       { resetPassId: request.body.reset_pass_id },
       async function (err, user) {
-        
         if (
           user.resetPassId &&
           user.resetPassId === request.body.reset_pass_id

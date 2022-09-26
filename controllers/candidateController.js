@@ -109,12 +109,21 @@ export const eligibleCandidateList = async (req, res) => {
 
 export const saveCandidateReport = async (req, res) => {
   try {
+    console.log(req.query.candidate_id);
     const data = await Candidate.aggregate([
-      { $match: { company_id: req.query.company_id } },
+      { $match: { candidate_id: Number(req.query.candidate_id) } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "email",
+          foreignField: "email",
+          as: "user",
+        },
+      },
       {
         $lookup: {
           from: "interviewapplications",
-          localField: "_id",
+          localField: "user._id",
           foreignField: "applicant",
           as: "interviewapplications",
         },
@@ -139,7 +148,7 @@ export const eligibleJobsForCandidate = async (req, res) => {
     let skills = await User.findOne(req.query, { "tools._id": 1 });
     skills = skills.tools.map((a) => a._id);
     let jobs = await Jobs.aggregate([
-      { $match: { "skills._id": { $in:skills} } },
+      { $match: { "skills._id": { $in: skills } } },
     ]);
 
     res.status(200).json(jobs);

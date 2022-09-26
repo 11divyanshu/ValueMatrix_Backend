@@ -100,7 +100,7 @@ export const eligibleCandidateList = async (req, res) => {
 
     userList = userList.map((a) => a.email);
     const candidateList = await Candidate.aggregate([
-      { $match: { email: { $in: userList }, company_id: req.body.company_id } },
+      { $match: { email: { $in: userList }, company_id: req.body.companyid } },
     ]);
     if (userList.length == 0 || candidateList.length == 0) {
       return res.json({

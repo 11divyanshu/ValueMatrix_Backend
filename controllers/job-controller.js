@@ -3,7 +3,7 @@ import Job from "../models/jobSchema.js";
 import User from "../models/userSchema.js";
 import Candidate from "../models/candidate_info.js";
 import Notification from "../models/notificationSchema.js";
-import {} from "dotenv/config.js";
+import { } from "dotenv/config.js";
 import fs from "fs";
 import passwordHash from "password-hash";
 import json2xls from "json2xls";
@@ -53,10 +53,10 @@ export const addJob = async (request, response) => {
         questions: request.body.questions ? request.body.questions : [],
         archived: false,
       };
-     // console.log(jobC);
+      // console.log(jobC);
       const newJob = new Job(jobC);
       await newJob.save();
-     // console.log("D");
+      // console.log("D");
       if (newJob) {
         let candidateList = request.body.candidateList.map((a) => a.email);
         let asd = await Candidate.updateMany(
@@ -218,7 +218,7 @@ export const exportJobDetails = async (request, response) => {
       });
     });
     response.status(200).json({ Message: "Files Downloaded" });
-  } catch (error) {}
+  } catch (error) { }
 };
 
 // Get Job From Id
@@ -257,7 +257,7 @@ export const GetJobFromId = async (request, response) => {
         response.status(200).json({ job: res, applicants, declined, invited });
       } else response.status(403).json("Data Not Found");
     });
-  } catch (error) {}
+  } catch (error) { }
 };
 
 // Send Invitations To Users
@@ -269,7 +269,8 @@ export const sendJobInvitations = async (request, response) => {
     await User.findOne({ _id: user_id }, async function (err, res) {
       if (
         res &&
-        !(res.user_type !== "Comapny" || res.user_type !== "Company_User")
+        !(res.user_type !== "Company" || res.user_type !== "Company_User")
+
       ) {
         res.status(403).json({ Message: "Not Authorized" });
       }
@@ -374,7 +375,18 @@ export const sendJobInvitations = async (request, response) => {
               }
             }
           ).clone();
-        });
+
+          Candidate.findOne({ email: candidate.Email }, async function (user, response) {
+            // let id = user.jobId;
+            console.log(candidate.Email)
+
+            console.log(user)
+            // let newJobID = user.jobId + ","+job_id;
+
+            // user.jobId = newJobID;
+            // await user.save();
+          }).clone();
+        })
       }).clone();
     }).clone();
     return response.status(200).json({ Message: "Invitations Sent" });

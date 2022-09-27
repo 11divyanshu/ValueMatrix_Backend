@@ -62,6 +62,12 @@ const userSchema = new mongoose.Schema({
   country: {
     type: String,
   },
+  state: {
+    type: String,
+  },
+  zip: {
+    type: String,
+  },
   resume: {
     type: String,
   },

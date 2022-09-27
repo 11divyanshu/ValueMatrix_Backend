@@ -311,8 +311,17 @@ export const submitCandidateResumeDetails = async (req, response) => {
       if ( req.body.city) {
         user.city = req.body.city;
       }
+
+
+      
       if ( req.body.country) {
         user.country = req.body.country;
+      }
+      if ( req.body.state) {
+        user.state = req.body.state;
+      }
+      if ( req.body.zip) {
+        user.zip = req.body.zip;
       }
       if (req.body.associate) {
         user.associate = req.body.associate;
@@ -348,7 +357,14 @@ export const submitCompanyDetails = async (req, response) => {
     User.findOne({ _id: req.body.user_id }, async function (err, user) {
       user.desc = req.body.about;
       // user.experience =req.body.experience;
-      user.address = req.body.contact.address;
+      // user.address = req.body.contact.address;
+      user.city = req.body.city;
+      user.country = req.body.country;
+      user.street = req.body.street;
+      user.state = req.body.state;
+      user.zip = req.body.zip;
+      user.houseNo = req.body.houseNo;
+
       user.tools = req.body.tools;
       await user.save();
       return response.status(200).json({ Success: true, user: user });

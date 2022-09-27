@@ -50,7 +50,16 @@ const userSchema = new mongoose.Schema({
     required: true,
     default: null,
   },
-  address: {
+  houseNo: {
+    type: String,
+  },
+  street: {
+    type: String,
+  },
+  city: {
+    type: String,
+  },
+  country: {
     type: String,
   },
   resume: {

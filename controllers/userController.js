@@ -302,8 +302,17 @@ export const submitCandidateResumeDetails = async (req, response) => {
       if (req.body.experience) {
         user.experience = req.body.experience;
       }
-      if (req.body.contact && req.body.contact.address) {
-        user.address = req.body.contact.address;
+      if ( req.body.houseNo) {
+        user.houseNo = req.body.houseNo;
+      }
+      if ( req.body.street) {
+        user.street = req.body.street;
+      }
+      if ( req.body.city) {
+        user.city = req.body.city;
+      }
+      if ( req.body.country) {
+        user.country = req.body.country;
       }
       if (req.body.associate) {
         user.associate = req.body.associate;
@@ -371,6 +380,7 @@ export const getUserInviteFromResetPassId = async (request, response) => {
 };
 
 // Set Profile
+
 export const setProfile = async (request, response) => {
   try {
     User.findOne(

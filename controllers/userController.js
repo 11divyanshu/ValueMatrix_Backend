@@ -1,6 +1,7 @@
 import User from "../models/userSchema.js";
 import Candidate from "../models/candidate_info.js";
 import Country from "../models/countrySchema.js";
+import AddCountry from "../models/countryAddSchema.js";
 import axios from "axios";
 import passwordHash from "password-hash";
 import v4 from "uuid/v4.js";
@@ -186,6 +187,24 @@ export const fetchCountry = async (request, response) => {
     console.log("Error :", error);
   }
 };
+export const getCountryList = async (request, response) => {
+  try {
+    // let res = await country.find({});
+    // console.log("hii");
+    // console.log(res);
+    await AddCountry.find({})
+      .collation({ locale: "en" })
+      .sort({ country: 1 })
+      .exec(function (err, countries) {
+        if (err) return console.error(err);
+        //console.log(countries);
+
+        return response.status(200).json({ countries });
+      });
+  } catch (error) {
+    console.log("Error :", error);
+  }
+};
 
 export const getProfileImg = async (request, response) => {
   {
@@ -311,7 +330,6 @@ export const submitCandidateResumeDetails = async (req, response) => {
       if ( req.body.city) {
         user.city = req.body.city;
       }
-
 
       
       if ( req.body.country) {

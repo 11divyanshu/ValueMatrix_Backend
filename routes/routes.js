@@ -25,6 +25,7 @@ import {
   getJobInvitations,
   handleCandidateJobInvitation,
   fetchCountry,
+  getCountryList,
 } from "../controllers/userController.js";
 
 import { sendOTPSMS, updateContactOTP } from "../controllers/sms-controller.js";
@@ -151,6 +152,7 @@ router.post("/logout", logout);
 router.post("/getUserInviteFromResetPassId", getUserInviteFromResetPassId);
 router.post("/setProfile", setProfile);
 router.post("/fetchCountry", fetchCountry);
+router.post("/getCountryList", getCountryList);
 
 // Candidate Routes
 router.post(

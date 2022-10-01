@@ -14,7 +14,6 @@ import {
   getUserFromId,
   getUser,
   updateUserDetails,
-  
   logout,
   updateProfileImage,
   getProfileImg,
@@ -76,11 +75,22 @@ import {
   filterCompany,
 } from "../controllers/companyController.js";
 import { addSkill, getSkills } from "../controllers/skillController.js";
-import { getInterviewApplication, getUserInterviewApplications, getXIEvaluationList, updateEvaluation ,getXIEvaluatedReports,getCandidateEvaluation} from "../controllers/interviewApplication-controller.js";
+import {
+  getInterviewApplication,
+  getUserInterviewApplications,
+  getXIEvaluationList,
+  updateEvaluation,
+  getXIEvaluatedReports,
+  getCandidateEvaluation,
+} from "../controllers/interviewApplication-controller.js";
 import Routes from "twilio/lib/rest/Routes.js";
 import { addEvaluationQuestion } from "../controllers/evaulationQuestion-controller.js";
-import { addCompanyList, addUniversityList, getCompanyList,getSchoolList } from "../controllers/dbListDataController.js";
-
+import {
+  addCompanyList,
+  addUniversityList,
+  getCompanyList,
+  getSchoolList,
+} from "../controllers/dbListDataController.js";
 
 import {
   addCandidate,
@@ -89,9 +99,15 @@ import {
   findAndUpdateCandidate,
   eligibleCandidateList,
   saveCandidateReport,
-  eligibleJobsForCandidate
+  eligibleJobsForCandidate,
 } from "../controllers/candidateController.js";
 
+import {
+  save,
+  update,
+  updateMany,
+  read,
+} from "../controllers/commonController.js";
 
 const router = express.Router();
 
@@ -112,7 +128,7 @@ var storage1 = multer.diskStorage({
     cb(null, "media/resume");
   },
   filename: (req, file, cb) => {
-   // console.log(req.body);
+    // console.log(req.body);
     cb(null, req.body.user_id + "-resume");
   },
 });
@@ -163,7 +179,6 @@ router.post("/addCompanyUser", verifyToken, addCompanyUser);
 router.post("/filterCompany/:time/:vacancy/:id", filterCompany);
 router.post("/getCandidateEvaluation", verifyToken, getCandidateEvaluation);
 
-
 // Reset Password
 router.post("/sendResetPasswordMail", resetPasswordByEmail);
 router.post("/sendResetPasswordSMS", resetPasswordByContact);
@@ -174,7 +189,7 @@ router.post("/resetPassword", resetPassword);
 router.post("/adminLogin", adminLogin);
 router.post("/getCompanyList", verifyToken, companyList);
 router.post("/getUserList", verifyToken, userList);
-router.post("/downloadResume", verifyToken, downloadResume);
+router.post("/downloadResume",verifyToken,downloadResume);
 router.post("/addAdminUser", verifyToken, addAdminUser);
 router.post("/addTaxId", verifyToken, addTaxId);
 router.post("/updateTaxId/:id", verifyToken, findAndUpdateTax);
@@ -230,23 +245,16 @@ router.post("/addSkills", verifyToken, addSkill);
 router.post("/getSkills", verifyToken, getSkills);
 
 // XI Routes
-router.post(
-  "/listXIEvaluation",verifyToken,
-  getXIEvaluationList
-);
-router.post(
-  "/listXIEvaluatedReports",verifyToken,
-  getXIEvaluatedReports
-);
+router.post("/listXIEvaluation", verifyToken, getXIEvaluationList);
+router.post("/listXIEvaluatedReports", verifyToken, getXIEvaluatedReports);
 router.post("/getInterviewApplication", verifyToken, getInterviewApplication);
-router.post("/updateEvaluation", verifyToken,updateEvaluation);
+router.post("/updateEvaluation", verifyToken, updateEvaluation);
 
 // Evaluation Question Routes
 router.post("/addEvaluationQuestions", verifyToken, addEvaluationQuestion);
 
-
 // DB List Data Routes
-router.post("/addCompanyList", verifyToken,addCompanyList);
+router.post("/addCompanyList", verifyToken, addCompanyList);
 router.get("/getCompanyList", getCompanyList);
 router.post("/addUniversityList", verifyToken, addUniversityList);
 router.get("/getSchoolList", getSchoolList);
@@ -260,10 +268,93 @@ router.post("/eligibleCandidateList",eligibleCandidateList);
 router.get("/saveCandidateReport",saveCandidateReport);
 router.get("/eligibleJobsForCandidate",eligibleJobsForCandidate);
 
+// common CRUD operations
+router.post("/add", (req, res) => {
+  const { body } = req;
+  save(body.model, body.data, (data) => {
+    res.send(data);
+  });
+});
 
+router.post("/update", (req, res) => {
+  const { body } = req;
+  update(body.model, body.data, (data) => {
+    res.send(data);
+  });
+});
 
+router.post("/updateMany", (req, res) => {
+  const { body } = req;
+  updateMany(body.model, body.data, (data) => {
+    res.send(data);
+  });
+});
 
+router.post("/read", (req, res) => {
+  const { body } = req;
+  read(body.model, body.data, (data) => {
+    res.send(data);
+  });
+});
 
+import {
+  addSlot,
+  availableSlots,
+  bookSlot,
+  slotUpdate,
+  slotdelete,
+} from "../controllers/slots.js";
 
+router.post("/addSlot", (req, res) => {
+  const { body } = req;
+  addSlot(body, (err, data) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.send(data);
+    }
+  });
+});
 
+router.get("/availableSlots", (req, res) => {
+  const { query } = req;
+  availableSlots(query, (err, data) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.send(data);
+    }
+  });
+});
+
+router.post("/bookSlot", (req, res) => {
+  const { body } = req;
+  bookSlot(body, (err, data) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.send(data);
+    }
+  });
+});
+
+router.put("/updateSlot", (req, res) => {
+  slotUpdate(req, (err, data) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.send(data);
+    }
+  });
+});
+
+router.delete("/deleteSlot", (req, res) => {
+  slotdelete(req, (err, data) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.send(data);
+    }
+  });
+});
 export default router;

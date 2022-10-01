@@ -63,6 +63,8 @@ import {
   sendJobInvitations,
   listJobsCandidate,
   archiveJob,
+  approveJob,
+  listOfUnapproveJobs
 } from "../controllers/job-controller.js";
 import {
   resetPassword,
@@ -232,6 +234,10 @@ router.post("/exportJobDetails", exportJobDetails);
 router.post("/getJobFromId", verifyToken, GetJobFromId);
 router.post("/sendJobInvitation", verifyToken, sendJobInvitations);
 router.post("/archiveJob", archiveJob);
+router.post("/approveJob", approveJob);
+router.get("/unapprovedJobsList", listOfUnapproveJobs);
+
+
 
 // Interview Applications
 router.post(
@@ -350,6 +356,34 @@ router.put("/updateSlot", (req, res) => {
 
 router.delete("/deleteSlot", (req, res) => {
   slotdelete(req, (err, data) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.send(data);
+    }
+  });
+});
+
+
+// Languages Routes
+import {
+  addLanguages,
+  listOfLanguages
+} from "../controllers/languages.js";
+
+
+router.post("/addLanguages", (req, res) => {
+  addLanguages(req.body, (err, data) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.send(data);
+    }
+  });
+});
+
+router.get("/languagesList", (req, res) => {
+  listOfLanguages(req, (err, data) => {
     if (err) {
       res.status(500).send(err);
     } else {

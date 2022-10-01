@@ -112,7 +112,7 @@ export const userSignup = async (request, response) => {
     const token = await axios.post(`${url}/generateToken`, {
       user: newUser.id,
     });
-    console.log(token);
+    // console.log(token);
     newUser.access_token = token.data.token;
     await newUser.save();
 
@@ -145,7 +145,7 @@ export const getUserFromId = async (request, response) => {
   try {
     User.findById(request.body.id, async function (err, res) {
       if (res) {
-        console.log(res);
+        // console.log(res);
         return response.status(200).json({ user: res });
       }
       response.status(403).json({ Message: "User Not Found" });
@@ -158,7 +158,7 @@ export const getUser = async (request, response) => {
   try {
     User.findById(request.body.id, async function (err, res) {
       if (res) {
-        console.log(res);
+        // console.log(res);
         return response.status(200).json({ user: res });
       }
       response.status(403).json({ Message: "User Not Found" });
@@ -258,6 +258,7 @@ export const updateUserDetails = async (request, response) => {
       request.body.updates,
       { new: true }
     );
+    console.log(user1)
     response.status(200).json({ user: user1 });
   } catch (error) {
     console.log("Error, ", error);

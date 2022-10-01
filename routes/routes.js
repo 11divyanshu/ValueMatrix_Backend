@@ -254,7 +254,7 @@ router.get("/getSchoolList", getSchoolList);
 // Candidate Routes
 router.post("/addCandidate",verifyToken,addCandidate);
 router.post("/getCandidateList",listCandidate);
-router.post("/deleteCandidate/:id",findAndDeleteCandidate);
+router.post("/deleteCandidate",findAndDeleteCandidate);
 router.put("/updateCandidate/:id",findAndUpdateCandidate);
 router.post("/eligibleCandidateList",eligibleCandidateList);
 router.get("/saveCandidateReport",saveCandidateReport);

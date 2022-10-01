@@ -50,25 +50,37 @@ export const listCandidate = async (req, res) => {
 
 export const findAndDeleteCandidate = async (req, res) => {
   try {
-    let candidateId = req.params.id;
+    let candidateId = req.query.id;
+    let companyId = req.body.company;
+    console.log(companyId)
+    let isDeleted = false;
+    if(req.body.isDeleted == true){
+       isDeleted = false;
+    }else{
+      isDeleted = true;
+    }
+    console.log(isDeleted)
+
 
     Candidate.findOneAndUpdate(
       { candidate_id: candidateId },
-      { isDeleted: true },
+      { isDeleted: isDeleted },
       async function (err, resonse) {
-        const CandidateList = await Candidate.find({ isDeleted: false });
+        const CandidateList = await Candidate.find({ company_id: companyId, isDeleted: false });
+        console.log(CandidateList);
         res.status(200).json(CandidateList);
       }
     );
 
-    let company_id = req.body.company_id;
-    console.log(req.body);
-    const CandidateList = await Candidate.find({
-      company_id: company_id,
-      isDeleted: false,
-    }).clone();
-    console.log(CandidateList);
-    res.status(200).json(CandidateList);
+
+    // let company_id = req.body.company_id;
+    // console.log(req.body);
+    // const CandidateList = await Candidate.find({
+    //   company_id: company_id,
+    //   isDeleted: false,
+    // }).clone();
+    // console.log(CandidateList);
+    // res.status(200).json(CandidateList);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

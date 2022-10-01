@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
 import Job from "../models/jobSchema.js";
+import JobBin from "../models/jobBinSchema.js";
 import User from "../models/userSchema.js";
 import Candidate from "../models/candidate_info.js";
 import Notification from "../models/notificationSchema.js";
-import { } from "dotenv/config.js";
+import {} from "dotenv/config.js";
 import fs from "fs";
 import passwordHash from "password-hash";
 import json2xls from "json2xls";
@@ -52,9 +53,10 @@ export const addJob = async (request, response) => {
         skills: request.body.skills ? request.body.skills : null,
         questions: request.body.questions ? request.body.questions : [],
         archived: false,
+        location: request.body.location,
       };
       // console.log(jobC);
-      const newJob = new Job(jobC);
+      const newJob = new JobBin(jobC);
       await newJob.save();
       // console.log("D");
       if (newJob) {
@@ -218,7 +220,7 @@ export const exportJobDetails = async (request, response) => {
       });
     });
     response.status(200).json({ Message: "Files Downloaded" });
-  } catch (error) { }
+  } catch (error) {}
 };
 
 // Get Job From Id
@@ -257,7 +259,7 @@ export const GetJobFromId = async (request, response) => {
         response.status(200).json({ job: res, applicants, declined, invited });
       } else response.status(403).json("Data Not Found");
     });
-  } catch (error) { }
+  } catch (error) {}
 };
 
 // Send Invitations To Users
@@ -273,16 +275,15 @@ export const sendJobInvitations = async (request, response) => {
       if (
         res &&
         !(res.user_type !== "Company" || res.user_type !== "Company_User")
-
       ) {
         res.status(403).json({ Message: "Not Authorized" });
       }
       await Job.findOne({ _id: job_id }, async function (err1, res1) {
         console.log("step 2");
         let invitations = res1.invitations ? res1.invitations : [];
-        await candidates.forEach(async(candidate, index) => {
+        await candidates.forEach(async (candidate, index) => {
           console.log("in the array");
-         await User.findOne(
+          await User.findOne(
             {
               $or: [
                 {
@@ -382,63 +383,71 @@ export const sendJobInvitations = async (request, response) => {
             }
           ).clone();
 
-
-      jobId =  await FindCandidateByEmail(candidate.Email,job_id);
-      console.log(jobId);
-      response.status(200).json({ Message: "Invitations Sent", jobId: jobId });
-      
-        
-        
-    })
-        
-        
-        
-        
-        
-     
-     
+          jobId = await FindCandidateByEmail(candidate.Email, job_id);
+          console.log(jobId);
+          response
+            .status(200)
+            .json({ Message: "Invitations Sent", jobId: jobId });
+        });
       }).clone();
-      
-      
+
       console.log("heelo");
-      
     }).clone();
-
-
   } catch (err) {
     console.log("Error : ", err);
   }
 };
 
-const FindCandidateByEmail = async (email,job_id)=>{
-  return new Promise( (resolve, reject) => {
-    let jobId ="";
-  Candidate.findOne({ email: email }, async function (err, user) {
-    // let id = user.jobId;
-    console.log("Step 5");
-    if (err) {
-      console.log(err);
-    }
+// Approve job
+export const approveJob = async (req, res) => {
+  try {
+    const jobData = await JobBin.findOne({ _id: req.body._id }).lean();
+    delete jobData._id;
+    delete jobData.__v;
+    res.send(jobData.__v);
+    const newJob = new Job(jobData);
+    await newJob.save();
+    await JobBin.findOneAndDelete({ _id: req.body._id });
+    res.send();
+  } catch (err) {
+    console.log("Error approveJob: ", err);
+    res.send(err);
+  }
+};
 
+// list of unapproved jobs
+export const listOfUnapproveJobs = async (req, res) => {
+  try {
+    const jobData = await JobBin.find()
+    res.send(jobData);
+  } catch (err) {
+    console.log("Error listOfUnapproveJob: ", err);
+    res.send(err);  }
+};
 
-    let newJobID;
-    if (user.jobId === "") {
-      newJobID = job_id;
-    }
-    else {
-      newJobID = user.jobId.concat(",", job_id);
-    }
+const FindCandidateByEmail = async (email, job_id) => {
+  return new Promise((resolve, reject) => {
+    let jobId = "";
+    Candidate.findOne({ email: email }, async function (err, user) {
+      // let id = user.jobId;
+      console.log("Step 5");
+      if (err) {
+        console.log(err);
+      }
 
-    user.jobId = newJobID;
-    jobId =newJobID;
+      let newJobID;
+      if (user.jobId === "") {
+        newJobID = job_id;
+      } else {
+        newJobID = user.jobId.concat(",", job_id);
+      }
 
-    // console.log(jobId);
-    await user.save();
-    resolve(jobId);
-    
-  }).clone()
-  
+      user.jobId = newJobID;
+      jobId = newJobID;
 
-  })
-
-}
+      // console.log(jobId);
+      await user.save();
+      resolve(jobId);
+    }).clone();
+  });
+};

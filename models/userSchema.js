@@ -39,16 +39,22 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     unique: true,
   },
+  secondaryEmails: {
+    type: Array,
+  },
   password: {
     type: String,
     required: false,
   },
-  
+
   contact: {
     type: String,
     unique: true,
     required: true,
     default: null,
+  },
+  secondaryContacts: {
+    type: Array,
   },
   houseNo: {
     type: String,
@@ -71,20 +77,20 @@ const userSchema = new mongoose.Schema({
   resume: {
     type: String,
   },
-  education : {
-    type : Array,
-  }, 
-  desc : {
-    type : Array,
-  }, 
-  billing : {
-    type : Array,
+  education: {
+    type: Array,
   },
-  experience : {
-    type : Array,
+  desc: {
+    type: Array,
+  },
+  billing: {
+    type: Array,
+  },
+  experience: {
+    type: Array,
   },
   associate: {
-    type: Array
+    type: Array,
   },
   tools: {
     type: Array,
@@ -111,7 +117,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  linkedInUrl:{
+  linkedInUrl: {
     type: String,
     required: false,
   },
@@ -157,6 +163,14 @@ const userSchema = new mongoose.Schema({
     type: Array,
     default: [],
   },
+  language: [
+    {
+      name: String,
+      read: Boolean,
+      write: Boolean,
+      speak: Boolean,
+    },
+  ],
 });
 
 // Google Login
@@ -196,9 +210,9 @@ passport.use(
               firstName: profile.name.givenName,
               lastName: profile.name.familyname,
               email: profile.emails[0].value,
-              user_type : "User",
+              user_type: "User",
               contact: profile.id,
-              access_token : id,
+              access_token: id,
             });
           } else if (res) {
             res.googleId = profile.id;
@@ -250,8 +264,8 @@ passport.use(
                   lastName: profile.name.familyname,
                   email: email,
                   contact: contact,
-                  user_type : "User",
-                  access_token : id,
+                  user_type: "User",
+                  access_token: id,
                 },
                 function (err, user) {
                   return done(err, user);
@@ -296,8 +310,8 @@ passport.use(
                 lastName: profile.name.familyName,
                 email: email,
                 contact: contact,
-                access_token : id,
-                user_type : "User",
+                access_token: id,
+                user_type: "User",
               },
               function (err, res) {
                 return done(err, res);
@@ -340,11 +354,11 @@ passport.use(
               {
                 githubId: profile.id,
                 username: username,
-                user_type : "User",
+                user_type: "User",
                 firstName: profile.displayName,
                 company: profile._json.company ? profile._json.company : "",
                 email: email,
-                access_token : id,
+                access_token: id,
                 about: profile._json.bio ? profile._json.bio : "",
                 contact: contact,
               },

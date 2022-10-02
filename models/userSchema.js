@@ -171,6 +171,21 @@ const userSchema = new mongoose.Schema({
       speak: Boolean,
     },
   ],
+  showComName: {
+    typr: Boolean,
+  },
+  showComLogo: {
+    typr: Boolean,
+  },
+  showEducation: {
+    typr: Boolean,
+  },
+  showContact: {
+    typr: Boolean,
+  },
+  showEmail: {
+    typr: Boolean,
+  },
 });
 
 // Google Login

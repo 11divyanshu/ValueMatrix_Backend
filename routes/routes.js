@@ -26,6 +26,8 @@ import {
   handleCandidateJobInvitation,
   fetchCountry,
   getCountryList,
+  approveCompany,
+  listOfUnapproveCompanies
 } from "../controllers/userController.js";
 
 import { sendOTPSMS, updateContactOTP } from "../controllers/sms-controller.js";
@@ -180,6 +182,9 @@ router.post("/submitCompanyDetails", verifyToken, submitCompanyDetails);
 router.post("/addCompanyUser", verifyToken, addCompanyUser);
 router.post("/filterCompany/:time/:vacancy/:id", filterCompany);
 router.post("/getCandidateEvaluation", verifyToken, getCandidateEvaluation);
+router.post("/approveCompany", approveCompany);
+router.post("/listOfUnapproveCompanies", listOfUnapproveCompanies);
+
 
 // Reset Password
 router.post("/sendResetPasswordMail", resetPasswordByEmail);

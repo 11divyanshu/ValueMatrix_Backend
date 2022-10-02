@@ -1,4 +1,5 @@
 import User from "../models/userSchema.js";
+import UserBin from "../models/userSchemaBin.js";
 import Candidate from "../models/candidate_info.js";
 import Country from "../models/countrySchema.js";
 import AddCountry from "../models/countryAddSchema.js";
@@ -105,10 +106,22 @@ export const userSignup = async (request, response) => {
       user_type: request.body.user_type,
       access_token: temp_acc,
       job_invitations: candidate ? [candidate.jobId] : [],
+      language: request.body.user_type,
+      showComName: request.body.showComName,
+      showComLogo: request.body.showComLogo,
+      showEducation: request.body.showEducation,
+      showContact: request.body.showContact,
+      showEmail: request.body.showEmail,
     };
 
-    const newUser = new User(user1);
-    await newUser.save();
+    if (request.body.user_type == "Company") {
+      const newUser = new UserBin(user1);
+      await newUser.save();
+    } else {
+      const newUser = new User(user1);
+      await newUser.save();
+    }
+
     const token = await axios.post(`${url}/generateToken`, {
       user: newUser.id,
     });
@@ -258,7 +271,7 @@ export const updateUserDetails = async (request, response) => {
       request.body.updates,
       { new: true }
     );
-    console.log(user1)
+    console.log(user1);
     response.status(200).json({ user: user1 });
   } catch (error) {
     console.log("Error, ", error);
@@ -322,24 +335,23 @@ export const submitCandidateResumeDetails = async (req, response) => {
       if (req.body.experience) {
         user.experience = req.body.experience;
       }
-      if ( req.body.houseNo) {
+      if (req.body.houseNo) {
         user.houseNo = req.body.houseNo;
       }
-      if ( req.body.street) {
+      if (req.body.street) {
         user.street = req.body.street;
       }
-      if ( req.body.city) {
+      if (req.body.city) {
         user.city = req.body.city;
       }
 
-      
-      if ( req.body.country) {
+      if (req.body.country) {
         user.country = req.body.country;
       }
-      if ( req.body.state) {
+      if (req.body.state) {
         user.state = req.body.state;
       }
-      if ( req.body.zip) {
+      if (req.body.zip) {
         user.zip = req.body.zip;
       }
       if (req.body.associate) {
@@ -514,5 +526,35 @@ export const handleCandidateJobInvitation = async (request, response) => {
     });
   } catch (err) {
     console.log(err);
+  }
+};
+
+// Approve company
+export const approveCompany = async (req, res) => {
+  try {
+    const jobData = await UserBin.findOne({
+      _id: req.body._id,
+      user_type: "Company",
+    }).lean();
+    delete jobData._id;
+    delete jobData.__v;
+    const newJob = new User(jobData);
+    await newJob.save();
+    await UserBin.findOneAndDelete({ _id: req.body._id });
+    res.send();
+  } catch (err) {
+    console.log("Error approveJob: ", err);
+    res.send(err);
+  }
+};
+
+// list of unapproved jobs
+export const listOfUnapproveCompanies = async (req, res) => {
+  try {
+    const jobData = await UserBin.find({ user_type: "Company" });
+    res.send(jobData);
+  } catch (err) {
+    console.log("Error listOfUnapproveCompanies: ", err);
+    res.send(err);
   }
 };

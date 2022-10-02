@@ -44,6 +44,7 @@ export const addJob = async (request, response) => {
         uploadBy: res.id,
         location: request.body.location,
         jobType: request.body.jobType,
+        jobLocation: request.body.jobLocation,
         reqApp: request.body.reqApp,
         validTill: request.body.validTill ? request.body.validTill : null,
         hiringOrganization: request.body.hiringOrganization,
@@ -138,6 +139,7 @@ export const updateJob = async (request, response) => {
         user.jobDesc = request.body.jobDesc;
         user.reqApp = request.body.reqApp;
         user.location = request.body.location;
+        user.jobLocation = request.body.jobLocation;
         user.hiringOrganization = request.body.hiringOrganization;
         user.eligibility = request.body.eligibility;
         user.perks = request.body.perks;
@@ -402,6 +404,7 @@ export const sendJobInvitations = async (request, response) => {
 // Approve job
 export const approveJob = async (req, res) => {
   try {
+    console.log(req.body)
     const jobData = await JobBin.findOne({ _id: req.body._id }).lean();
     delete jobData._id;
     delete jobData.__v;
@@ -415,7 +418,6 @@ export const approveJob = async (req, res) => {
     res.send(err);
   }
 };
-
 // list of unapproved jobs
 export const listOfUnapproveJobs = async (req, res) => {
   try {

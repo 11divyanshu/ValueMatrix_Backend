@@ -357,6 +357,9 @@ export const submitCandidateResumeDetails = async (req, response) => {
       if (req.body.associate) {
         user.associate = req.body.associate;
       }
+      if (req.body.language) {
+        user.language = req.body.language;
+      }
       if (
         (user.contact === user.googleId ||
           user.contact === user.microsoftId ||

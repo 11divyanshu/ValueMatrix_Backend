@@ -163,14 +163,18 @@ const userSchema = new mongoose.Schema({
     type: Array,
     default: [],
   },
-  language: [
-    {
-      name: String,
-      read: Boolean,
-      write: Boolean,
-      speak: Boolean,
-    },
-  ],
+  language:{
+    type: Array,
+    default: [],
+  },
+  // language: [
+  //   {
+  //     name: String,
+  //     read: Boolean,
+  //     write: Boolean,
+  //     speak: Boolean,
+  //   },
+  // ],
   showComName: {
     typr: Boolean,
   },

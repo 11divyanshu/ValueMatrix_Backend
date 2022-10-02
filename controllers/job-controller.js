@@ -60,12 +60,13 @@ export const addJob = async (request, response) => {
       await newJob.save();
       // console.log("D");
       if (newJob) {
-        let candidateList = request.body.candidateList.map((a) => a.email);
+        let candidateList = request.body.candidateList ? request.body.candidateList.map((a) => a.email) : null;
         let asd = await Candidate.updateMany(
           { email: { $in: candidateList } },
           { jobId: newJob._id.valueOf() }
         );
 
+        
         response
           .status(200)
           .json({ Message: "Job Added Successfully", job: newJob });

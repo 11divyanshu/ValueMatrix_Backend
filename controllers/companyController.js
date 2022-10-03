@@ -8,10 +8,14 @@ import sendGridMail from "@sendgrid/mail";
 import FormData from "form-data";
 import path from "path";
 import job from "../models/jobSchema.js";
+import { response } from "express";
 
 const url = process.env.BACKEND_URL;
 const front_url = process.env.FRONTEND_URL;
 sendGridMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+
+
 
 export const addCompanyUser = async (request, response) => {
   try {
@@ -87,6 +91,17 @@ export const addCompanyUser = async (request, response) => {
     console.log("Error : ", error);
   }
 };
+
+export const getCompanyUserList = async (request,response)=>{
+  try {
+    
+   let company_users =await User.find({user_type:"Company_User" , company_id:request.query.id});
+   response.status(200).send(company_users);
+
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 
 

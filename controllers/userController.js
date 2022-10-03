@@ -278,6 +278,7 @@ export const updateUserDetails = async (request, response) => {
   }
 };
 
+
 // Update Profile Picture
 export const updateProfileImage = async (req, response) => {
   try {

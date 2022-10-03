@@ -32,7 +32,7 @@ function generatePassword() {
 export const addJob = async (request, response) => {
   try {
     User.findOne({ _id: request.body.user_id }, async function (err, res) {
-      //console.log(request.body);
+      console.log(request.body);
       if (res === null || res === undefined) {
         response.status(404).json({ Message: "Admin Not Found" });
         return;
@@ -55,6 +55,11 @@ export const addJob = async (request, response) => {
         questions: request.body.questions ? request.body.questions : [],
         archived: false,
         location: request.body.location,
+        showComLogo : request.body.showComLogo,
+        showComName : request.body.showComName,
+        showEmail : request.body.showEmail,
+        showEducation : request.body.showEducation,
+        showContact : request.body.showContact
       };
       // console.log(jobC);
       const newJob = new JobBin(jobC);
@@ -146,6 +151,11 @@ export const updateJob = async (request, response) => {
         user.salary = request.body.salary;
         user.skills = request.body.skills;
         user.questions = request.body.questions;
+        user.showComLogo = request.body.showComLogo;
+        user.showComName = request.body.showComName;
+        user.showEmail = request.body.showEmail;
+        user.showEducation = request.body.showEducation;
+        user.showContact = request.body.showContact;
         await user.save();
         return response.status(200).json({ Success: true });
       }

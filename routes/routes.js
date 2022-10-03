@@ -26,8 +26,6 @@ import {
   handleCandidateJobInvitation,
   fetchCountry,
   getCountryList,
-  approveCompany,
-  listOfUnapproveCompanies
 } from "../controllers/userController.js";
 
 import { sendOTPSMS, updateContactOTP } from "../controllers/sms-controller.js";
@@ -77,6 +75,7 @@ import {
 import {
   addCompanyUser,
   filterCompany,
+  getCompanyUserList
 } from "../controllers/companyController.js";
 import { addSkill, getSkills } from "../controllers/skillController.js";
 import {
@@ -94,6 +93,10 @@ import {
   addUniversityList,
   getCompanyList,
   getSchoolList,
+  checkCompany,
+  listUnapproveCompany,
+  approveCompany,
+  
 } from "../controllers/dbListDataController.js";
 
 import {
@@ -182,8 +185,10 @@ router.post("/submitCompanyDetails", verifyToken, submitCompanyDetails);
 router.post("/addCompanyUser", verifyToken, addCompanyUser);
 router.post("/filterCompany/:time/:vacancy/:id", filterCompany);
 router.post("/getCandidateEvaluation", verifyToken, getCandidateEvaluation);
-router.post("/approveCompany", approveCompany);
-router.post("/listOfUnapproveCompanies", listOfUnapproveCompanies);
+// router.post("/approveCompany", approveCompany);
+ router.get("/unapprovedJobsList", listOfUnapproveJobs);
+ router.get("/getCompanyUserList", getCompanyUserList);
+
 
 
 // Reset Password
@@ -240,7 +245,6 @@ router.post("/getJobFromId", verifyToken, GetJobFromId);
 router.post("/sendJobInvitation", verifyToken, sendJobInvitations);
 router.post("/archiveJob", archiveJob);
 router.post("/approveJob", approveJob);
-router.get("/unapprovedJobsList", listOfUnapproveJobs);
 
 
 
@@ -269,6 +273,12 @@ router.post("/addCompanyList", verifyToken, addCompanyList);
 router.get("/getCompanyList", getCompanyList);
 router.post("/addUniversityList", verifyToken, addUniversityList);
 router.get("/getSchoolList", getSchoolList);
+router.post("/jobTitles", jobTitles);
+router.post("/addcompany", addcompany);
+router.get("/getJobTitles", getJobTitles);
+router.get("/listUnapproveTitles", listUnapproveTitles);
+router.post("/approveTitle", approveTitle);
+
 
 // Candidate Routes
 router.post("/addCandidate",verifyToken,addCandidate);
@@ -369,11 +379,15 @@ router.delete("/deleteSlot", (req, res) => {
   });
 });
 
-
 // Languages Routes
 import {
   addLanguages,
-  listOfLanguages
+  listOfLanguages,
+  jobTitles,
+  getJobTitles,
+  listUnapproveTitles,
+  approveTitle,
+  addcompany
 } from "../controllers/languages.js";
 
 
@@ -396,4 +410,17 @@ router.get("/languagesList", (req, res) => {
     }
   });
 });
+
+
+
+
+// Check Company
+router.post("/checkCompany",checkCompany);
+router.get("/listUnapproveCompany",listUnapproveCompany);
+router.post("/approveCompany",approveCompany);
+
+
+
+
+
 export default router;

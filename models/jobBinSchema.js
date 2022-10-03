@@ -27,6 +27,11 @@ const jobBinSchema = new mongoose.Schema({
     required: true,
     enum: ["Internship", "Full-Time", "Part-Time", "Freelancing"],
   },
+  jobLocation: {
+    type: String,
+    required: true,
+    enum: ["Remote", "Hybrid", "On-Site"],
+  },
   applicants: {
     type: Array,
   },
@@ -79,7 +84,23 @@ const jobBinSchema = new mongoose.Schema({
   location: {
     type: String,
   },
+  showComName: {
+    type: Boolean,
+  },
+  showComLogo: {
+    type: Boolean,
+  },
+  showEducation: {
+    type: Boolean,
+  },
+  showContact: {
+    type: Boolean,
+  },
+  showEmail: {
+    type: Boolean,
+  },
 });
 
 const jobBin = mongoose.model("jobBin", jobBinSchema);
 export default jobBin;
+

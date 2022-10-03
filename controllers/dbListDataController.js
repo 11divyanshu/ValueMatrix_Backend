@@ -1,5 +1,7 @@
 import CompanyList from "../models/CompanyListSchema.js";
 import UniversityList from "../models/universityListSchema.js";
+import CompanyBin from "../models/companyBinSchema.js";
+import company from "../models/CompanyListSchema.js";
 
 export const addCompanyList = async (req, res) => {
   try {
@@ -49,4 +51,49 @@ export const getSchoolList = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
+export const checkCompany = async (req, res) => {
+  try {
+    console.log(req.body)
+    // console.log(schoolList);
+
+    const company = new CompanyBin({name:req.body.name});
+    await company.save();
+    res.status(200).json();
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+export const listUnapproveCompany =  async(request , res) => {
+  try {
+    const company = await CompanyBin.find();
+    // console.log(company);
+    res.status(200).json(company);
+  } catch (error) {}
+};
+
+
+export const approveCompany =  async(req , res) => {
+  try {
+    console.log(req.body)
+    const jobData = await CompanyBin.findOne({ _id: req.body.id }).lean();
+    delete jobData._id;
+    delete jobData.__v;
+    res.send(jobData.__v);
+    const newJob = new company(jobData);
+    await newJob.save();
+    await CompanyBin.findOneAndDelete({ _id: req.body.id });
+    res.send();
+  } catch (err) {
+    console.log("Error approveCompany: ", err);
+    res.send(err);
+  }
+};
+
+
+
+
+
 

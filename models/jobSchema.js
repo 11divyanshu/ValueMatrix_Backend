@@ -83,7 +83,22 @@ const jobSchema = new mongoose.Schema({
   },
   location: { 
     type: String
-  }
+  },
+  showComName: {
+    type: Boolean,
+  },
+  showComLogo: {
+    type: Boolean,
+  },
+  showEducation: {
+    type: Boolean,
+  },
+  showContact: {
+    type: Boolean,
+  },
+  showEmail: {
+    type: Boolean,
+  },
 });
 
 

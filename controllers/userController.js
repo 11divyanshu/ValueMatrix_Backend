@@ -56,6 +56,12 @@ export const vaildateSignupDetails = async (request, response) => {
 // User Login
 export const userLogin = async (request, response) => {
   try {
+    var userData = await User.findOne({ secondaryEmails: request.body.username });
+    if(userData) {
+      return response
+      .status(400)
+      .json({ msg:  "You can not login with secondary email" , email :request.body.username  });
+    }
     var user = await User.findOne({ email: request.body.username });
     if (user == null) {
       user = await User.findOne({ username: request.body.username });
@@ -90,6 +96,25 @@ export const userLogin = async (request, response) => {
 export const userSignup = async (request, response) => {
   try {
     // console.log(request.body);
+
+    let userData = await User.findOne({ 
+      $or: [
+        {
+          secondaryEmails: request.body.email 
+        },
+        {
+          secondaryContacts: request.body.contact 
+        }
+      ]
+    });
+
+    if(userData) {
+      return response
+      .status(400)
+      .json({ msg:  "Email/Contact already registered" });
+    }
+
+
     const candidate = await Candidate.findOne({ email: request.body.email });
     let name = String(request.body.name).split(" ");
     let firstname = name[0];

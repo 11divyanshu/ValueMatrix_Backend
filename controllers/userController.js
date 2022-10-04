@@ -56,11 +56,14 @@ export const vaildateSignupDetails = async (request, response) => {
 // User Login
 export const userLogin = async (request, response) => {
   try {
-    var userData = await User.findOne({ secondaryEmails: request.body.username });
-    if(userData) {
-      return response
-      .status(400)
-      .json({ msg:  "You can not login with secondary email" , email :request.body.username  });
+    var userData = await User.findOne({
+      secondaryEmails: request.body.username,
+    });
+    if (userData) {
+      return response.status(400).json({
+        msg: "You can not login with secondary email",
+        email: request.body.username,
+      });
     }
     var user = await User.findOne({ email: request.body.username });
     if (user == null) {
@@ -97,23 +100,22 @@ export const userSignup = async (request, response) => {
   try {
     // console.log(request.body);
 
-    let userData = await User.findOne({ 
+    let userData = await User.findOne({
       $or: [
         {
-          secondaryEmails: request.body.email 
+          secondaryEmails: request.body.email,
         },
         {
-          secondaryContacts: request.body.contact 
-        }
-      ]
+          secondaryContacts: request.body.contact,
+        },
+      ],
     });
 
-    if(userData) {
+    if (userData) {
       return response
-      .status(400)
-      .json({ msg:  "Email/Contact already registered" });
+        .status(400)
+        .json({ msg: "Email/Contact already registered" });
     }
-
 
     const candidate = await Candidate.findOne({ email: request.body.email });
     let name = String(request.body.name).split(" ");
@@ -303,19 +305,35 @@ export const updateUserDetails = async (request, response) => {
   }
 };
 
-
 // Update Profile Picture
 export const updateProfileImage = async (req, response) => {
   try {
     User.findOne({ _id: req.body.user_id }, async function (err, user) {
+      let path_url = "./media/profileImg/" + req.file.filename;
+      console.log("path_url", path_url);
+      const options = {
+        method: "POST",
+        url: "https://face-detection6.p.rapidapi.com/img/face",
+        headers: {
+          "content-type": "application/json",
+          "X-RapidAPI-Key":
+            "8f063108cfmsh3aa100a3fcfbaacp154179jsnb2004b15c7fc",
+          "X-RapidAPI-Host": "face-detection6.p.rapidapi.com",
+        },
+        data: { url: path_url, accuracy_boost: 2 },
+      };
+
+      let profileData = await axios.request(options);
+
       let str = user._id + "-profileImg";
       user.profileImg = str;
       await user.save();
+
       console.log(user);
       return response.status(200).json({ Success: true });
     });
   } catch (error) {
-    console.log("Error : ", error);
+    return response.status(400).send(error);
   }
 };
 
@@ -342,6 +360,36 @@ export const uploadCandidateResume = async (req, response) => {
       let str = user._id + "-resume";
       user.resume = str;
       await user.save();
+
+      // let path_url = "./media/resume/" + req.body.user_id + "-resume";
+      // let buffer = await fs.readFileSync(path.resolve(path_url));
+      // var base64Doc = buffer.toString("base64");
+      // var modifiedDate = new Date(fs.statSync(filePath).mtimeMs)
+      //   .toISOString()
+      //   .substring(0, 10);
+      // var postData = JSON.stringify({
+      //   DocumentAsBase64String: base64Doc,
+      //   DocumentLastModified: modifiedDate,
+      // });
+
+      // var options = {
+      //   host: "rest.resumeparsing.com",
+      //   protocol: "https:",
+      //   path: "/v10/parser/resume",
+      //   method: "POST",
+      //   headers: {
+      //     "Sovren-AccountId": "12345678",
+      //     "Sovren-ServiceKey": "eumey7feY5zjeWZW397Jks6PBj2NRKSH",
+      //     Accept: "application/json",
+      //     "Content-Type": "application/json",
+      //     "Content-Length": Buffer.byteLength(postData),
+      //   },
+      // };
+
+      // const ResumeParseData = await axios(options);
+
+      // console.log("ResumeParseData", ResumeParseData);
+
       return response.status(200).json({ Success: true });
     });
   } catch (error) {

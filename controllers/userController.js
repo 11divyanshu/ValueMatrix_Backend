@@ -309,7 +309,7 @@ export const updateUserDetails = async (request, response) => {
 export const updateProfileImage = async (req, response) => {
   try {
     User.findOne({ _id: req.body.user_id }, async function (err, user) {
-      let path_url = "./media/profileImg/" + req.file.filename;
+      let path_url = "http://dev.serve.valuematrix.ai/media/profileImg/" + req.file.filename;
       console.log("path_url", path_url);
       const options = {
         method: "POST",
@@ -325,11 +325,17 @@ export const updateProfileImage = async (req, response) => {
 
       let profileData = await axios.request(options);
 
-      let str = user._id + "-profileImg";
+	if(profileData.data.detected_faces.length == 0){
+		return response.status(200).json({ Message: "No Faces Found" });
+	}else if( profileData.data.detected_faces.length != 1 ){
+		return response.status(200).json({ Message: "More than one faces Found" });
+	}
+
+      let str = user._id + "-profileImg.png";
       user.profileImg = str;
       await user.save();
 
-      console.log(user);
+      //console.log(user);
       return response.status(200).json({ Success: true });
     });
   } catch (error) {

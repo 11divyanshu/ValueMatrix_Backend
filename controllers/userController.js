@@ -288,20 +288,19 @@ export const getProfileImg = async (request, response) => {
     try {
       User.findById(request.body.id, async function (err, res) {
         if (res && res.access_valid) {
-          if(res.profileImg){
-console.log(res.profileImg)
-          
-          let path_url = "./media/profileImg/" + res.profileImg;
-          let d = await fs.readFileSync(
-            path.resolve(path_url),
-            {},
-            function (err, res) {}
-          );
-         // console.log(d)
-          return response.status(200).json({ Image: d });
-          }else{
-            return response.status(400).json({ Message: "No Profile Image" });
+          if (res.profileImg) {
+            console.log(res.profileImg);
 
+            let path_url = "./media/profileImg/" + res.profileImg;
+            let d = await fs.readFileSync(
+              path.resolve(path_url),
+              {},
+              function (err, res) {}
+            );
+            // console.log(d)
+            return response.status(200).json({ Image: d });
+          } else {
+            return response.status(400).json({ Message: "No Profile Image" });
           }
         }
 
@@ -353,32 +352,35 @@ export const updateUserDetails = async (request, response) => {
 export const updateProfileImage = async (req, response) => {
   try {
     User.findOne({ _id: req.body.user_id }, async function (err, user) {
+      let user_type = req.query.user;
+      console.log(user_type);
+      if (user_type === "User") {
+        let path_url =
+          "http://dev.serve.valuematrix.ai/media/profileImg/" +
+          req.file.filename;
+        console.log("path_url", path_url);
+        const options = {
+          method: "POST",
+          url: "https://face-detection6.p.rapidapi.com/img/face",
+          headers: {
+            "content-type": "application/json",
+            "X-RapidAPI-Key":
+              "8f063108cfmsh3aa100a3fcfbaacp154179jsnb2004b15c7fc",
+            "X-RapidAPI-Host": "face-detection6.p.rapidapi.com",
+          },
+          data: { url: path_url, accuracy_boost: 2 },
+        };
 
- let user_type = req.query.user;
-console.log(user_type)
-if(user_type === "User"){
-      let path_url = "http://dev.serve.valuematrix.ai/media/profileImg/" + req.file.filename;
-      console.log("path_url", path_url);
-      const options = {
-        method: "POST",
-        url: "https://face-detection6.p.rapidapi.com/img/face",
-        headers: {
-          "content-type": "application/json",
-          "X-RapidAPI-Key":
-            "8f063108cfmsh3aa100a3fcfbaacp154179jsnb2004b15c7fc",
-          "X-RapidAPI-Host": "face-detection6.p.rapidapi.com",
-        },
-        data: { url: path_url, accuracy_boost: 2 },
-      };
+        let profileData = await axios.request(options);
 
-      let profileData = await axios.request(options);
-
-	if(profileData.data.detected_faces.length == 0){
-		return response.status(200).json({ Message: "No Faces Found" });
-	}else if( profileData.data.detected_faces.length != 1 ){
-		return response.status(200).json({ Message: "More than one faces Found" });
-	}
-}
+        if (profileData.data.detected_faces.length == 0) {
+          return response.status(200).json({ Message: "No Faces Found" });
+        } else if (profileData.data.detected_faces.length != 1) {
+          return response
+            .status(200)
+            .json({ Message: "More than one faces Found" });
+        }
+      }
 
       let str = user._id + "-profileImg.png";
       user.profileImg = str;
@@ -411,133 +413,140 @@ export const logout = async (req, response) => {
 // Candidate Resume Upload
 export const uploadCandidateResume = async (req, response) => {
   try {
-    // User.findOne({ _id: req.body.user_id }, async function (err, user) {
-    //   let str = user._id + "-resume";
-    //   user.resume = str;
-    //   await user.save();
+    User.findOne({ _id: req.body.user_id }, async function (err, user) {
+      let str = user._id + "-resume";
+      user.resume = str;
+      await user.save();
 
-    let path_url = "./media/resume/" + req.body.user_id + "-resume";
-    let buffer = await fs.readFileSync(path.resolve(path_url));
-    var base64Doc = buffer.toString("base64");
-    var modifiedDate = new Date().toISOString().substring(0, 10);
-    var postData = JSON.stringify({
-      DocumentAsBase64String: base64Doc,
-      DocumentLastModified: modifiedDate,
-    });
+      let path_url = "./media/resume/" + req.body.user_id + "-resume";
+      let buffer = await fs.readFileSync(path.resolve(path_url));
+      var base64Doc = buffer.toString("base64");
+      var modifiedDate = new Date().toISOString().substring(0, 10);
+      var postData = JSON.stringify({
+        DocumentAsBase64String: base64Doc,
+        DocumentLastModified: modifiedDate,
+      });
 
-    var options = {
-      url: "https://rest.resumeparsing.com/v10/parser/resume",
-      method: "POST",
-      headers: {
-        "Sovren-AccountId": "25792885",
-        "Sovren-ServiceKey": "3udxhUZvj/XEb7DXkX2bkLaLcB8hzaqyfz7DZ2z+",
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "Content-Length": Buffer.byteLength(postData),
-      },
-      data: postData,
-    };
-    const ResumeParseData = await axios.request(options);
-
-    if (ResumeParseData.data && ResumeParseData.data.Info.Code === "Success") {
-      let resumeData = ResumeParseData.data.Value.ResumeData;
-      profileData.firstName =
-        resumeData.ContactInformation.CandidateName.FormattedName;
-      profileData.email = resumeData.ContactInformation.EmailAddresses[0];
-      profileData.contact = resumeData.ContactInformation.Telephones[0].Raw;
-      profileData.address = resumeData.ContactInformation.Location
-        ? resumeData.ContactInformation.Location.StreetAddressLines[0]
-        : "";
-
-      let linkedIn = resumeData.ContactInformation.WebAddresses
-        ? resumeData.ContactInformation.WebAddresses.filter(
-            (obj) => obj.Type == "LinkedIn"
-          )
-        : [];
-      profileData.linkedInId =
-        linkedIn && linkedIn.length > 0 ? linkedIn[0].Address : "";
-      // profileData. resume = user._id + "-resume"
-
-      if (resumeData.Education && resumeData.Education.EducationDetails) {
-        for (let i = 0; i < resumeData.Education.EducationDetails.length; i++) {
-          const edu = resumeData.Education.EducationDetails[i];
-          let EduObj = {
-            school: edu.SchoolName.Raw,
-            degree: edu.Degree.Name.Raw,
-            field_of_study: edu.Majors ? edu.Majors[0] : "",
-            start_date: "",
-            end_date: edu.LastEducationDate.Date,
-            grade: edu.GPA ? edu.GPA.Score : "",
-            description: null,
-            Ispresent: edu.LastEducationDate.IsCurrentDate,
-          };
-          profileData.education.push(EduObj);
-        }
-      }
+      var options = {
+        url: "https://rest.resumeparsing.com/v10/parser/resume",
+        method: "POST",
+        headers: {
+          "Sovren-AccountId": "25792885",
+          "Sovren-ServiceKey": "3udxhUZvj/XEb7DXkX2bkLaLcB8hzaqyfz7DZ2z+",
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "Content-Length": Buffer.byteLength(postData),
+        },
+        data: postData,
+      };
+      const ResumeParseData = await axios.request(options);
 
       if (
-        resumeData.EmploymentHistory &&
-        resumeData.EmploymentHistory.Positions
+        ResumeParseData.data &&
+        ResumeParseData.data.Info.Code === "Success"
       ) {
-        for (
-          let i = 0;
-          i < resumeData.EmploymentHistory.Positions.length;
-          i++
+        let resumeData = ResumeParseData.data.Value.ResumeData;
+        profileData.firstName =
+          resumeData.ContactInformation.CandidateName.FormattedName;
+        profileData.email = resumeData.ContactInformation.EmailAddresses[0];
+        profileData.contact = resumeData.ContactInformation.Telephones[0].Raw;
+        profileData.address = resumeData.ContactInformation.Location
+          ? resumeData.ContactInformation.Location.StreetAddressLines[0]
+          : "";
+
+        let linkedIn = resumeData.ContactInformation.WebAddresses
+          ? resumeData.ContactInformation.WebAddresses.filter(
+              (obj) => obj.Type == "LinkedIn"
+            )
+          : [];
+        profileData.linkedInId =
+          linkedIn && linkedIn.length > 0 ? linkedIn[0].Address : "";
+        profileData.resume = user._id + "-resume";
+
+        if (resumeData.Education && resumeData.Education.EducationDetails) {
+          for (
+            let i = 0;
+            i < resumeData.Education.EducationDetails.length;
+            i++
+          ) {
+            const edu = resumeData.Education.EducationDetails[i];
+            let EduObj = {
+              school: edu.SchoolName.Raw,
+              degree: edu.Degree.Name.Raw,
+              field_of_study: edu.Majors ? edu.Majors[0] : "",
+              start_date: "",
+              end_date: edu.LastEducationDate.Date,
+              grade: edu.GPA ? edu.GPA.Score : "",
+              description: null,
+              Ispresent: edu.LastEducationDate.IsCurrentDate,
+            };
+            profileData.education.push(EduObj);
+          }
+        }
+
+        if (
+          resumeData.EmploymentHistory &&
+          resumeData.EmploymentHistory.Positions
         ) {
-          const experience = resumeData.EmploymentHistory.Positions[i];
-          let experienceObj = {
-            title: experience.JobTitle ? experience.JobTitle.Raw : "",
-            company_name: experience.Employer
-              ? experience.Employer.Name.Raw
-              : "",
-            location: "",
-            start_date: experience.StartDate ? experience.StartDate.Date : "",
-            end_date: experience.EndDate ? experience.EndDate.Date : "",
-            industry: "",
-            description: experience.Description,
-            Ispresent: experience.EndDate
-              ? experience.EndDate.IsCurrentDate
-              : "",
-          };
-          profileData.experience.push(experienceObj);
-          profileData.associate.push(experienceObj);
+          for (
+            let i = 0;
+            i < resumeData.EmploymentHistory.Positions.length;
+            i++
+          ) {
+            const experience = resumeData.EmploymentHistory.Positions[i];
+            let experienceObj = {
+              title: experience.JobTitle ? experience.JobTitle.Raw : "",
+              company_name: experience.Employer
+                ? experience.Employer.Name.Raw
+                : "",
+              location: "",
+              start_date: experience.StartDate ? experience.StartDate.Date : "",
+              end_date: experience.EndDate ? experience.EndDate.Date : "",
+              industry: "",
+              description: experience.Description,
+              Ispresent: experience.EndDate
+                ? experience.EndDate.IsCurrentDate
+                : "",
+            };
+            profileData.experience.push(experienceObj);
+            profileData.associate.push(experienceObj);
+          }
         }
+
+        if (resumeData.Skills && resumeData.Skills.Raw) {
+          for (let i = 0; i < resumeData.Skills.Raw.length; i++) {
+            const skills = resumeData.Skills.Raw[i];
+            let toolsObj = {
+              _id: "",
+              primarySkill: skills.Name,
+              secondarySkill: "",
+              role: "",
+              proficiency: "",
+            };
+            profileData.tools.push(toolsObj);
+          }
+        }
+
+        if (resumeData.LanguageCompetencies) {
+          for (let i = 0; i < resumeData.LanguageCompetencies.length; i++) {
+            const languages = resumeData.LanguageCompetencies[i];
+            let lanObj = {
+              name: languages.Language,
+              read: null,
+              write: null,
+              speak: null,
+            };
+            profileData.language.push(lanObj);
+          }
+        }
+      } else {
+        return response
+          .status(400)
+          .json({ Success: false, data: "Resume parsing is failed" });
       }
 
-      if (resumeData.Skills && resumeData.Skills.Raw) {
-        for (let i = 0; i < resumeData.Skills.Raw.length; i++) {
-          const skills = resumeData.Skills.Raw[i];
-          let toolsObj = {
-            _id: "",
-            primarySkill: skills.Name,
-            secondarySkill: "",
-            role: "",
-            proficiency: "",
-          };
-          profileData.tools.push(toolsObj);
-        }
-      }
-
-      if (resumeData.LanguageCompetencies) {
-        for (let i = 0; i < resumeData.LanguageCompetencies.length; i++) {
-          const languages = resumeData.LanguageCompetencies[i];
-          let lanObj = {
-            name: languages.Language,
-            read: null,
-            write: null,
-            speak: null,
-          };
-          profileData.language.push(lanObj);
-        }
-      }
-    } else {
-      return response
-        .status(400)
-        .json({ Success: false, data: "Resume parsing is failed" });
-    }
-
-    return response.status(200).json({ Success: true, data: profileData });
-    // });
+      return response.status(200).json({ Success: true, data: profileData });
+    });
   } catch (error) {
     console.log("Error : ", error);
     return response.status(400).json(error);

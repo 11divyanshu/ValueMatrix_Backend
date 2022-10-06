@@ -22,7 +22,7 @@ export const jobTitles = (req, res) => {
   try {
     let uList = req.body.list;  
     uList.forEach(async(item)=>{
-      console.log(item);
+      // console.log(item);
       const title = new jobTitleBin({name:item.name});
       await title.save();
       res.status(200);
@@ -35,7 +35,7 @@ export const addcompany = (req, res) => {
   try {
     let uList = req.body.list;  
     uList.forEach(async(item)=>{
-      console.log(item);
+      // console.log(item);
       const title = new company({name:item.name});
       await title.save();
       res.status(200);
@@ -48,7 +48,7 @@ export const addcompany = (req, res) => {
 export const getJobTitles = async (req, res)=>{
   try {
     let title = await jobTitle.find({});
-    console.log(title)
+    // console.log(title)
     res.status(200).json(title);
 
   } catch (error) {
@@ -58,7 +58,7 @@ export const getJobTitles = async (req, res)=>{
 export const listUnapproveTitles = async (req, res)=>{
   try {
     let title = await jobTitleBin.find({});
-    console.log(title)
+    // console.log(title)
     res.status(200).json(title);
 
   } catch (error) {
@@ -69,7 +69,7 @@ export const listUnapproveTitles = async (req, res)=>{
 
 export const approveTitle =  async(req , res) => {
   try {
-    console.log(req.body)
+    // console.log(req.body)
     const jobData = await jobTitleBin.findOne({ _id: req.body.id }).lean();
     delete jobData._id;
     delete jobData.__v;
@@ -96,3 +96,5 @@ export const listOfLanguages = (req, callback) => {
       callback(err, null);
     }
   };
+
+  

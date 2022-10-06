@@ -345,7 +345,7 @@ export const updateUserDetails = async (request, response) => {
     console.log(user1);
     response.status(200).json({ user: user1 });
   } catch (error) {
-    console.log("Error, ", error);
+    console.log("update Error, ", error);
   }
 };
 
@@ -447,8 +447,27 @@ export const uploadCandidateResume = async (req, response) => {
         let resumeData = ResumeParseData.data.Value.ResumeData;
         profileData.firstName =
           resumeData.ContactInformation.CandidateName.FormattedName;
-        profileData.email = resumeData.ContactInformation.EmailAddresses[0];
-        profileData.contact = resumeData.ContactInformation.Telephones[0].Raw;
+          if( resumeData.ContactInformation.EmailAddresses[0] != user.email){
+              let arr=[];
+              arr.push(resumeData.ContactInformation.EmailAddresses[0]);
+              profileData.secondaryEmails = arr;
+          }else{
+
+            profileData.email = resumeData.ContactInformation.EmailAddresses[0];
+          }
+
+        // profileData.contact = resumeData.ContactInformation.Telephones[0].Raw;
+
+        if( resumeData.ContactInformation.Telephones[0].Raw != user.contact){
+          let arr=[];
+          arr.push(resumeData.ContactInformation.Telephones[0].Raw);
+          profileData.secondaryContacts = arr;
+      }else{
+
+        profileData.contact = resumeData.ContactInformation.Telephones[0].Raw ;
+      }
+
+
         profileData.address = resumeData.ContactInformation.Location
           ? resumeData.ContactInformation.Location.StreetAddressLines[0]
           : "";
@@ -517,10 +536,10 @@ export const uploadCandidateResume = async (req, response) => {
             const skills = resumeData.Skills.Raw[i];
             let toolsObj = {
               _id: "",
-              primarySkill: skills.Name,
+              primarySkill:skills.Name,
               secondarySkill: "",
-              role: "",
-              proficiency: "",
+              role:"",
+              proficiency: "0",
             };
             profileData.tools.push(toolsObj);
           }

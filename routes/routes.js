@@ -124,7 +124,7 @@ var storage = multer.diskStorage({
     cb(null, "media/profileImg");
   },
   filename: (req, file, cb) => {
-    cb(null, req.body.user_id + "-profileImg");
+    cb(null, req.body.user_id + "-profileImg.png");
   },
 });
 var upload = multer({ storage: storage });

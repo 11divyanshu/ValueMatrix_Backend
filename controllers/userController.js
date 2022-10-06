@@ -251,13 +251,21 @@ export const getProfileImg = async (request, response) => {
     try {
       User.findById(request.body.id, async function (err, res) {
         if (res && res.access_valid) {
+          if(res.profileImg){
+console.log(res.profileImg)
+          
           let path_url = "./media/profileImg/" + res.profileImg;
           let d = await fs.readFileSync(
             path.resolve(path_url),
             {},
             function (err, res) {}
           );
-          return response.json({ Image: d });
+         // console.log(d)
+          return response.status(200).json({ Image: d });
+          }else{
+            return response.status(400).json({ Message: "No Profile Image" });
+
+          }
         }
 
         return response.status(403).json({ Message: "User Not Found" });
@@ -267,7 +275,6 @@ export const getProfileImg = async (request, response) => {
     }
   }
 };
-
 // Update User Profile
 export const updateUserDetails = async (request, response) => {
   try {
@@ -309,6 +316,10 @@ export const updateUserDetails = async (request, response) => {
 export const updateProfileImage = async (req, response) => {
   try {
     User.findOne({ _id: req.body.user_id }, async function (err, user) {
+
+ let user_type = req.query.user;
+console.log(user_type)
+if(user_type === "User"){
       let path_url = "http://dev.serve.valuematrix.ai/media/profileImg/" + req.file.filename;
       console.log("path_url", path_url);
       const options = {
@@ -330,6 +341,7 @@ export const updateProfileImage = async (req, response) => {
 	}else if( profileData.data.detected_faces.length != 1 ){
 		return response.status(200).json({ Message: "More than one faces Found" });
 	}
+}
 
       let str = user._id + "-profileImg.png";
       user.profileImg = str;

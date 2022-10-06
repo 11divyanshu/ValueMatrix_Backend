@@ -531,9 +531,9 @@ export const uploadCandidateResume = async (req, response) => {
             const languages = resumeData.LanguageCompetencies[i];
             let lanObj = {
               name: languages.Language,
-              read: null,
-              write: null,
-              speak: null,
+              read: false,
+              write: false,
+              speak: true,
             };
             profileData.language.push(lanObj);
           }

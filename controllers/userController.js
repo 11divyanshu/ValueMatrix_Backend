@@ -18,6 +18,7 @@ import InterviewApplication from "../models/interviewApplicationSchema.js";
 
 const url = process.env.BACKEND_URL;
 const front_url = process.env.FRONTEND_URL;
+const IMAGEPATH = process.env.IMAGEPATH
 sendGridMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 var storage = multer.memoryStorage({
@@ -355,9 +356,7 @@ export const updateProfileImage = async (req, response) => {
       let user_type = req.query.user;
       console.log(user_type);
       if (user_type === "User") {
-        let path_url =
-          "http://dev.serve.valuematrix.ai/media/profileImg/" +
-          req.file.filename;
+        let path_url = IMAGEPATH + req.file.filename;
         console.log("path_url", path_url);
         const options = {
           method: "POST",

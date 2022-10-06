@@ -3,7 +3,7 @@ import languages from "../models/languages.js";
 import mongoose from "mongoose";
 import jobTitle from "../models/jobTitles.js";
 import jobTitleBin from "../models/jobTitlleBin.js";
-import company from "../models/CompanyListSchema.js";
+import company from "../models/companyListSchema.js";
 
 export const addLanguages = (body, callback) => {
   try {

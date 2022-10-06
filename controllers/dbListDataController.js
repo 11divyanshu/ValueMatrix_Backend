@@ -1,7 +1,7 @@
-import CompanyList from "../models/CompanyListSchema.js";
+import CompanyList from "../models/companyListSchema.js";
 import UniversityList from "../models/universityListSchema.js";
 import CompanyBin from "../models/companyBinSchema.js";
-import company from "../models/CompanyListSchema.js";
+import company from "../models/companyListSchema.js";
 
 export const addCompanyList = async (req, res) => {
   try {

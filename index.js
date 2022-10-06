@@ -30,7 +30,7 @@ app.use(
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(express.static("media/"));
+app.use("/media",express.static("media"));
 
 Connection();
 

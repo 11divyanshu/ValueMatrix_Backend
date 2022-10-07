@@ -179,13 +179,13 @@ export const userSignup = async (request, response) => {
       showEmail: request.body.showEmail,
     };
 
-    if (request.body.user_type == "Company") {
-      const newUser = new UserBin(user1);
-      await newUser.save();
-    } else {
+    // if (request.body.user_type == "Company") {
+    //   const newUser = new UserBin(user1);
+    //   await newUser.save();
+    // } else {
       const newUser = new User(user1);
       await newUser.save();
-    }
+    // }
 
     const token = await axios.post(`${url}/generateToken`, {
       user: newUser.id,
@@ -334,6 +334,8 @@ export const updateUserDetails = async (request, response) => {
       });
     }
 
+  
+
     User.findOne({ _id: request.body.user_id }, function (err, res) {
       if (res.access_valid === false) return response.status(403);
     });
@@ -342,7 +344,7 @@ export const updateUserDetails = async (request, response) => {
       request.body.updates,
       { new: true }
     );
-    console.log(user1);
+    console.log("user1",user1);
     response.status(200).json({ user: user1 });
   } catch (error) {
     console.log("update Error, ", error);
@@ -562,7 +564,6 @@ export const uploadCandidateResume = async (req, response) => {
           .status(400)
           .json({ Success: false, data: "Resume parsing is failed" });
       }
-
       return response.status(200).json({ Success: true, data: profileData });
     });
   } catch (error) {

@@ -9,6 +9,8 @@ import FormData from "form-data";
 import path from "path";
 import job from "../models/jobSchema.js";
 import { response } from "express";
+ import generator from "generate-password"
+ import v4 from "uuid/v4.js";
 
 const url = process.env.BACKEND_URL;
 const front_url = process.env.FRONTEND_URL;
@@ -70,23 +72,52 @@ export const addCompanyUser = async (request, response) => {
       permission[i.id] = i.value;
     });
     //console.log(permission);
+    var password = generator.generate({
+      length: 10,
+      numbers: true
+    });
+    let id = v4();
     let newUser = new User({
       email: request.body.email,
       firstName: request.body.firstName,
       lastName: request.body.lastName,
       username: request.body.username,
       contact: request.body.contact,
-      password: passwordHash.generate(request.body.password),
+      password: passwordHash.generate(password),
+      resetPassId:id,
+
       user_type: "Company_User",
       permissions: [{company_permissions:permission, admin_permissions: null}],
       company_id: request.body.company_id,
     });
+
     await newUser.save();
+    let html = `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
+    <div style="margin:50px auto;width:70%;padding:20px 0">
+      <div style="border-bottom:1px solid #eee">
+        <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Value Matrix</a>
+      </div>
+      <p style="font-size:1.1em">Hi, ${request.body.firstName}</p>
+      <p style="font-size:1.1em">There was a request to change your password!      </p>
+      <br/>
+      <p>If you did not make this request then please ignore this email.      </p>
+      <p>Otherwise, please click this link to claim your profile: <a href="${front_url}/resetPassword/${id}">Link</a> </p>
+    </div>
+  </div>`;
+
+
+        await sendGridMail.send({
+          to: request.body.email,
+          from: "developervm171@gmail.com",
+          subject: "Reset Password",
+          html: html,
+        });
     //console.log(newUser);
     return response.json({
       message: "User added successfully",
       user: newUser,
     });
+
   } catch (error) {
     console.log("Error : ", error);
   }

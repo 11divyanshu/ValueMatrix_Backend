@@ -429,6 +429,31 @@ router.post("/approveCompany",approveCompany);
 
 
 
+// CountryCode Routes
+import {
+  addCountryCodes,
+  listOfCountryaCodes
+} from "../controllers/countryCodeController.js";
+router.post("/addCountryCodes", (req, res) => {
+  addCountryCodes(req.body, (err, data) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.send(data);
+    }
+  });
+});
+
+router.get("/countryCodeList", (req, res) => {
+  listOfCountryaCodes(req, (err, data) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.send(data);
+    }
+  });
+});
+
 
 
 export default router;

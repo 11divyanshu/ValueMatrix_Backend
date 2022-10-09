@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 import user from "./userSchema.js";
 
-const langSchema = new mongoose.Schema({
-  name: {
+const countryCodeSchema = new mongoose.Schema({
+  country: {
     type: "string",
     required: true,
     unique: true,
@@ -10,7 +10,7 @@ const langSchema = new mongoose.Schema({
   code: {
     type: "string",
   },
-  nativeName: {
+  iso: {
     type: "string",
   },
   isDeleted: {
@@ -22,5 +22,5 @@ const langSchema = new mongoose.Schema({
     default: true,
   },
 });
-const language = new mongoose.model("languages", langSchema);
-export default language;
+const countryCode = new mongoose.model("countryCode", countryCodeSchema);
+export default countryCode;

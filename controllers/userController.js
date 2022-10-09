@@ -161,6 +161,10 @@ export const userSignup = async (request, response) => {
     let lastname = name.slice(1).join(" ");
     let temp_acc = v4();
     let password = passwordHash.generate(request.body.password);
+    let cc = request.body.countryCode.split("-");
+    let country = cc[1];
+    let countryCode = cc[0];
+    console.log(cc);
     let user1 = {
       username: request.body.username,
       email: request.body.email,
@@ -177,7 +181,8 @@ export const userSignup = async (request, response) => {
       showEducation: request.body.showEducation,
       showContact: request.body.showContact,
       showEmail: request.body.showEmail,
-      country: request.body.country,
+      country: country,
+      countryCode: countryCode,
     };
 
     // if (request.body.user_type == "Company") {

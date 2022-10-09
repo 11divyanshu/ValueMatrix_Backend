@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema({
     trim: true,
   },
 
+
   username: {
     type: String,
     required: true,
@@ -55,6 +56,10 @@ const userSchema = new mongoose.Schema({
   },
   secondaryContacts: {
     type: Array,
+  },
+  countryCode:{
+    type:String,
+    required:true,
   },
   houseNo: {
     type: String,

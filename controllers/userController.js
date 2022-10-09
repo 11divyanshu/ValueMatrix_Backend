@@ -177,6 +177,7 @@ export const userSignup = async (request, response) => {
       showEducation: request.body.showEducation,
       showContact: request.body.showContact,
       showEmail: request.body.showEmail,
+      country: request.body.country,
     };
 
     // if (request.body.user_type == "Company") {

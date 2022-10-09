@@ -324,7 +324,13 @@ import {
   bookSlot,
   slotUpdate,
   slotdelete,
+  XISlots,
+  findCandidateByEmail
 } from "../controllers/slots.js";
+
+
+router.get("/XISlots" , XISlots);
+router.post("/findCandidateByEmail" , findCandidateByEmail);
 
 router.post("/addSlot", (req, res) => {
   const { body } = req;
@@ -348,6 +354,7 @@ router.get("/availableSlots", (req, res) => {
   });
 });
 
+
 router.post("/bookSlot", (req, res) => {
   const { body } = req;
   bookSlot(body, (err, data) => {
@@ -368,6 +375,7 @@ router.put("/updateSlot", (req, res) => {
     }
   });
 });
+
 
 router.delete("/deleteSlot", (req, res) => {
   slotdelete(req, (err, data) => {

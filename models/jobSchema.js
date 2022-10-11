@@ -68,20 +68,20 @@ const jobSchema = new mongoose.Schema({
     type: Array,
     required: false,
   },
-  reqApp:{
-    type:Number,
-   
+  reqApp: {
+    type: Number,
+
   },
-  archived:{
-    type:Boolean,
+  archived: {
+    type: Boolean,
     default: false,
   },
-  questions:{
-    type:Array,
+  questions: {
+    type: Array,
     required: false,
-    default : []  
+    default: []
   },
-  location: { 
+  location: {
     type: String
   },
   showComName: {
@@ -99,6 +99,9 @@ const jobSchema = new mongoose.Schema({
   showEmail: {
     type: Boolean,
   },
+  status: {
+    type: String,
+  }
 });
 
 

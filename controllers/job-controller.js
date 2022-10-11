@@ -4,7 +4,7 @@ import JobBin from "../models/jobBinSchema.js";
 import User from "../models/userSchema.js";
 import Candidate from "../models/candidate_info.js";
 import Notification from "../models/notificationSchema.js";
-import {} from "dotenv/config.js";
+import { } from "dotenv/config.js";
 import fs from "fs";
 import passwordHash from "password-hash";
 import json2xls from "json2xls";
@@ -55,11 +55,11 @@ export const addJob = async (request, response) => {
         questions: request.body.questions ? request.body.questions : [],
         archived: false,
         location: request.body.location,
-        showComLogo : request.body.showComLogo,
-        showComName : request.body.showComName,
-        showEmail : request.body.showEmail,
-        showEducation : request.body.showEducation,
-        showContact : request.body.showContact
+        showComLogo: request.body.showComLogo,
+        showComName: request.body.showComName,
+        showEmail: request.body.showEmail,
+        showEducation: request.body.showEducation,
+        showContact: request.body.showContact
       };
       // console.log(jobC);
       const newJob = new JobBin(jobC);
@@ -72,7 +72,7 @@ export const addJob = async (request, response) => {
           { jobId: newJob._id.valueOf() }
         );
 
-        
+
         response
           .status(200)
           .json({ Message: "Job Added Successfully", job: newJob });
@@ -233,7 +233,7 @@ export const exportJobDetails = async (request, response) => {
       });
     });
     response.status(200).json({ Message: "Files Downloaded" });
-  } catch (error) {}
+  } catch (error) { }
 };
 
 // Get Job From Id
@@ -272,7 +272,7 @@ export const GetJobFromId = async (request, response) => {
         response.status(200).json({ job: res, applicants, declined, invited });
       } else response.status(403).json("Data Not Found");
     });
-  } catch (error) {}
+  } catch (error) { }
 };
 
 // Send Invitations To Users
@@ -435,7 +435,8 @@ export const listOfUnapproveJobs = async (req, res) => {
     res.send(jobData);
   } catch (err) {
     console.log("Error listOfUnapproveJob: ", err);
-    res.send(err);  }
+    res.send(err);
+  }
 };
 
 const FindCandidateByEmail = async (email, job_id) => {
@@ -464,3 +465,103 @@ const FindCandidateByEmail = async (email, job_id) => {
     }).clone();
   });
 };
+
+import job from "../models/jobSchema.js"
+
+export const jobStatusChange = async (req, res) => {
+  try {
+    let statusData = await job.findOneAndUpdate({ _id: req.body.job_id }, { $set: { status: req.body.status } }, { new: true })
+    if (statusData.status === req.body.status) {
+      res.send({ data: "update successfully" }).status(200);
+    } else {
+      res.send({ data: "status not updated!" }).status(400);
+
+    }
+  }
+  catch (err) {
+    res.send({ data: "something went wrong", err }).status(400);
+  }
+}
+var ObjectId = mongoose.Types.ObjectId;
+
+export const jobDetailsUploadedByUser = async (req, res) => {
+  try {
+
+    const data = await job.aggregate([
+      { $match: { uploadBy: ObjectId(req.query.userId) } },
+      {
+        $lookup: {
+          from: "interviewapplications",
+          localField: "_id",
+          foreignField: "job",
+          as: "interviewApplication",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "interviewApplication.applicant",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+    ]);
+    res.send(data).status(200);
+  }
+  catch (err) {
+    console.log('error in jobDetailsUploadedByUser', err);
+    res.send('')
+  }
+}
+
+export const jobDetailsByJobId = async (req, res) => {
+  try {
+
+    const data = await job.aggregate([
+      { $match: { _id: ObjectId(req.query.userId) } },
+      {
+        $lookup: {
+          from: "interviewapplications",
+          localField: "_id",
+          foreignField: "job",
+          as: "interviewApplication",
+        },
+      },
+    ]);
+    res.send(data).status(200);
+  }
+  catch (err) {
+    console.log(err);
+    res.send({ data: "something went wrong", err }).status(400);
+  }
+}
+
+export const UserDetailsByJobId = async (req, res) => {
+  try {
+
+    const data = await job.aggregate([
+      { $match: { _id: ObjectId(req.query.userId) } },
+      {
+        $lookup: {
+          from: "interviewapplications",
+          localField: "_id",
+          foreignField: "job",
+          as: "interviewApplication",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "interviewApplication.applicant",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+    ]);
+    res.send(data).status(200);
+  }
+  catch (err) {
+    console.log('error in jobDetailsByJobId', err);
+    res.send('')
+  }
+}

@@ -86,7 +86,7 @@ import {
   updateEvaluation,
   getXIEvaluatedReports,
   getCandidateEvaluation,
-  updateInterviewApplication,
+  interviewApplicationStatusChange,
 } from "../controllers/interviewApplication-controller.js";
 import Routes from "twilio/lib/rest/Routes.js";
 import { addEvaluationQuestion } from "../controllers/evaulationQuestion-controller.js";
@@ -98,7 +98,7 @@ import {
   checkCompany,
   listUnapproveCompany,
   approveCompany,
-  
+
 } from "../controllers/dbListDataController.js";
 
 import {
@@ -188,8 +188,8 @@ router.post("/addCompanyUser", verifyToken, addCompanyUser);
 router.post("/filterCompany/:time/:vacancy/:id", filterCompany);
 router.post("/getCandidateEvaluation", verifyToken, getCandidateEvaluation);
 // router.post("/approveCompany", approveCompany);
- router.get("/unapprovedJobsList", listOfUnapproveJobs);
- router.get("/getCompanyUserList", getCompanyUserList);
+router.get("/unapprovedJobsList", listOfUnapproveJobs);
+router.get("/getCompanyUserList", getCompanyUserList);
 
 
 
@@ -203,7 +203,7 @@ router.post("/resetPassword", resetPassword);
 router.post("/adminLogin", adminLogin);
 router.post("/getCompanyList", verifyToken, companyList);
 router.post("/getUserList", verifyToken, userList);
-router.post("/downloadResume",verifyToken,downloadResume);
+router.post("/downloadResume", verifyToken, downloadResume);
 router.post("/addAdminUser", verifyToken, addAdminUser);
 router.post("/addTaxId", verifyToken, addTaxId);
 router.post("/updateTaxId/:id", verifyToken, findAndUpdateTax);
@@ -285,13 +285,13 @@ router.post("/approveTitle", approveTitle);
 
 
 // Candidate Routes
-router.post("/addCandidate",verifyToken,addCandidate);
-router.post("/getCandidateList",listCandidate);
-router.post("/deleteCandidate",findAndDeleteCandidate);
-router.put("/updateCandidate/:id",findAndUpdateCandidate);
-router.post("/eligibleCandidateList",eligibleCandidateList);
-router.get("/saveCandidateReport",saveCandidateReport);
-router.get("/eligibleJobsForCandidate",eligibleJobsForCandidate);
+router.post("/addCandidate", verifyToken, addCandidate);
+router.post("/getCandidateList", listCandidate);
+router.post("/deleteCandidate", findAndDeleteCandidate);
+router.put("/updateCandidate/:id", findAndUpdateCandidate);
+router.post("/eligibleCandidateList", eligibleCandidateList);
+router.get("/saveCandidateReport", saveCandidateReport);
+router.get("/eligibleJobsForCandidate", eligibleJobsForCandidate);
 
 // common CRUD operations
 router.post("/add", (req, res) => {
@@ -333,8 +333,8 @@ import {
 } from "../controllers/slots.js";
 
 
-router.get("/XISlots" , XISlots);
-router.post("/findCandidateByEmail" , findCandidateByEmail);
+router.get("/XISlots", XISlots);
+router.post("/findCandidateByEmail", findCandidateByEmail);
 
 router.post("/addSlot", (req, res) => {
   const { body } = req;
@@ -427,9 +427,9 @@ router.get("/languagesList", (req, res) => {
 
 
 // Check Company
-router.post("/checkCompany",checkCompany);
-router.get("/listUnapproveCompany",listUnapproveCompany);
-router.post("/approveCompany",approveCompany);
+router.post("/checkCompany", checkCompany);
+router.get("/listUnapproveCompany", listUnapproveCompany);
+router.post("/approveCompany", approveCompany);
 
 
 
@@ -459,5 +459,11 @@ router.get("/countryCodeList", (req, res) => {
 });
 
 
+router.post('/interviewApplicationstatusChange', interviewApplicationStatusChange);
 
+import { jobStatusChange, jobDetailsUploadedByUser, jobDetailsByJobId, UserDetailsByJobId } from "../controllers/job-controller.js";
+router.post("/jobStatusChange", jobStatusChange);
+router.get("/jobDetailsUploadedByUser", jobDetailsUploadedByUser);
+router.get("/jobDetailsByJobId", jobDetailsByJobId);
+router.get("/UserDetailsByJobId", UserDetailsByJobId)
 export default router;

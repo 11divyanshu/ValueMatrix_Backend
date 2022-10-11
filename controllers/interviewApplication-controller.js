@@ -410,3 +410,63 @@ export const updateInterviewApplication = async (req,res)=>{
     res.send(err).status(400)
   }
 }
+
+
+import job from '../models/jobSchema.js'
+import interviewApplication from '../models/interviewApplicationSchema.js'
+import mongoose from 'mongoose';
+
+var ObjectId = mongoose.Types.ObjectId;
+
+export const interviewApplicationStatusChange = async (req, res) => {
+    try {
+        if ((req.body.status === 'On Hold' || req.body.status === 'Assigned' || req.body.status === 'Rejected') && (!req.body.isCompany)) {
+            return res.status(400).send('Only company can update given status');
+        }
+
+        if (req.body.status === 'Accepted') {
+            const data = await interviewApplication.aggregate([
+                { $match: { _id: ObjectId(req.body._id) } },
+                {
+                    $lookup: {
+                        from: "jobs",
+                        localField: "job",
+                        foreignField: "_id",
+                        as: "jobs",
+                    }
+                }
+            ])
+            console.log(data[0].jobs[0].status);
+
+            if (data[0].jobs[0].status === "Closed" || data[0].jobs[0].status === "Archieve" || data[0].jobs[0].status === "Not Accepting") {
+                return res.status(400).send('This job is no longer accepting applications');
+            }
+
+
+        }
+
+        const data = await interviewApplication.findByIdAndUpdate({ _id: ObjectId(req.body._id) }, { $set: { status: req.body.status } }, { new: true });
+        res.status(200).send('updated successfully');
+
+    }
+    catch (err) {
+        res.status(400).send('something went wrong');
+    }
+}
+// export const updateSkills = async (request,response)=>{
+//   try {
+//   console.log(request.body);
+//     let user1 = await InterviewApplication.findOne(
+//       { applicant: request.body.user_id },async function(err,user){
+
+      
+//       user.tools = request.body.updates.tools;
+//         await user.save();
+//         console.log(user);
+//       }
+//     );
+//     response.status(200).json({user: user1});
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }

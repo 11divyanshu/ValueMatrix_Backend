@@ -282,3 +282,43 @@ export const slotDetailsOfXI = async (req, res) => {
     res.status(400).send('something went wrong', err);
   }
 }
+
+
+
+export const slotDetailsOfUser = async (req, res) => {
+  try {
+    const data = await Slot.aggregate([
+      { $match: { userId: mongoose.Types.ObjectId(req.query.userId) } },
+      {
+        $lookup: {
+          from: "interviewapplications",
+          localField: "interviewId",
+          foreignField: "_id",
+          as: "interviewApplication",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "interviewApplication.applicant",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $lookup: {
+          from: "jobs",
+          localField: "interviewApplication.job",
+          foreignField: "_id",
+          as: "job",
+        },
+      },
+    ]);
+    console.log(data);
+    res.send(data)
+  }
+  catch (err) {
+    console.log(err);
+    res.status(400).send('something went wrong', err);
+  }
+}

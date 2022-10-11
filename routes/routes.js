@@ -332,8 +332,10 @@ import {
   XISlots,
   findCandidateByEmail,
   slotDetailsOfXI,
+  slotDetailsOfUser,
 } from "../controllers/slots.js";
 
+router.get("/slotDetailsOfUser", slotDetailsOfUser);
 router.get("/slotDetailsOfXI", slotDetailsOfXI);
 router.get("/XISlots", XISlots);
 router.post("/findCandidateByEmail", findCandidateByEmail);

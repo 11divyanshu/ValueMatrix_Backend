@@ -70,7 +70,7 @@ export const addSlot = (data, callback) => {
 export const availableSlots = (data, callback) => {
   try {
     Slot.find(
-      { status: "Available", cancelBy: { $nin: [data.userId] } ,isDeleted: false},
+      { status: "Available", cancelBy: { $nin: [data.userId] }, isDeleted: false },
       (err, res) => {
         if (err) {
           callback(err, null);
@@ -84,10 +84,10 @@ export const availableSlots = (data, callback) => {
   }
 };
 
-export const findCandidateByEmail = async(req , response)=>{
-const email = req.query.email;
-  Candidate.find({email:email},async function(err,res){
-       return response.status(200).json(res);
+export const findCandidateByEmail = async (req, response) => {
+  const email = req.query.email;
+  Candidate.find({ email: email }, async function (err, res) {
+    return response.status(200).json(res);
   })
 }
 
@@ -213,7 +213,7 @@ export const slotdelete = (req, callback) => {
       {
         isDeleted: true,
         status: "Available",
-        $unset: {candidateId: 1, interviewId:1 }
+        $unset: { candidateId: 1, interviewId: 1 }
       },
       { returnOriginal: false },
       (err, res) => {
@@ -229,17 +229,56 @@ export const slotdelete = (req, callback) => {
   }
 };
 
-export const XISlots = (request,response)=>{
+export const XISlots = (request, response) => {
   try {
-    Slot.find({createdBy : request.query.id,isDeleted: false}, async function (err ,res){
-      if(err){
-        return response.status(500).json({Message : "No Available Slots"});
+    Slot.find({ createdBy: request.query.id, isDeleted: false }, async function (err, res) {
+      if (err) {
+        return response.status(500).json({ Message: "No Available Slots" });
       }
-      if(res){
-        return  response.status(200).json(res);
+      if (res) {
+        return response.status(200).json(res);
       }
     })
   } catch (error) {
-    
+
+  }
+}
+
+
+export const slotDetailsOfXI = async (req, res) => {
+  try {
+    const data = await Slot.aggregate([
+      { $match: { createdBy: mongoose.Types.ObjectId(req.query.XI_id) } },
+      {
+        $lookup: {
+          from: "interviewapplications",
+          localField: "interviewId",
+          foreignField: "_id",
+          as: "interviewApplication",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "interviewApplication.applicant",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $lookup: {
+          from: "jobs",
+          localField: "interviewApplication.job",
+          foreignField: "_id",
+          as: "job",
+        },
+      },
+    ]);
+    console.log(data);
+    res.send(data)
+  }
+  catch (err) {
+    console.log(err);
+    res.status(400).send('something went wrong', err);
   }
 }

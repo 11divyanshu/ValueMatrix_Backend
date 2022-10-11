@@ -85,6 +85,7 @@ import {
   updateEvaluation,
   getXIEvaluatedReports,
   getCandidateEvaluation,
+  updateInterviewApplication,
 } from "../controllers/interviewApplication-controller.js";
 import Routes from "twilio/lib/rest/Routes.js";
 import { addEvaluationQuestion } from "../controllers/evaulationQuestion-controller.js";
@@ -264,6 +265,8 @@ router.post("/listXIEvaluation", verifyToken, getXIEvaluationList);
 router.post("/listXIEvaluatedReports", verifyToken, getXIEvaluatedReports);
 router.post("/getInterviewApplication", verifyToken, getInterviewApplication);
 router.post("/updateEvaluation", verifyToken, updateEvaluation);
+router.put("/updateInterviewApplication", updateInterviewApplication);
+
 
 // Evaluation Question Routes
 router.post("/addEvaluationQuestions", verifyToken, addEvaluationQuestion);

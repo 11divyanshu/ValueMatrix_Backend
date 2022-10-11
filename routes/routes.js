@@ -87,6 +87,7 @@ import {
   getXIEvaluatedReports,
   getCandidateEvaluation,
   interviewApplicationStatusChange,
+  updateInterviewApplication,
 } from "../controllers/interviewApplication-controller.js";
 import Routes from "twilio/lib/rest/Routes.js";
 import { addEvaluationQuestion } from "../controllers/evaulationQuestion-controller.js";

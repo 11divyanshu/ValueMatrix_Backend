@@ -414,7 +414,7 @@ export const updateInterviewApplication = async (req,res)=>{
 
 import job from '../models/jobSchema.js'
 import interviewApplication from '../models/interviewApplicationSchema.js'
-import mongoose from 'mongoose';
+
 
 var ObjectId = mongoose.Types.ObjectId;
 

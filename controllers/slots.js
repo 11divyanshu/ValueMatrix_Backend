@@ -70,7 +70,7 @@ export const addSlot = (data, callback) => {
 export const availableSlots = (data, callback) => {
   try {
     Slot.find(
-      { status: "Available", cancelBy: { $nin: [data.userId] } },
+      { status: "Available", cancelBy: { $nin: [data.userId] } ,isDeleted: false},
       (err, res) => {
         if (err) {
           callback(err, null);
@@ -84,9 +84,18 @@ export const availableSlots = (data, callback) => {
   }
 };
 
+export const findCandidateByEmail = async(req , response)=>{
+const email = req.query.email;
+  Candidate.find({email:email},async function(err,res){
+       return response.status(200).json(res);
+  })
+}
+
+
 export const bookSlot = (data, callback) => {
   try {
     let OTP = "";
+
 
     async.parallel(
       [
@@ -99,6 +108,7 @@ export const bookSlot = (data, callback) => {
                 if (err) {
                   return cb(err, null);
                 }
+
 
                 var digits = "0123456789";
                 for (let i = 0; i < 6; i++) {
@@ -119,6 +129,7 @@ export const bookSlot = (data, callback) => {
                 });
               }
             );
+
           } catch (err) {
             cb(err, null);
           }
@@ -217,3 +228,18 @@ export const slotdelete = (req, callback) => {
     callback(err, null);
   }
 };
+
+export const XISlots = (request,response)=>{
+  try {
+    Slot.find({createdBy : request.query.id,isDeleted: false}, async function (err ,res){
+      if(err){
+        return response.status(500).json({Message : "No Available Slots"});
+      }
+      if(res){
+        return  response.status(200).json(res);
+      }
+    })
+  } catch (error) {
+    
+  }
+}

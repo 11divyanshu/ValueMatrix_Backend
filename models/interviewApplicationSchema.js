@@ -11,11 +11,11 @@ const interviewApplicationSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
+  slotId: {
+    type: mongoose.Schema.Types.ObjectId,
+  },
   status: {
-    type: String,
-    required: true,
-    enum: ["Pending", "Accepted", "Rejected", "Scheduled"],
-    default: "Pending",
+    type: String
   },
   createTime: {
     type: Date,

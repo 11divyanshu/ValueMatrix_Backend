@@ -391,20 +391,22 @@ if(status === false){
   }
 }
 
-// export const updateSkills = async (request,response)=>{
-//   try {
-//   console.log(request.body);
-//     let user1 = await InterviewApplication.findOne(
-//       { applicant: request.body.user_id },async function(err,user){
+export const updateInterviewApplication = async (req,res)=>{
+  try {
+    let id = req.query.id;
 
-      
-//       user.tools = request.body.updates.tools;
-//         await user.save();
-//         console.log(user);
-//       }
-//     );
-//     response.status(200).json({user: user1});
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
+    let data = await InterviewApplication.findOneAndUpdate(
+      { _id: mongoose.Types.ObjectId( id )},
+      req.body
+    );
+    if(data) {
+      res.send().status(200)
+    }else {
+      res.send({data :"Updatation failed"}).status(400)
+    }
+
+  } catch (err) {
+    console.log("error in updateInterviewApplication",  err);
+    res.send(err).status(400)
+  }
+}

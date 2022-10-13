@@ -8,9 +8,10 @@ import axios from "axios";
 import session from "express-session";
 import passport from "passport";
 import User from "./models/userSchema.js";
-import {} from "dotenv/config";
+import { } from "dotenv/config";
 import cookieParser from "cookie-parser";
 import querystring from 'querystring';
+
 
 collectDefaultMetrics();
 
@@ -18,19 +19,19 @@ const domain = process.env.FRONTEND_DOMAIN
 
 const app = express();
 const PORT = 8000;
-  
+
 app.use(
   session({
     secret: "Our little secret.",
     resave: false,
-    cookie: {domain: domain},
+    cookie: { domain: domain },
     saveUninitialized: false,
   })
 );
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
-app.use("/media",express.static("media"));
+app.use("/media", express.static("media"));
 
 Connection();
 
@@ -76,22 +77,22 @@ app.get(
   async function (req, res) {
     // Successful authentication, redirect secrets.
     const token = await getToken(req.user);
-    res.cookie("access_token", token.data.token, {origin: domain});
+    res.cookie("access_token", token.data.token, { origin: domain });
     let type = req.user.user_type;
-    if(req.user.invite){
+    if (req.user.invite) {
       res.redirect(`${url}/setProfile/${req.user.resetPassId}`)
       return;
     }
     let url1 = null;
-    if (type === "Company") url1= `${url}/company`;
+    if (type === "Company") url1 = `${url}/company`;
     else if (type === "XI") url1 = `${url}/XI`;
     else if (req.user.isAdmin) url1 = `${url}/admin`;
     else url1 = `${url}/user`;
     let r = querystring.stringify({
-      a : token.data.token
+      a: token.data.token
     });
 
-    res.redirect(url1+"/?"+r);
+    res.redirect(url1 + "/?" + r);
   }
 );
 
@@ -110,22 +111,22 @@ app.get(
   passport.authenticate("microsoft", { failureRedirect: "/login" }),
   async function (req, res) {
     const token = await getToken(req.user);
-    await res.cookie("access_token", token.data.token, {origin: domain});
+    await res.cookie("access_token", token.data.token, { origin: domain });
     let type = req.user.user_type;
-    if(req.user.invite){
+    if (req.user.invite) {
       res.redirect(`${url}/setProfile/${req.user.resetPassId}`)
       return;
     }
     let url1 = null;
-    if (type === "Company") url1= `${url}/company`;
+    if (type === "Company") url1 = `${url}/company`;
     else if (type === "XI") url1 = `${url}/XI`;
     else if (req.user.isAdmin) url1 = `${url}/admin`;
     else url1 = `${url}/user`;
     let r = querystring.stringify({
-      a : token.data.token
+      a: token.data.token
     });
 
-    res.redirect(url1+"/?"+r);
+    res.redirect(url1 + "/?" + r);
   }
 );
 // Microsoft Auth
@@ -145,22 +146,22 @@ app.get(
   }),
   async function (req, res) {
     const token = await getToken(req.user);
-    await res.cookie("access_token", token.data.token, {origin: domain});
-    if(req.user.invite){
+    await res.cookie("access_token", token.data.token, { origin: domain });
+    if (req.user.invite) {
       res.redirect(`${url}/setProfile/${req.user.resetPassId}`)
       return;
     }
     let url1 = null;
     let type = req.user.user_type;
-    if (type === "Company") url1= `${url}/company`;
+    if (type === "Company") url1 = `${url}/company`;
     else if (type === "XI") url1 = `${url}/XI`;
     else if (req.user.isAdmin) url1 = `${url}/admin`;
     else url1 = `${url}/user`;
     let r = querystring.stringify({
-      a : token.data.token
+      a: token.data.token
     });
 
-    res.redirect(url1+"/?"+r);
+    res.redirect(url1 + "/?" + r);
   }
 );
 // LinkedIn Auth
@@ -169,25 +170,25 @@ app.get(
 app.get('/auth/github',
   passport.authenticate('github'));
 
-app.get('/auth/github/callback', 
+app.get('/auth/github/callback',
   passport.authenticate('github', { failureRedirect: '/login' }),
   async function (req, res) {
     const token = await getToken(req.user);
-    await res.cookie("access_token", token.data.token, {origin: domain});
+    await res.cookie("access_token", token.data.token, { origin: domain });
     let url1 = null;
     let type = req.user.user_type;
-    if (type === "Company") url1= `${url}/company`;
+    if (type === "Company") url1 = `${url}/company`;
     else if (type === "XI") url1 = `${url}/XI`;
     else if (req.user.isAdmin) url1 = `${url}/admin`;
     else url1 = `${url}/user`;
     let r = querystring.stringify({
-      a : token.data.token
+      a: token.data.token
     });
 
-    res.redirect(url1+"/?"+r);
+    res.redirect(url1 + "/?" + r);
   }
-  
-  );
+
+);
 //Github Auth
 
 app.listen(PORT, "0.0.0.0", () =>
@@ -206,3 +207,5 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use("/", Routes);
+
+import { } from './scheduler/interview.scheduler.js';

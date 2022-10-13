@@ -285,10 +285,14 @@ export const slotDetailsOfXI = async (req, res) => {
 
 
 
+
+
+
+
 export const slotDetailsOfUser = async (req, res) => {
   try {
     const data = await Slot.aggregate([
-      { $match: { userId: mongoose.Types.ObjectId(req.query.userId) } },
+      { $match: { userId: mongoose.Types.ObjectId(req.query.userId) , status:"Pending" } },
       {
         $lookup: {
           from: "interviewapplications",
@@ -300,9 +304,9 @@ export const slotDetailsOfUser = async (req, res) => {
       {
         $lookup: {
           from: "users",
-          localField: "interviewApplication.applicant",
+          localField: "createdBy",
           foreignField: "_id",
-          as: "user",
+          as: "XI",
         },
       },
       {
@@ -314,7 +318,45 @@ export const slotDetailsOfUser = async (req, res) => {
         },
       },
     ]);
-    console.log(data);
+    // console.log(data);
+    res.send(data)
+  }
+  catch (err) {
+    console.log(err);
+    res.status(400).send('something went wrong', err);
+  }
+}
+
+export const userInterviewsDetails = async (req, res) => {
+  try {
+    const data = await Slot.aggregate([
+      { $match: { _id: mongoose.Types.ObjectId(req.query.slotId) , status:"Pending" } },
+      {
+        $lookup: {
+          from: "interviewapplications",
+          localField: "interviewId",
+          foreignField: "_id",
+          as: "interviewApplication",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "XI",
+        },
+      },
+      {
+        $lookup: {
+          from: "jobs",
+          localField: "interviewApplication.job",
+          foreignField: "_id",
+          as: "job",
+        },
+      },
+    ]);
+    // console.log(data);
     res.send(data)
   }
   catch (err) {

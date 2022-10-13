@@ -333,14 +333,17 @@ import {
   findCandidateByEmail,
   slotDetailsOfXI,
   slotDetailsOfUser,
+  userInterviewsDetails
 } from "../controllers/slots.js";
 
 router.get("/slotDetailsOfUser", slotDetailsOfUser);
+router.get("/userInterviewsDetails", userInterviewsDetails);
 router.get("/slotDetailsOfXI", slotDetailsOfXI);
 router.get("/XISlots", XISlots);
 router.post("/findCandidateByEmail", findCandidateByEmail);
 
 router.post("/addSlot", (req, res) => {
+
   const { body } = req;
   addSlot(body, (err, data) => {
     if (err) {

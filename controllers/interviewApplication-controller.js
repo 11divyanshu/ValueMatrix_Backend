@@ -49,7 +49,7 @@ export const getXIEvaluationList = async (request, response) => {
     console.log(u_id);
     let jobs = [];
     let data = await InterviewApplication.aggregate([
-      { $match: { interviewers: { $in: [mongoose.Types.ObjectId(u_id)] } } },
+      { $match: { interviewers: { $in: [u_id] } } },
       {
         $lookup: {
           from: "jobs",
@@ -60,14 +60,24 @@ export const getXIEvaluationList = async (request, response) => {
       },
       {
         $lookup: {
+          from: "slots",
+          localField: "_id",
+          foreignField: "interviewId",
+          as: "slots",
+        },
+      },
+      {
+        $lookup: {
           from: "users",
-          localField: "job",
-          foreignField: "applicant",
+          localField: "applicant",
+          foreignField: "_id",
           as: "applicant",
         },
       },
+     
+      
     ]);
-
+console.log(data)
     response.send(data)
     // await InterviewApplication.find({
     //   interviewers: { $in: mongoose.Types.ObjectId(u_id) },
@@ -181,11 +191,13 @@ export const getXIEvaluatedReports = async (request, response) => {
 export const getInterviewApplication = async (request, response) => {
   try {
     let id = request.body.id;
-    // console.log(request.body);
-    await InterviewApplication.findOne({ _id: id }).exec(async function (
+    
+    console.log(request.body);
+    await InterviewApplication.findOne({ _id: mongoose.Types.ObjectId(id) }).exec(async function (
       err,
       res
     ) {
+      console.log(res)
       if (err) {
         return response.status(500).json({ message: "Error Occured" });
       } else {
@@ -216,7 +228,9 @@ export const getInterviewApplication = async (request, response) => {
           }).clone();
 
           // console.log(data);
+
         }
+
         return response.status(200).json({ message: "Success", data: data });
       }
     });

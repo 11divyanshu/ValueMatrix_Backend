@@ -737,9 +737,11 @@ export const getJobInvitations = async (request, response) => {
   }
 };
 
+
 // Handle Candidate Job Invitation
 export const handleCandidateJobInvitation = async (request, response) => {
   try {
+    console.log(request.body);
     await Job.findOne({ _id: request.body.job_id }, async function (err, job) {
       if (job) {
         await User.findOne(
@@ -757,11 +759,15 @@ export const handleCandidateJobInvitation = async (request, response) => {
                 let newInterview = new Interview({
                   job: request.body.job_id,
                   applicant: user._id,
+                  interviewers:request.body.interviewers
                 });
                 await newInterview.save();
                 await user.save();
                 await job.save();
-                return response.status(200).json({ Success: true });
+console.log(newInterview)
+                
+
+                return response.status(200).json({ Success: true , data : newInterview});
               } else {
                 user.job_invitations = user.job_invitations.filter(
                   (item) => item !== request.body.job_id

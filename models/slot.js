@@ -34,6 +34,9 @@ const slotSchema = new mongoose.Schema({
   interviewId:{
     type: mongoose.Schema.Types.ObjectId,
   },
+  _jobId:{
+    type: mongoose.Schema.Types.ObjectId,
+  },
   updateDate: {
     type: Date,
     default: Date.now(),

@@ -99,6 +99,12 @@ const jobBinSchema = new mongoose.Schema({
   showEmail: {
     type: Boolean,
   },
+  status: {
+    type: String,
+  },
+  draft: {
+    type: Boolean,
+  }
 });
 
 const jobBin = mongoose.model("jobBin", jobBinSchema);

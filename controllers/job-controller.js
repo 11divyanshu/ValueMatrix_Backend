@@ -59,7 +59,8 @@ export const addJob = async (request, response) => {
         showComName: request.body.showComName,
         showEmail: request.body.showEmail,
         showEducation: request.body.showEducation,
-        showContact: request.body.showContact
+        showContact: request.body.showContact,
+        draft: request.body.draft
       };
       // console.log(jobC);
       const newJob = new JobBin(jobC);

@@ -416,6 +416,7 @@ var ObjectId = mongoose.Types.ObjectId;
 
 export const interviewApplicationStatusChange = async (req, res) => {
   try {
+    console.log(req.body);
     if (
       (req.body.status === "On Hold" ||
         req.body.status === "Assigned" ||
@@ -425,7 +426,7 @@ export const interviewApplicationStatusChange = async (req, res) => {
       return res.status(400).send("Only company can update given status");
     }
 
-    if (req.body.status === "Accepted") {
+    if (req.body.status === "Assigned") {
       const data = await interviewApplication.aggregate([
         { $match: { _id: ObjectId(req.body._id) } },
         {
@@ -441,12 +442,14 @@ export const interviewApplicationStatusChange = async (req, res) => {
 
       if (
         data[0].jobs[0].status === "Closed" ||
-        data[0].jobs[0].status === "Archieve" ||
+        data[0].jobs[0].status === "Archieved" ||
         data[0].jobs[0].status === "Not Accepting"
       ) {
         return res
           .status(400)
           .send("This job is no longer accepting applications");
+      }else{
+        console.log("Checking flow");
       }
     }
 

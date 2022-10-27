@@ -69,8 +69,7 @@ const jobSchema = new mongoose.Schema({
     required: false,
   },
   reqApp: {
-    type: Number,
-
+    type: Number, 
   },
   archived: {
     type: Boolean,

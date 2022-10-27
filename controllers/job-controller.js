@@ -478,7 +478,6 @@ export const jobStatusChange = async (req, res) => {
       res.send({ data: "update successfully" }).status(200);
     } else {
       res.send({ data: "status not updated!" }).status(400);
-
     }
   }
   catch (err) {

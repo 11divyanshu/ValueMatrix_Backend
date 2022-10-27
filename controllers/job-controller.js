@@ -12,6 +12,7 @@ import v4 from "uuid/v4.js";
 import sendGridMail from "@sendgrid/mail";
 import axios from "axios";
 import InterviewApplication from "../models/interviewApplicationSchema.js";
+import job from "../models/jobSchema.js"
 
 const url = process.env.BACKEND_URL;
 const frontendUrl = process.env.FRONTEND_URL;
@@ -41,7 +42,7 @@ export const addJob = async (request, response) => {
       let jobC = {
         jobTitle: request.body.jobTitle,
         jobDesc: request.body.jobDesc,
-        uploadBy: res.id,
+        uploadBy: res.user_id,
         location: request.body.location,
         jobType: request.body.jobType,
         jobLocation: request.body.jobLocation,
@@ -65,6 +66,7 @@ export const addJob = async (request, response) => {
       // console.log(jobC);
       const newJob = new JobBin(jobC);
       await newJob.save();
+
       // console.log("D");
       if (newJob) {
         let candidateList = request.body.candidateList ? request.body.candidateList.map((a) => a.email) : null;
@@ -168,18 +170,17 @@ export const updateJob = async (request, response) => {
 
 export const archiveJob = async (request, response) => {
   try {
-    // console.log(request.body)
-    let newJob = await Job.findOne(
-      { _id: request.body._id },
-      async function (err, user) {
-        // console.log(user);
-        user.archived = request.body.archived;
-        await user.save();
-        return response.status(200).json({ Success: true });
-      }
-    ).clone();
-  } catch (error) {
-    console.log("Error : ", error);
+    console.log(request.body.archived);
+    let statusData = await job.findOneAndUpdate({ _id: request.body._id }, { $set: { archived: request.body.archived } }, { new: true })
+    if (statusData.status === request.body.status) {
+      response.send({ data: "update successfully" }).status(200);
+    } else {
+      response.send({ data: "status not updated!" }).status(400);
+
+    }
+  }
+  catch (err) {
+    response.send({ data: "something went wrong", err }).status(400);
   }
 };
 
@@ -255,6 +256,7 @@ export const GetJobFromId = async (request, response) => {
 
                 let data = {
                   _id: result._id,
+                  appid: res._id,
                   firstName: result.firstName,
                   lastname: result.lastname,
                   contact: result.contact,
@@ -467,7 +469,7 @@ const FindCandidateByEmail = async (email, job_id) => {
   });
 };
 
-import job from "../models/jobSchema.js"
+
 
 export const jobStatusChange = async (req, res) => {
   try {

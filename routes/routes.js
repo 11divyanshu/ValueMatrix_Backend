@@ -472,5 +472,5 @@ import { jobStatusChange, jobDetailsUploadedByUser, jobDetailsByJobId, UserDetai
 router.post("/jobStatusChange", jobStatusChange);
 router.get("/jobDetailsUploadedByUser", jobDetailsUploadedByUser);
 router.get("/jobDetailsByJobId", jobDetailsByJobId);
-router.get("/UserDetailsByJobId", UserDetailsByJobId)
+router.get("/UserDetailsByJobId", UserDetailsByJobId);
 export default router;

@@ -59,6 +59,7 @@ import {
   addJob,
   exportJobDetails,
   listJobs,
+  listBinJobs,
   updateJob,
   GetJobFromId,
   sendJobInvitations,
@@ -241,6 +242,7 @@ router.post("/sendWhatsappNotification", verifyToken, whatsappMessage);
 // Job
 router.post("/addJob", addJob);
 router.post("/listJob/:id", listJobs);
+router.get("/listBinJob/:id", listBinJobs);
 router.post("/listJobCandidate", listJobsCandidate);
 router.post("/updateJobDetails", verifyToken, updateJob);
 router.post("/exportJobDetails", exportJobDetails);

@@ -164,7 +164,7 @@ export const userSignup = async (request, response) => {
     let cc = request.body.countryCode.split("-");
     let country = cc[1];
     let countryCode = cc[0];
-    console.log(cc);
+    // console.log(cc);
     let user1 = {
       username: request.body.username,
       email: request.body.email,

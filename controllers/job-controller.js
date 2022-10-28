@@ -103,6 +103,18 @@ export const listJobs = async (request, response) => {
     console.log(error);
   }
 };
+export const listBinJobs = async (request, response) => {
+  try {
+    await JobBin.find({ uploadBy: request.params.id })
+      .sort({ createTime: -1 })
+      .exec(async function (err, res) {
+        await response.status(200).json({ jobs: res });
+        return;
+      });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export const listJobsCandidate = async (request, response) => {
   try {

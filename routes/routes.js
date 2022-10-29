@@ -473,4 +473,9 @@ router.post("/jobStatusChange", jobStatusChange);
 router.get("/jobDetailsUploadedByUser", jobDetailsUploadedByUser);
 router.get("/jobDetailsByJobId", jobDetailsByJobId);
 router.get("/UserDetailsByJobId", UserDetailsByJobId)
+ 
+import { insertUserInterviewApplications } from '../controllers/xiInterviewApplication-controller.js';
+
+router.post('/insertUserInterviewApplications', insertUserInterviewApplications);
+
 export default router;

@@ -39,6 +39,7 @@ import {
 import {
   adminLogin,
   companyList,
+  getXIList,
   userList,
   downloadResume,
   addAdminUser,
@@ -204,6 +205,7 @@ router.post("/resetPassword", resetPassword);
 // Admin Routes
 router.post("/adminLogin", adminLogin);
 router.post("/getCompanyList", verifyToken, companyList);
+router.post("/getXIList", verifyToken, getXIList);
 router.post("/getUserList", verifyToken, userList);
 router.post("/downloadResume", verifyToken, downloadResume);
 router.post("/addAdminUser", verifyToken, addAdminUser);

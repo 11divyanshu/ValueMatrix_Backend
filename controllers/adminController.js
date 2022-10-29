@@ -64,6 +64,22 @@ export const companyList = async (request, response) => {
     return response.status(401).json(`Error : ${error.message}`);
   }
 };
+export const getXIList = async (request, response) => {
+  try {
+    console.log(request.body)
+    await User.findOne({ _id: request.body.user_id }, function (error, res) {
+      console.log(res);
+      if (res && res.permissions[0].admin_permissions.list_XI === false) {
+        return response.status(403).json("You cannot view XI");
+      }
+    }).clone();
+    await User.find({ user_type: "XI" }, function (err, res) {
+      return response.status(200).json(res);
+    }).clone();
+  } catch (error) {
+    return response.status(401).json(`Error : ${error.message}`);
+  }
+};
 
 export const userList = async (request, response) => {
   try {

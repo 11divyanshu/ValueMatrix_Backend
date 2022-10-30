@@ -11,7 +11,7 @@ import User from "./models/userSchema.js";
 import { } from "dotenv/config";
 import cookieParser from "cookie-parser";
 import querystring from 'querystring';
-
+import twilio from 'twilio';
 
 collectDefaultMetrics();
 
@@ -19,6 +19,8 @@ const domain = process.env.FRONTEND_DOMAIN
 
 const app = express();
 const PORT = 8000;
+const ClientCapability = twilio.jwt.ClientCapability;
+const VoiceResponse = twilio.twiml.VoiceResponse;
 
 app.use(
   session({
@@ -28,13 +30,43 @@ app.use(
     saveUninitialized: false,
   })
 );
+app.use('/js/twilio.min.js', (req, res) => {
+  res.sendFile('./node_modules/twilio-client/dist/twilio.min.js');
+});
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use("/media", express.static("media"));
 
 Connection();
+app.get('/token', (request, response) => {
+  const capability = new ClientCapability({
+    accountSid: process.env.TWILIO_ACCOUNT_SID,
+    authToken: process.env.TWILIO_AUTH_TOKEN,
+  });
 
+  capability.addScope(
+    new ClientCapability.OutgoingClientScope({
+      applicationSid: process.env.TWILIO_TWIML_APP_SID})
+  );
+
+  const token = capability.toJwt();
+
+  // Include token in a JSON response
+  response.send({
+    token: token,
+  });
+});
+
+// Create TwiML for outbound calls
+app.post('/voice', (request, response) => {
+  let voiceResponse = new VoiceResponse();
+  voiceResponse.dial({
+    callerId: process.env.TWILIO_NUMBER,
+  }, request.body.number);
+  response.type('text/xml');
+  response.send(voiceResponse.toString());
+});
 
 app.get("/metrics", async (_req, res) => {
   try {

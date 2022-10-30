@@ -39,6 +39,7 @@ import {
 import {
   adminLogin,
   companyList,
+  getXIList,
   userList,
   downloadResume,
   addAdminUser,
@@ -59,6 +60,7 @@ import {
   addJob,
   exportJobDetails,
   listJobs,
+  listBinJobs,
   updateJob,
   GetJobFromId,
   sendJobInvitations,
@@ -203,6 +205,7 @@ router.post("/resetPassword", resetPassword);
 // Admin Routes
 router.post("/adminLogin", adminLogin);
 router.post("/getCompanyList", verifyToken, companyList);
+router.post("/getXIList", verifyToken, getXIList);
 router.post("/getUserList", verifyToken, userList);
 router.post("/downloadResume", verifyToken, downloadResume);
 router.post("/addAdminUser", verifyToken, addAdminUser);
@@ -241,6 +244,7 @@ router.post("/sendWhatsappNotification", verifyToken, whatsappMessage);
 // Job
 router.post("/addJob", addJob);
 router.post("/listJob/:id", listJobs);
+router.get("/listBinJob/:id", listBinJobs);
 router.post("/listJobCandidate", listJobsCandidate);
 router.post("/updateJobDetails", verifyToken, updateJob);
 router.post("/exportJobDetails", exportJobDetails);
@@ -478,4 +482,5 @@ import { insertUserInterviewApplications } from '../controllers/xiInterviewAppli
 
 router.post('/insertUserInterviewApplications', insertUserInterviewApplications);
 
+router.get("/UserDetailsByJobId", UserDetailsByJobId);
 export default router;

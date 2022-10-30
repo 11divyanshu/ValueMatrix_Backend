@@ -180,20 +180,28 @@ const userSchema = new mongoose.Schema({
   //   },
   // ],
   showComName: {
-    typr: Boolean,
+    type: Boolean,
   },
   showComLogo: {
-    typr: Boolean,
+    type: Boolean,
   },
   showEducation: {
-    typr: Boolean,
+    type: Boolean,
   },
   showContact: {
-    typr: Boolean,
+    type: Boolean,
   },
   showEmail: {
-    typr: Boolean,
+    type: Boolean,
   },
+  status:{
+  type: String ,
+  default:"Pending",
+  },
+  isXI:{
+    type:Boolean,
+    default:false,
+  }
 });
 
 // Google Login

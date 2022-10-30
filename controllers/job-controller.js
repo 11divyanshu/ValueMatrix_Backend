@@ -38,13 +38,14 @@ export const addJob = async (request, response) => {
         response.status(404).json({ Message: "Admin Not Found" });
         return;
       }
+
       //console.log(request.body.skills);
       let jobC = {
         jobTitle: request.body.jobTitle,
         jobDesc: request.body.jobDesc,
         uploadBy: res.user_id,
         location: request.body.location,
-        jobType: request.body.jobType,
+        jobType: request.body.jobType ? request.body.jobType : "Full-Time",
         jobLocation: request.body.jobLocation,
         reqApp: request.body.reqApp,
         validTill: request.body.validTill ? request.body.validTill : null,
@@ -63,6 +64,7 @@ export const addJob = async (request, response) => {
         showContact: request.body.showContact,
         draft: request.body.draft
       };
+      
       // console.log(jobC);
       const newJob = new JobBin(jobC);
       await newJob.save();
@@ -94,6 +96,18 @@ export const addJob = async (request, response) => {
 export const listJobs = async (request, response) => {
   try {
     await Job.find({ uploadBy: request.params.id })
+      .sort({ createTime: -1 })
+      .exec(async function (err, res) {
+        await response.status(200).json({ jobs: res });
+        return;
+      });
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const listBinJobs = async (request, response) => {
+  try {
+    await JobBin.find({ uploadBy: request.params.id })
       .sort({ createTime: -1 })
       .exec(async function (err, res) {
         await response.status(200).json({ jobs: res });

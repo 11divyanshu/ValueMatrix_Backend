@@ -26,7 +26,7 @@ const xiInterviewApplicationSchema = new mongoose.Schema({
 });
 
 const XiInterviewApplication = mongoose.model(
-  "xiInterviewApplication",
+  "xiInterviewApplicationabc",
   xiInterviewApplicationSchema
 );
 export default XiInterviewApplication;

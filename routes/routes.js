@@ -42,8 +42,10 @@ import {
   adminLogin,
   companyList,
   getXIList,
+  getXIUserList,
+  postXIUserLevel,
   userList,
-  downloadResume,
+  downloadResume, 
   addAdminUser,
   addTaxId,
   findAndUpdateTax,
@@ -212,6 +214,8 @@ router.post("/resetPassword", resetPassword);
 router.post("/adminLogin", adminLogin);
 router.post("/getCompanyList", verifyToken, companyList);
 router.post("/getXIList", verifyToken, getXIList);
+router.post("/getXIUserList", verifyToken, getXIUserList);
+router.post("/postXIUserLevel", verifyToken, postXIUserLevel);
 router.post("/getUserList", verifyToken, userList);
 router.post("/downloadResume", verifyToken, downloadResume);
 router.post("/addAdminUser", verifyToken, addAdminUser);

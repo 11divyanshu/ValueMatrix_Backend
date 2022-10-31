@@ -81,6 +81,37 @@ export const getXIList = async (request, response) => {
   }
 };
 
+export const getXIUserList = async (request, response) => {
+  try {
+    console.log(request.body)
+    await User.findOne({ _id: request.body.user_id }, function (error, res) {
+      console.log(res);
+      if (res && res.permissions[0].admin_permissions.list_XI === false) {
+        return response.status(403).json("You cannot view XI");
+      }
+    }).clone();
+    await User.find({ user_type: "XI",status:"Approved" }, function (err, res) {
+      return response.status(200).json(res);
+    }).clone();
+  } catch (error) {
+    return response.status(401).json(`Error : ${error.message}`);
+  }
+};
+
+export const postXIUserLevel = async (request, response) => {
+  try {
+    let statusData = await User.findOneAndUpdate({ _id: request.body.user_id }, { $set: { level: request.body.level } }, { new: true })
+    if (statusData.level === request.body.level) {
+      response.send({ data: "update successfully" }).status(200);
+    } else {
+      response.send({ data: "status not updated!" }).status(400);
+    }
+  }
+  catch (err) {
+    res.send({ data: "something went wrong", err }).status(400);
+  }
+};
+
 export const userList = async (request, response) => {
   try {
     await User.findOne({ _id: request.body.user_id }, function (error, res) {

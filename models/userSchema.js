@@ -197,6 +197,10 @@ const userSchema = new mongoose.Schema({
   status:{
   type: String ,
   },
+  level:{
+    type: Number ,
+    defalut: 0,
+    },
   isXI:{
     type:Boolean,
     default:false,

@@ -97,6 +97,7 @@ const jobBinSchema = new mongoose.Schema({
   },
   status: {
     type: String,
+    default:"Pending"
   },
   draft: {
     type: Boolean,

@@ -196,7 +196,6 @@ const userSchema = new mongoose.Schema({
   },
   status:{
   type: String ,
-  default:"Pending",
   },
   isXI:{
     type:Boolean,

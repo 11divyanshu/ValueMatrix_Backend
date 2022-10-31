@@ -79,49 +79,42 @@ export const getXIEvaluationList = async (request, response) => {
     ]);
 console.log(data)
     response.send(data)
-    // await InterviewApplication.find({
-    //   interviewers: { $in: mongoose.Types.ObjectId(u_id) },
-    // }).exec(async function (err, res) {
-    //   if (err) {
-    //     // console.log(err);
-    //     return response.status(500).json({ message: "Error Occured" });
-    //   } else {
-    //     // console.log(res);
-    //     await res.forEach(async (item, index) => {
-    //       let r = { application: item };
-    //       await Job.findOne({ _id: item.job }, async function (err, result) {
-    //         r.job = {
-    //           _id: result._id,
-    //           jobTitle: result.jobTitle,
-    //           hiringOrganization: result.hiringOrganization,
-    //           jobLocation: result.jobLocation,
-    //           jobDescription: result.jobDescription,
-    //           jobType: result.jobType,
-    //         };
-
-    //        await User.findOne(
-    //           { _id: item.applicant },
-    //           async function (err, result) {
-    //             r.applicant = {
-    //               _id: result._id,
-    //               firstName: result.firstName,
-    //               lastname: result.lastname,
-    //               contact: result.contact,
-    //               email: result.email,
-    //               username: result.username,
-    //             };
-    //           }
-    //         ).clone();
-    //       }).clone();
-
-    //       // console.log(r);
-    //       jobs.push(r);
-    //     });
-    //     setTimeout(() => {
-    //       return response.status(200).json({ jobs });
-    //     }, 2000);
-    //   }
-    // });
+   
+  } catch (err) {
+    return response.status(500).json({ Error: err.message });
+  }
+};
+export const getXIInterviewList = async (request, response) => {
+  try {
+    // console.log(request);
+    let u_id = request.body.user_id;
+    console.log(u_id);
+    let jobs = [];
+    let data = await xiInterviewApplication.aggregate([
+      { $match: { interviewer: mongoose.Types.ObjectId(u_id) } },
+      
+      {
+        $lookup: {
+          from: "slots",
+          localField: "slotId",
+          foreignField: "_id",
+          as: "slots",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "applicant",
+          foreignField: "_id",
+          as: "applicant",
+        },
+      },
+     
+      
+    ]);
+console.log(data)
+    response.send(data)
+   
   } catch (err) {
     return response.status(500).json({ Error: err.message });
   }
@@ -408,9 +401,28 @@ export const updateInterviewApplication = async (req, res) => {
     res.send(err).status(400);
   }
 };
+export const updateXIInterviewApplication = async (req, res) => {
+  try {
+    let id = req.query.id;
+
+    let data = await xiInterviewApplication.findOneAndUpdate(
+      { _id: mongoose.Types.ObjectId(id) },
+      req.body
+    );
+    if (data) {
+      res.send().status(200);
+    } else {
+      res.send({ data: "Updatation failed" }).status(400);
+    }
+  } catch (err) {
+    console.log("error in updateInterviewApplication", err);
+    res.send(err).status(400);
+  }
+};
 
 import job from "../models/jobSchema.js";
 import interviewApplication from "../models/interviewApplicationSchema.js";
+import xiInterviewApplication from "../models/xiInterviewApplication.js";
 
 var ObjectId = mongoose.Types.ObjectId;
 

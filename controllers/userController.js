@@ -6,7 +6,7 @@ import AddCountry from "../models/countryAddSchema.js";
 import axios from "axios";
 import passwordHash from "password-hash";
 import v4 from "uuid/v4.js";
-import {} from "dotenv/config";
+import { } from "dotenv/config";
 import Job from "../models/jobSchema.js";
 import Interview from "../models/interviewApplicationSchema.js";
 import multer from "multer";
@@ -14,7 +14,7 @@ import fs from "fs";
 import sendGridMail from "@sendgrid/mail";
 import FormData from "form-data";
 import path from "path";
-import InterviewApplication from "../models/interviewApplicationSchema.js";
+import XIInterview from "../models/xiInterviewApplication.js";
 
 const url = process.env.BACKEND_URL;
 const front_url = process.env.FRONTEND_URL;
@@ -183,14 +183,15 @@ export const userSignup = async (request, response) => {
       showEmail: request.body.showEmail,
       country: country,
       countryCode: countryCode,
+      status:request.body.user_type === "XI" ? "Pending" : "User",
     };
 
     // if (request.body.user_type == "Company") {
     //   const newUser = new UserBin(user1);
     //   await newUser.save();
     // } else {
-      const newUser = new User(user1);
-      await newUser.save();
+    const newUser = new User(user1);
+    await newUser.save();
     // }
 
     const token = await axios.post(`${url}/generateToken`, {
@@ -302,7 +303,7 @@ export const getProfileImg = async (request, response) => {
             let d = await fs.readFileSync(
               path.resolve(path_url),
               {},
-              function (err, res) {}
+              function (err, res) { }
             );
             // console.log(d)
             return response.status(200).json({ Image: d });
@@ -340,7 +341,7 @@ export const updateUserDetails = async (request, response) => {
       });
     }
 
-  
+
 
     User.findOne({ _id: request.body.user_id }, function (err, res) {
       if (res.access_valid === false) return response.status(403);
@@ -350,7 +351,7 @@ export const updateUserDetails = async (request, response) => {
       request.body.updates,
       { new: true }
     );
-    console.log("user1",user1);
+    console.log("user1", user1);
     response.status(200).json({ user: user1 });
   } catch (error) {
     console.log("update Error, ", error);
@@ -455,25 +456,25 @@ export const uploadCandidateResume = async (req, response) => {
         let resumeData = ResumeParseData.data.Value.ResumeData;
         profileData.firstName =
           resumeData.ContactInformation.CandidateName.FormattedName;
-          if( resumeData.ContactInformation.EmailAddresses[0] != user.email){
-              let arr=[];
-              arr.push(resumeData.ContactInformation.EmailAddresses[0]);
-              profileData.secondaryEmails = arr;
-          }else{
+        if (resumeData.ContactInformation.EmailAddresses[0] != user.email) {
+          let arr = [];
+          arr.push(resumeData.ContactInformation.EmailAddresses[0]);
+          profileData.secondaryEmails = arr;
+        } else {
 
-            profileData.email = resumeData.ContactInformation.EmailAddresses[0];
-          }
+          profileData.email = resumeData.ContactInformation.EmailAddresses[0];
+        }
 
         // profileData.contact = resumeData.ContactInformation.Telephones[0].Raw;
 
-        if( resumeData.ContactInformation.Telephones[0].Raw != user.contact){
-          let arr=[];
+        if (resumeData.ContactInformation.Telephones[0].Raw != user.contact) {
+          let arr = [];
           arr.push(resumeData.ContactInformation.Telephones[0].Raw);
           profileData.secondaryContacts = arr;
-      }else{
+        } else {
 
-        profileData.contact = resumeData.ContactInformation.Telephones[0].Raw ;
-      }
+          profileData.contact = resumeData.ContactInformation.Telephones[0].Raw;
+        }
 
 
         profileData.address = resumeData.ContactInformation.Location
@@ -482,8 +483,8 @@ export const uploadCandidateResume = async (req, response) => {
 
         let linkedIn = resumeData.ContactInformation.WebAddresses
           ? resumeData.ContactInformation.WebAddresses.filter(
-              (obj) => obj.Type == "LinkedIn"
-            )
+            (obj) => obj.Type == "LinkedIn"
+          )
           : [];
         profileData.linkedInId =
           linkedIn && linkedIn.length > 0 ? linkedIn[0].Address : "";
@@ -544,9 +545,9 @@ export const uploadCandidateResume = async (req, response) => {
             const skills = resumeData.Skills.Raw[i];
             let toolsObj = {
               _id: "",
-              primarySkill:skills.Name,
+              primarySkill: skills.Name,
               secondarySkill: "",
-              role:"",
+              role: "",
               proficiency: "0",
             };
             profileData.tools.push(toolsObj);
@@ -759,15 +760,15 @@ export const handleCandidateJobInvitation = async (request, response) => {
                 let newInterview = new Interview({
                   job: request.body.job_id,
                   applicant: user._id,
-                  interviewers:request.body.interviewers
+                  interviewers: request.body.interviewers
                 });
                 await newInterview.save();
                 await user.save();
                 await job.save();
-console.log(newInterview)
-                
+                console.log(newInterview)
 
-                return response.status(200).json({ Success: true , data : newInterview});
+
+                 return response.status(200).json({ Success: true, data: newInterview });
               } else {
                 user.job_invitations = user.job_invitations.filter(
                   (item) => item !== request.body.job_id
@@ -820,5 +821,33 @@ export const listOfUnapproveCompanies = async (req, res) => {
   } catch (err) {
     console.log("Error listOfUnapproveCompanies: ", err);
     res.send(err);
+  }
+};
+
+export const handleXIInterview  = async (request, response) => {
+  try {
+    console.log(request.body);
+
+
+
+    let newInterview = new XIInterview({
+      slotId: request.body.slotId,
+      applicant: request.body.applicant,
+      interviewer: request.body.interviewer,
+      status:request.body.status,
+    });
+    await newInterview.save();
+   
+    console.log(newInterview)
+
+
+    return response.status(200).json({ Success: true, data: newInterview });
+
+
+
+
+
+  } catch (err) {
+    console.log(err);
   }
 };

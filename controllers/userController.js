@@ -186,13 +186,30 @@ export const userSignup = async (request, response) => {
       status:request.body.user_type === "XI" ? "Pending" : "User",
     };
 
-    // if (request.body.user_type == "Company") {
-    //   const newUser = new UserBin(user1);
-    //   await newUser.save();
-    // } else {
+
+
+   
+  
     const newUser = new User(user1);
     await newUser.save();
-    // }
+    let userArray = [];
+    const candidateInfo = {
+      email: newUser.email,
+      phoneNo: newUser.contact,
+      firstName: firstname,
+      lastname: lastname,
+      candidate_id:0,
+    }
+    userArray.push(candidateInfo);
+
+    if (request.body.user_type == "User" || request.body.user_type == "XI") {
+      const CandidadeCount = await Candidate.count();
+    for (let i = 0; i < userArray.length; i++) {
+      console.log(userArray);
+      userArray[i].candidate_id = CandidadeCount + i;
+    }
+    let newCandidate = await Candidate.insertMany(userArray);
+    } 
 
     const token = await axios.post(`${url}/generateToken`, {
       user: newUser.id,

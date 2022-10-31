@@ -43,7 +43,7 @@
     "password-hash": "^1.2.2",
     "prom-client": "^14.0.1",
     "request": "^2.88.2",
-    "twilio": "^3.81.0",
+    "twilio": "^3.83.0",
     "unirest": "^0.6.0",
     "uuidv4": "^6.2.13"
   }

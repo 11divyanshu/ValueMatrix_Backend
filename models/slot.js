@@ -41,7 +41,13 @@ const slotSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  slotType:{
+    type:String,
+    enum : ["XI", "SuperXI"],
+
+  }
 });
+
 
 const slot = mongoose.model("slot", slotSchema);
 export default slot;

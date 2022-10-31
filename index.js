@@ -16,11 +16,14 @@ import twilio from 'twilio';
 collectDefaultMetrics();
 
 const domain = process.env.FRONTEND_DOMAIN
-
+const accountSid = 'AC09f5dbae6f3d0958f34956e7fd042466'; // Your Account SID from www.twilio.com/console
+const authToken = '777ab2cebd3caceb714a0eab8fa395cd';
 const app = express();
 const PORT = 8000;
 const ClientCapability = twilio.jwt.ClientCapability;
 const VoiceResponse = twilio.twiml.VoiceResponse;
+const client = new twilio(accountSid, authToken);
+
 
 app.use(
   session({
@@ -40,6 +43,7 @@ app.use("/media", express.static("media"));
 
 Connection();
 app.get('/token', (request, response) => {
+  console.log("token");
   const capability = new ClientCapability({
     accountSid: process.env.TWILIO_ACCOUNT_SID,
     authToken: process.env.TWILIO_AUTH_TOKEN,
@@ -51,9 +55,9 @@ app.get('/token', (request, response) => {
   );
 
   const token = capability.toJwt();
-
+console.log(token)
   // Include token in a JSON response
-  response.send({
+  response.status(200).send({
     token: token,
   });
 });
@@ -62,7 +66,7 @@ app.get('/token', (request, response) => {
 app.post('/voice', (request, response) => {
   let voiceResponse = new VoiceResponse();
   voiceResponse.dial({
-    callerId: process.env.TWILIO_NUMBER,
+    callerId: 9617949056,
   }, request.body.number);
   response.type('text/xml');
   response.send(voiceResponse.toString());
@@ -118,6 +122,7 @@ app.get(
     let url1 = null;
     if (type === "Company") url1 = `${url}/company`;
     else if (type === "XI") url1 = `${url}/XI`;
+    else if (type === "SuperXI") url1 = `${url}/XI`;
     else if (req.user.isAdmin) url1 = `${url}/admin`;
     else url1 = `${url}/user`;
     let r = querystring.stringify({
@@ -152,6 +157,8 @@ app.get(
     let url1 = null;
     if (type === "Company") url1 = `${url}/company`;
     else if (type === "XI") url1 = `${url}/XI`;
+    else if (type === "SuperXI") url1 = `${url}/XI`;
+
     else if (req.user.isAdmin) url1 = `${url}/admin`;
     else url1 = `${url}/user`;
     let r = querystring.stringify({
@@ -187,6 +194,8 @@ app.get(
     let type = req.user.user_type;
     if (type === "Company") url1 = `${url}/company`;
     else if (type === "XI") url1 = `${url}/XI`;
+    else if (type === "SuperXI") url1 = `${url}/XI`;
+
     else if (req.user.isAdmin) url1 = `${url}/admin`;
     else url1 = `${url}/user`;
     let r = querystring.stringify({

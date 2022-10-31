@@ -5,6 +5,7 @@ import multer from "multer";
 import {
   sendOTPEmail,
   UpdateEmailOTP,
+  sendForwardedMail,
 } from "../controllers/mail-controller.js";
 
 import {
@@ -26,6 +27,7 @@ import {
   handleCandidateJobInvitation,
   fetchCountry,
   getCountryList,
+  handleXIInterview
 } from "../controllers/userController.js";
 
 import { sendOTPSMS, updateContactOTP } from "../controllers/sms-controller.js";
@@ -67,7 +69,8 @@ import {
   listJobsCandidate,
   archiveJob,
   approveJob,
-  listOfUnapproveJobs
+  listOfUnapproveJobs,
+  getJobBinById
 } from "../controllers/job-controller.js";
 import {
   resetPassword,
@@ -90,6 +93,8 @@ import {
   getCandidateEvaluation,
   interviewApplicationStatusChange,
   updateInterviewApplication,
+  updateXIInterviewApplication,
+  getXIInterviewList
 } from "../controllers/interviewApplication-controller.js";
 import Routes from "twilio/lib/rest/Routes.js";
 import { addEvaluationQuestion } from "../controllers/evaulationQuestion-controller.js";
@@ -165,6 +170,7 @@ router.post("/getUserInviteFromResetPassId", getUserInviteFromResetPassId);
 router.post("/setProfile", setProfile);
 router.post("/fetchCountry", fetchCountry);
 router.post("/getCountryList", getCountryList);
+router.post("/handleXIInterview", handleXIInterview);
 
 // Candidate Routes
 router.post(
@@ -216,6 +222,7 @@ router.post("/deleteTaxId/:id", verifyToken, findAndDeleteTax);
 // Sending mails
 router.post("/updateEmailOTP", verifyToken, UpdateEmailOTP);
 router.post("/OTPMail", sendOTPEmail);
+router.post("/sendForwardedMail", sendForwardedMail);
 
 // sending sms
 router.post("/OTPSms", sendOTPSMS);
@@ -249,6 +256,7 @@ router.post("/listJobCandidate", listJobsCandidate);
 router.post("/updateJobDetails", verifyToken, updateJob);
 router.post("/exportJobDetails", exportJobDetails);
 router.post("/getJobFromId", verifyToken, GetJobFromId);
+router.post("/getJobBinById", verifyToken, getJobBinById);
 router.post("/sendJobInvitation", verifyToken, sendJobInvitations);
 router.post("/archiveJob", archiveJob);
 router.post("/approveJob", approveJob);
@@ -268,10 +276,12 @@ router.post("/getSkills", verifyToken, getSkills);
 
 // XI Routes
 router.post("/listXIEvaluation", verifyToken, getXIEvaluationList);
+router.post("/getXIInterviewList", verifyToken, getXIInterviewList);
 router.post("/listXIEvaluatedReports", verifyToken, getXIEvaluatedReports);
 router.post("/getInterviewApplication", verifyToken, getInterviewApplication);
 router.post("/updateEvaluation", verifyToken, updateEvaluation);
 router.put("/updateInterviewApplication", updateInterviewApplication);
+router.put("/updateXIInterviewApplication", updateXIInterviewApplication);
 
 
 // Evaluation Question Routes
@@ -336,6 +346,7 @@ import {
   XISlots,
   findCandidateByEmail,
   slotDetailsOfXI,
+  slotDetailsOfXIinterview,
   slotDetailsOfUser,
   userInterviewsDetails
 } from "../controllers/slots.js";
@@ -343,6 +354,7 @@ import {
 router.get("/slotDetailsOfUser", slotDetailsOfUser);
 router.get("/userInterviewsDetails", userInterviewsDetails);
 router.get("/slotDetailsOfXI", slotDetailsOfXI);
+router.get("/slotDetailsOfXIinterview", slotDetailsOfXIinterview);
 router.get("/XISlots", XISlots);
 router.post("/findCandidateByEmail", findCandidateByEmail);
 
@@ -358,9 +370,10 @@ router.post("/addSlot", (req, res) => {
   });
 });
 
-router.get("/availableSlots", (req, res) => {
-  const { query } = req;
-  availableSlots(query, (err, data) => {
+router.post("/availableSlots", (req, res) => {
+  const { body } = req;
+   
+  availableSlots(body, (err, data) => {
     if (err) {
       res.status(500).send(err);
     } else {

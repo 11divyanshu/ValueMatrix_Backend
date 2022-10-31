@@ -9,8 +9,10 @@ var fastsms_api = process.env.FAST2SMS_API_KEY;
 
 export const addSlot = (data, callback) => {
   try {
+    let user_type;
     async.series(
       [
+
         function (cb) {
           try {
             User.findOne(
@@ -20,7 +22,8 @@ export const addSlot = (data, callback) => {
                 if (err) {
                   return cb(err, null);
                 }
-                if (res && res.user_type !== "XI") {
+                user_type = res.user_type;
+                if (res && res.user_type !== "XI" && res.user_type !== "SuperXI") {
                   return cb("Your not eligible to create slot", null);
                 }
                 cb();
@@ -32,6 +35,7 @@ export const addSlot = (data, callback) => {
         },
 
         function (cb) {
+          console.log(user_type)
           try {
             let insertData = [];
             for (let i = 0; i < data.length; i++) {
@@ -40,6 +44,7 @@ export const addSlot = (data, callback) => {
                 createdBy: data[i].createdBy,
                 startDate: new Date(data[i].startDate),
                 endDate: new Date(data[i].endDate),
+                slotType: user_type,
               };
               insertData.push(insertObj);
             }
@@ -69,12 +74,14 @@ export const addSlot = (data, callback) => {
 
 export const availableSlots = (data, callback) => {
   try {
+    console.log(data);
     Slot.find(
-      { status: "Available", cancelBy: { $nin: [data.userId] }, isDeleted: false },
+      { status: "Available", cancelBy: { $nin: [data.userId] }, isDeleted: false , slotType: data.type },
       (err, res) => {
         if (err) {
           callback(err, null);
         } else {
+          console.log(res)
           callback(null, res);
         }
       }
@@ -282,6 +289,44 @@ export const slotDetailsOfXI = async (req, res) => {
     res.status(400).send('something went wrong', err);
   }
 }
+export const slotDetailsOfXIinterview = async (req, res) => {
+  try {
+    const data = await Slot.aggregate([
+      { $match: { createdBy: mongoose.Types.ObjectId(req.query.XI_id) } },
+      {
+        $lookup: {
+          from: "xiInterviewapplications",
+          localField: "interviewId",
+          foreignField: "_id",
+          as: "interviewApplication",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "interviewApplication.applicant",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $lookup: {
+          from: "jobs",
+          localField: "interviewApplication.job",
+          foreignField: "_id",
+          as: "job",
+        },
+      },
+    ]);
+    console.log(data);
+    res.send(data)
+  }
+  catch (err) {
+    console.log(err);
+    res.status(400).send('something went wrong', err);
+  }
+}
+
 
 
 
@@ -292,13 +337,21 @@ export const slotDetailsOfXI = async (req, res) => {
 export const slotDetailsOfUser = async (req, res) => {
   try {
     const data = await Slot.aggregate([
-      { $match: { userId: mongoose.Types.ObjectId(req.query.userId) , status:"Pending" } },
+      { $match: { userId: mongoose.Types.ObjectId(req.query.userId) } },
       {
         $lookup: {
           from: "interviewapplications",
           localField: "interviewId",
           foreignField: "_id",
           as: "interviewApplication",
+        },
+      },
+      {
+        $lookup: {
+          from: "xiinterviewapplications",
+          localField: "interviewId",
+          foreignField: "_id",
+          as: "xiinterviewApplication",
         },
       },
       {

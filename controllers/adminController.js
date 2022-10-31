@@ -73,7 +73,7 @@ export const getXIList = async (request, response) => {
         return response.status(403).json("You cannot view XI");
       }
     }).clone();
-    await User.find({ user_type: "XI" }, function (err, res) {
+    await User.find({ user_type: "User",status:"Pending" }, function (err, res) {
       return response.status(200).json(res);
     }).clone();
   } catch (error) {

@@ -43,6 +43,7 @@ import {
   companyList,
   getXIList,
   getXIUserList,
+  getSuperXIUserList,
   postXIUserLevel,
   userList,
   downloadResume, 
@@ -215,6 +216,7 @@ router.post("/adminLogin", adminLogin);
 router.post("/getCompanyList", verifyToken, companyList);
 router.post("/getXIList", verifyToken, getXIList);
 router.post("/getXIUserList", verifyToken, getXIUserList);
+router.post("/getSuperXIUserList", verifyToken, getSuperXIUserList);
 router.post("/postXIUserLevel", verifyToken, postXIUserLevel);
 router.post("/getUserList", verifyToken, userList);
 router.post("/downloadResume", verifyToken, downloadResume);

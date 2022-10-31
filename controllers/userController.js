@@ -206,7 +206,7 @@ export const userSignup = async (request, response) => {
       const CandidadeCount = await Candidate.count();
     for (let i = 0; i < userArray.length; i++) {
       console.log(userArray);
-      userArray[i].candidate_id = CandidadeCount + i;
+      userArray[i].candidate_id = CandidadeCount + i +1;
     }
     let newCandidate = await Candidate.insertMany(userArray);
     } 

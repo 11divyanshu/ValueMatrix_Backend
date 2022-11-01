@@ -7,6 +7,48 @@ import mongoose from "mongoose";
 var req = unirest("GET", "https://www.fast2sms.com/dev/bulkV2");
 var fastsms_api = process.env.FAST2SMS_API_KEY;
 
+export const ValidateSlot = (request,response) =>{
+try {
+  console.log(request.body)
+  Slot.find(
+    { createdBy:request.body.id, isDeleted: false },
+    (err, res) => {
+      if (err) {
+      } else {
+       let currentDate = new Date(request.body.startTime);
+       let startDate = new Date(currentDate.getFullYear(), 0, 1);
+        var days = Math.floor((currentDate - startDate) /
+            (24 * 60 * 60 * 1000));
+             
+
+
+        var weekNumber = Math.ceil(days / 7);
+        let count = 0;
+        for(let i=0;i <res.length ;i++){
+            if(res[i].weekNo == weekNumber){
+              count++;
+            }
+        }
+        console.log(count)
+
+
+        if(count >=4){
+          return response.status(200).json({check:false});
+        }else{
+          return response.status(200).json({check:true});
+
+        }
+
+      }
+    }
+  );
+
+
+} catch (error) {
+  
+}
+}
+
 export const addSlot = (data, callback) => {
   try {
     let user_type;
@@ -38,13 +80,24 @@ export const addSlot = (data, callback) => {
           console.log(user_type)
           try {
             let insertData = [];
+
+          
+
+
             for (let i = 0; i < data.length; i++) {
               data[i].slotId = i;
+              let currentDate = new Date(data[i].startDate);
+              let startDate = new Date(currentDate.getFullYear(), 0, 1);
+               var days = Math.floor((currentDate - startDate) /
+                   (24 * 60 * 60 * 1000));
+                    
+               var weekNumber = Math.ceil(days / 7);
               let insertObj = {
                 createdBy: data[i].createdBy,
                 startDate: new Date(data[i].startDate),
                 endDate: new Date(data[i].endDate),
                 slotType: user_type,
+                weekNo: weekNumber,
               };
               insertData.push(insertObj);
             }

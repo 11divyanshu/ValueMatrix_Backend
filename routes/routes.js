@@ -354,7 +354,8 @@ import {
   slotDetailsOfXI,
   slotDetailsOfXIinterview,
   slotDetailsOfUser,
-  userInterviewsDetails
+  userInterviewsDetails,
+  ValidateSlot
 } from "../controllers/slots.js";
 
 router.get("/slotDetailsOfUser", slotDetailsOfUser);
@@ -364,6 +365,7 @@ router.get("/slotDetailsOfXIinterview", slotDetailsOfXIinterview);
 router.get("/XISlots", XISlots);
 router.post("/findCandidateByEmail", findCandidateByEmail);
 
+router.post("/ValidateSlot", ValidateSlot);
 router.post("/addSlot", (req, res) => {
 
   const { body } = req;

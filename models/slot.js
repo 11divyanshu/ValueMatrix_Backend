@@ -16,6 +16,10 @@ const slotSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  weekNo:{
+  type:Number,
+  required:true,
+  },
   userId: {
     type:  mongoose.Schema.Types.ObjectId,
   },

@@ -117,6 +117,7 @@ export const getSuperXIUserList = async (request, response) => {
 export const postXIUserLevel = async (request, response) => {
   try {
     let statusData = await User.findOneAndUpdate({ _id: request.body.user_id }, { $set: { level: request.body.level } }, { new: true })
+    
     if (statusData.level === request.body.level) {
       response.send({ data: "update successfully" }).status(200);
     } else {

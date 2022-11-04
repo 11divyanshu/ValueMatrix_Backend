@@ -43,6 +43,14 @@ const interviewApplicationSchema = new mongoose.Schema({
   evaluations: {
     type: Object,
     required: false,
+  },
+  rating:{
+    type:Number,
+    default:0,
+  },
+  comment:{
+    type:String,
+    default:"",
   }
 });
 

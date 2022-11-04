@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
 
-const performanceMultiplierSchema = new mongoose.Schema({
-  multiplier: {
+const levelSchema = new mongoose.Schema({
+  level: {
     type: Number,
     required: true,
   },
+  
   min: {
     type: Number,
     required: true,
@@ -20,8 +21,8 @@ const performanceMultiplierSchema = new mongoose.Schema({
  
 });
 
-const PerformanceMultiplier = mongoose.model(
-  "performanceMultiplier",
-  performanceMultiplierSchema
+const Level = mongoose.model(
+  "level",
+  levelSchema
 );
-export default PerformanceMultiplier;
+export default Level;

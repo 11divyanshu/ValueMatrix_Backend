@@ -43,7 +43,7 @@ export const addJob = async (request, response) => {
       let jobC = {
         jobTitle: request.body.jobTitle,
         jobDesc: request.body.jobDesc,
-        uploadBy: request.body.user_id ,
+        uploadBy: request.body.user_id,
         location: request.body.location,
         jobType: request.body.jobType ? request.body.jobType : "Full-Time",
         jobLocation: request.body.jobLocation,
@@ -65,7 +65,7 @@ export const addJob = async (request, response) => {
         draft: request.body.draft,
         invitations: request.body.invitations,
       };
-      
+
       // console.log(jobC);
       const newJob = new JobBin(jobC);
       await newJob.save();
@@ -335,63 +335,64 @@ export const getJobBinById = async (request, response) => {
 // Send Invitations To Users
 export const sendJobInvitations = async (job) => {
   try {
-     let job_id = job._id;
+    let job_id = job._id;
     let candidates = job.invitations;
     // let user_id = request.body.user_id;
     let jobId = "";
     // await User.findOne({ _id: user_id }, async function (err, res) {
-      console.log("step 1");
-     
-console.log(job_id)
+    console.log("step 1");
 
-      // await JobBin.findOne({ _id: mongoose.Types.ObjectId(job_id) }, async function (err1, res1) {
-        console.log("step 2");
-        console.log(job)
-        let invitations = [];
-        await candidates.forEach(async (candidate, index) => {
-          console.log("in the array");
-          await User.findOne(
+    console.log(job_id)
+
+    // await JobBin.findOne({ _id: mongoose.Types.ObjectId(job_id) }, async function (err1, res1) {
+    console.log("step 2");
+    console.log(job)
+    let invitations = [];
+    await candidates.forEach(async (candidate, index) => {
+      console.log("in the array");
+      await User.findOne(
+        {
+          $or: [
             {
-              $or: [
-                {
-                  email: candidate.Email,
-                },
-                {
-                  contact: candidate.Contact,
-                },
-              ],
+              email: candidate.Email,
             },
-            
-
-            async function (error, result) {
-              console.log("callback");
-              if (result) {
-                if (!result.job_invitations.includes(result._id)) {
-                  let i = result.job_invitations ? result.job_invitations : [];
-                  i.push((job_id).valueOf());
-                  invitations.push((result._id));
-                  result.job_invitations = i;
-                  await result.save();
-                  await User.findOneAndUpdate(
-                    { _id: result._id },
-                    { job_invitations: i }
-                  );
+            {
+              contact: candidate.Contact,
+            },
+          ],
+        },
 
 
-                  let noti = new Notification({
-                    forAll: false,
-                    title: "Job Invitation - " + job.jobTitle,
-                    message:
-                      "You have been invited for the job " +
-                      job.jobTitle ,
-                      // " by " +
-                      // res.username,
-                    sendTo: [result._id],
-                    type: "Notification",
-                  });
-                  await noti.save();
 
-                  let html = `<h1>Job Invitation</h1>
+        async function (error, result) {
+          console.log("callback");
+          if (result) {
+            if (!result.job_invitations.includes(result._id)) {
+              let i = result.job_invitations ? result.job_invitations : [];
+              i.push((job_id).valueOf());
+              invitations.push((result._id));
+              result.job_invitations = i;
+              await result.save();
+              await User.findOneAndUpdate(
+                { _id: result._id },
+                { job_invitations: i }
+              );
+
+
+              let noti = new Notification({
+                forAll: false,
+                title: "Job Invitation - " + job.jobTitle,
+                message:
+                  "You have been invited for the job " +
+                  job.jobTitle,
+                // " by " +
+                // res.username,
+                sendTo: [result._id],
+                type: "Notification",
+              });
+              await noti.save();
+
+              let html = `<h1>Job Invitation</h1>
               <br/>
               <p>
                 You have been invited for the job <b>${job.jobTitle}</b> 
@@ -400,45 +401,77 @@ console.log(job_id)
               <a href="${frontendUrl}/user/jobInvitations
               " target="_blank">${frontendUrl}/user/jobInvitations</a>`;
 
-                  await sendGridMail.send({
-                    to: result.email,
-                    from: "developervm171@gmail.com",
-                    subject: `Job Invitation for ${job.jobTitle} - Value Matrix`,
-                    html: html,
-                  });
+              await sendGridMail.send({
+                to: result.email,
+                from: "developervm171@gmail.com",
+                subject: `Job Invitation for ${job.jobTitle} - Value Matrix`,
+                html: html,
+              });
 
-                  if (index === candidates.length - 1) {
-                    await Job.findOne(
-                      { _id: job._id },
-                      async function (err, user) {
-                        console.log(invitations)
+              if (index === candidates.length - 1) {
+                await Job.findOne(
+                  { _id: job._id },
+                  async function (err, user) {
+                    console.log(invitations)
 
-                   user.invitations = invitations;
-                    await user.save();}).clone()
-                  }
-                }
-              } else {
-                let id = v4();
-                let pass = generatePassword();
-                let reset_pass_id = v4();
-                let newUser = new User({
-                  username: id,
-                  firstName: candidate.FirstName ? candidate.FirstName : "",
-                  lastName: candidate.LastName ? candidate.LastName : "",
-                  email: candidate.Email,
-                  contact: candidate.Contact,
-                  password: passwordHash.generate(pass),
-                  user_type: "User",
-                  invite: 1,
-                  address: candidate.Address ? candidate.Address : null,
-                  resetPassId: reset_pass_id,
-                  job_invitations: [job_id],
-                  tools: job.skills ? job.skills : [],
-                });
+                    user.invitations = invitations;
+                    await user.save();
+                  }).clone()
+              }
+            }
+          } else {
+            let id = v4();
+            let pass = generatePassword();
+            let reset_pass_id = v4();
+            let newUser = new User({
+              username: id,
+              firstName: candidate.FirstName ? candidate.FirstName : "",
+              lastName: candidate.LastName ? candidate.LastName : "",
+              email: candidate.Email,
+              contact: candidate.Contact,
+              password: passwordHash.generate(pass),
+              user_type: "User",
+              invite: 1,
+              address: candidate.Address ? candidate.Address : null,
+              resetPassId: reset_pass_id,
+              job_invitations: [job_id],
+              tools: job.skills ? job.skills : [],
+            });
 
-                await newUser.save();
-                invitations.push(newUser._id);
-                let htmltext = `<h1>Invitation to join Job Portal</h1><br/><p>You have been invited for the job interview for <b>${job.jobTitle}</b> .
+
+
+            await newUser.save();
+
+
+
+
+           
+            const CandidadeCount = await Candidate.count();
+              
+              const candidateInfo = {
+                email: candidate.Email,
+                phoneNo: candidate.Contact,
+                firstName: candidate.FirstName ? candidate.FirstName : "",
+                lastName: candidate.LastName ? candidate.LastName : "",
+                candidate_id: CandidadeCount + 1,
+                jobId:job_id,
+              }
+             
+
+             
+            
+
+            
+                let newCandidate = new Candidate(candidateInfo);
+                await newCandidate.save();
+
+
+              
+        
+
+
+            invitations.push(newUser._id);
+            let htmltext = `<h1>Invitation to join Job Portal</h1><br/><p>You have been invited for the job interview for <b>${job.jobTitle}</b> .
               </p>
               <br/>
               <p>To continue with the interview inviation click on the link below ( or paste the link in the browser ) and login with the credentials given below : </p>
@@ -446,37 +479,38 @@ console.log(job_id)
               <a href="${frontendUrl}/login" target="_blank">${frontendUrl}/login</a><br/>
               <p><b>Username :</b> ${candidate.Email}</p><br/>
               <p><b>Password</b> ${pass} </p><br/>`;
-                await sendGridMail.send({
-                  to: candidate.Email,
-                  from: "developervm171@gmail.com",
-                  subject: `Job Invitation for ${job.jobTitle} - Value Matrix`,
-                  html: htmltext,
-                });
-                if (index === candidates.length - 1) {
-                  // res1.invitations = invitations;
-                  // await res1.save();
-                  await Job.findOne(
-                    { _id: job._id },
-                    async function (err, user) {
-                      console.log(invitations)
-                 user.invitations = invitations;
-                  await user.save();}).clone();
-                }
-              }
+            await sendGridMail.send({
+              to: candidate.Email,
+              from: "developervm171@gmail.com",
+              subject: `Job Invitation for ${job.jobTitle} - Value Matrix`,
+              html: htmltext,
+            });
+            if (index === candidates.length - 1) {
+              // res1.invitations = invitations;
+              // await res1.save();
+              await Job.findOne(
+                { _id: job._id },
+                async function (err, user) {
+                  console.log(invitations)
+                  user.invitations = invitations;
+                  await user.save();
+                }).clone();
             }
-          ).clone();
+          }
+        }
+      ).clone();
 
-          jobId = await FindCandidateByEmail(candidate.Email, job_id);
-          console.log(jobId);
-          // response
-          //   .status(200)
-          //   .json({ Message: "Invitations Sent", jobId: jobId });
-        });
-      // }).clone();
+      jobId = await FindCandidateByEmail(candidate.Email, job_id);
+      console.log(jobId);
+      // response
+      //   .status(200)
+      //   .json({ Message: "Invitations Sent", jobId: jobId });
+    });
+    // }).clone();
 
 
-      console.log("heelo");
-    
+    console.log("heelo");
+
   } catch (err) {
     console.log("Error : ", err);
   }
@@ -635,8 +669,9 @@ export const approveJob = async (req, res) => {
     await Job.findOne(
       { _id: newJob._id },
       async function (err, user) {
-   user.status = "Active";
-    await user.save();}).clone();
+        user.status = "Active";
+        await user.save();
+      }).clone();
 
     sendJobInvitations(newJob);
     console.log(newJob);
@@ -667,22 +702,23 @@ const FindCandidateByEmail = async (email, job_id) => {
       console.log("Step 5");
       if (err) {
         console.log(err);
+      }if(user){
+
+      let newJobID;
+      if (user.jobId === "" || user.jobId === null) {
+        newJobID = job_id;
+      } else {
+        newJobID = user.jobId.concat(",", job_id);
       }
 
-      // let newJobID;
-      // if (user.jobId === "") {
-      //   newJobID = job_id;
-      // } else {
-      //   newJobID = user.jobId.concat(",", job_id);
-      // }
+      user.jobId = newJobID;
+      jobId = newJobID;
 
-      // user.jobId = newJobID;
-      // jobId = newJobID;
-
-      // console.log(jobId);
+      console.log(jobId);
       await user.save();
-      resolve(jobId);
+      resolve(jobId);}
     }).clone();
+  
   });
 };
 

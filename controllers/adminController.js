@@ -90,9 +90,24 @@ export const getXIUserList = async (request, response) => {
         return response.status(403).json("You cannot view XI");
       }
     }).clone();
-    await User.find({ user_type: "XI",status:"Approved" }, function (err, res) {
-      return response.status(200).json(res);
-    }).clone();
+
+    const data = await User.aggregate([
+      { $match: { user_type: "XI",status:"Approved"  } },
+      {
+        $lookup: {
+          from: "xi_infos",
+          localField: "_id",
+          foreignField: "candidate_id",
+          as: "xi_info",
+        },
+      },
+      
+    ]);
+
+      return response.status(200).json(data);
+
+    // await User.find({ user_type: "XI",status:"Approved" }, function (err, res) {
+    // }).clone();
   } catch (error) {
     return response.status(401).json(`Error : ${error.message}`);
   }

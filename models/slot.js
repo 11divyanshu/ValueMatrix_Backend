@@ -27,6 +27,13 @@ const slotSchema = new mongoose.Schema({
     type: String,
     default : "Available"
   },
+  priority: {
+    type: Number,
+  },
+  value: {
+    type: Number,
+  },
+  
   isDeleted: {
     type: Boolean,
     default: false

@@ -35,7 +35,16 @@ const xiInterviewApplicationSchema = new mongoose.Schema({
   interviewMeet: {
     type: String,
     required: false,
+  }
+  ,
+  rating:{
+    type:Number,
+    default:0,
   },
+  comment:{
+    type:String,
+    default:'',
+  }
 });
 
 const xiInterviewApplication = mongoose.model(

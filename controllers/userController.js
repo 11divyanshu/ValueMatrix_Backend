@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import User from "../models/userSchema.js";
 import UserBin from "../models/userSchemaBin.js";
 import Candidate from "../models/candidate_info.js";
@@ -15,6 +16,7 @@ import sendGridMail from "@sendgrid/mail";
 import FormData from "form-data";
 import path from "path";
 import XIInterview from "../models/xiInterviewApplication.js";
+import xi_info from "../models/xi_infoSchema.js";
 
 const url = process.env.BACKEND_URL;
 const front_url = process.env.FRONTEND_URL;
@@ -183,33 +185,59 @@ export const userSignup = async (request, response) => {
       showEmail: request.body.showEmail,
       country: country,
       countryCode: countryCode,
-      status:request.body.user_type === "XI" ? "Pending" : "User",
+      status: request.body.user_type === "XI" ? "Pending" : "User",
     };
 
 
 
-   
-  
+
+
     const newUser = new User(user1);
     await newUser.save();
-    let userArray = [];
-    const candidateInfo = {
-      email: newUser.email,
-      phoneNo: newUser.contact,
-      firstName: firstname,
-      lastname: lastname,
-      candidate_id:0,
-    }
-    userArray.push(candidateInfo);
 
-    if (request.body.user_type == "User" || request.body.user_type == "XI") {
-      const CandidadeCount = await Candidate.count();
-    for (let i = 0; i < userArray.length; i++) {
-      console.log(userArray);
-      userArray[i].candidate_id = CandidadeCount + i +1;
+    if (!candidate) {
+
+
+
+
+
+
+
+
+
+
+
+
+      if (request.body.user_type == "User" || request.body.user_type == "XI") {
+        const CandidadeCount = await Candidate.count();
+        const candidateInfo = {
+          email: newUser.email,
+          phoneNo: newUser.contact,
+          firstName: firstname,
+          lastName: lastname,
+          candidate_id: CandidadeCount + 1,
+          jobId: "",
+        }
+
+
+
+
+
+
+        let newCandidate = new Candidate(candidateInfo);
+        await newCandidate.save();
+      }
     }
-    let newCandidate = await Candidate.insertMany(userArray);
-    } 
+
+    if (request.body.user_type === "XI") {
+      const candidateInfo = {
+        candidate_id: newUser._id,
+
+      }
+      let xi = new xi_info(candidateInfo);
+      await xi.save();
+    }
+
 
     const token = await axios.post(`${url}/generateToken`, {
       user: newUser.id,
@@ -735,6 +763,7 @@ export const setProfile = async (request, response) => {
   }
 };
 
+
 // Get Job Invitations
 export const getJobInvitations = async (request, response) => {
   try {
@@ -743,7 +772,7 @@ export const getJobInvitations = async (request, response) => {
       async function (err, user) {
         if (user) {
           let jobInvites = await Job.find({
-            _id: { $in: user.job_invitations },
+            _id: { $in: user.job_invitations},
           }).clone();
           return response.status(200).json({ jobInvites: jobInvites });
         }
@@ -754,6 +783,7 @@ export const getJobInvitations = async (request, response) => {
     console.log("Error : ", error);
   }
 };
+
 
 
 // Handle Candidate Job Invitation
@@ -785,7 +815,7 @@ export const handleCandidateJobInvitation = async (request, response) => {
                 console.log(newInterview)
 
 
-                 return response.status(200).json({ Success: true, data: newInterview });
+                return response.status(200).json({ Success: true, data: newInterview });
               } else {
                 user.job_invitations = user.job_invitations.filter(
                   (item) => item !== request.body.job_id
@@ -841,7 +871,7 @@ export const listOfUnapproveCompanies = async (req, res) => {
   }
 };
 
-export const handleXIInterview  = async (request, response) => {
+export const handleXIInterview = async (request, response) => {
   try {
     console.log(request.body);
 
@@ -851,10 +881,10 @@ export const handleXIInterview  = async (request, response) => {
       slotId: request.body.slotId,
       applicant: request.body.applicant,
       interviewer: request.body.interviewer,
-      status:request.body.status,
+      status: request.body.status,
     });
     await newInterview.save();
-   
+
     console.log(newInterview)
 
 

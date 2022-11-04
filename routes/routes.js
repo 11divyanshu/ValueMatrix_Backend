@@ -96,6 +96,7 @@ import {
   getCandidateEvaluation,
   interviewApplicationStatusChange,
   updateInterviewApplication,
+  XIPerformance,
   updateXIInterviewApplication,
   getXIInterviewList
 } from "../controllers/interviewApplication-controller.js";
@@ -288,6 +289,7 @@ router.post("/getInterviewApplication", verifyToken, getInterviewApplication);
 router.post("/updateEvaluation", verifyToken, updateEvaluation);
 router.put("/updateInterviewApplication", updateInterviewApplication);
 router.put("/updateXIInterviewApplication", updateXIInterviewApplication);
+router.post("/XIPerformance", XIPerformance);
 
 
 // Evaluation Question Routes
@@ -355,7 +357,8 @@ import {
   slotDetailsOfXIinterview,
   slotDetailsOfUser,
   userInterviewsDetails,
-  ValidateSlot
+  ValidateSlot,
+  priorityEngine
 } from "../controllers/slots.js";
 
 router.get("/slotDetailsOfUser", slotDetailsOfUser);
@@ -500,8 +503,54 @@ router.get("/jobDetailsByJobId", jobDetailsByJobId);
 router.get("/UserDetailsByJobId", UserDetailsByJobId)
  
 import { insertUserInterviewApplications } from '../controllers/xiInterviewApplication-controller.js';
+import { addXICategory, ListXICategory, updateXICategory , addXILevel, ListXILevel, updateXILevel , addXIMultiplier, ListXIMultiplier, updateXIMultiplier } from "../controllers/XiCategory.js";
+import { updateXIInfo ,addXIInfo,getXIInfo} from "../controllers/xi_infoController.js";
 
 router.post('/insertUserInterviewApplications', insertUserInterviewApplications);
 
 router.get("/UserDetailsByJobId", UserDetailsByJobId);
+
+
+
+//Xi Category , limit ,performance Multiplier
+
+
+router.post('/updateXICategory', updateXICategory);
+router.post('/addXICategory', addXICategory);
+router.get('/listXICategory', ListXICategory);
+
+router.post('/updateXILevel', updateXILevel);
+router.post('/addXILevel', addXILevel);
+router.get('/listXILevel', ListXILevel);
+
+router.post('/updateXIMultiplier', updateXIMultiplier);
+router.post('/addXIMultiplier', addXIMultiplier);
+router.get('/listXIMultiplier', ListXIMultiplier);
+
+//XI Info
+
+router.post('/updateXIInfo', updateXIInfo);
+router.post('/addXIInfo', addXIInfo);
+router.get('/getXIInfo', getXIInfo);
+
+// priority Engine
+
+router.post('/priorityEngine', priorityEngine);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export default router;
+
+
+

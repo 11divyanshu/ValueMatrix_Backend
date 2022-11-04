@@ -420,9 +420,78 @@ export const updateXIInterviewApplication = async (req, res) => {
   }
 };
 
+export const XIPerformance = async (req, res) => {
+  try {
+    let id = req.query.id;
+console.log(id)
+    let data = await InterviewApplication.find(
+      { interviewers: { $in: id }, status:"Interviewed" ,rating:{$gt :0} },
+     
+    ).clone()
+    let xidata = await xiInterviewApplication.find(
+      { interviewer:  mongoose.Types.ObjectId(id), status:"Interviewed",rating:{$gt :0} },
+     
+    ).clone()
+
+  let merge =[...data , ...xidata]
+  merge.sort(function(a, b){return  b.rating - a.rating });
+
+let rating =0;
+let count = merge.length;
+  if(merge.length >=40){
+    for(let i=0 ; i<40;i++){
+      rating =rating + merge[i].rating ;
+    }
+  }else{
+    for(let i=0 ; i<merge.length;i++){
+      rating =rating + merge[i].rating ;
+    }
+    }
+    rating  = rating*2  + count*10;
+let level =0;
+    await Level.find({min: { $lte:count} , max:{$gt :count}},  async(err, res) =>{
+      console.log(res)
+     level = res[0].level;
+      
+  }).clone()
+
+  let multiplier =0 ;
+    await PerformanceMultiplier.find({min: { $lte:rating} , max:{$gt :rating}},  async(err, res) =>{
+      console.log(res)
+       multiplier = res[0].multiplier;
+       let user1 = await xi_info.findOneAndUpdate(
+        { candidate_id: mongoose.Types.ObjectId(id) },
+        {rating : rating , count : merge.length , multiplier: multiplier , level:level},
+        
+    
+    );
+  }).clone()
+
+  console.log(rating);
+  console.log(count);
+
+ 
+
+
+
+    console.log(merge)
+    if (data) {
+      res.send().status(200);
+    } else {
+      res.send({ data: "Updatation failed" }).status(400);
+    }
+  } catch (err) {
+    console.log("error in updateInterviewApplication", err);
+    res.send(err).status(400);
+  }
+};
+
 import job from "../models/jobSchema.js";
 import interviewApplication from "../models/interviewApplicationSchema.js";
 import xiInterviewApplication from "../models/xiInterviewApplication.js";
+import Level from "../models/LevelSchema.js";
+import PerformanceMultiplier from "../models/PerformanceMultiplierSchema.js";
+import xi_info from "../models/xi_infoSchema.js";
 
 var ObjectId = mongoose.Types.ObjectId;
 

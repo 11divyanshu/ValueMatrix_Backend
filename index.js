@@ -16,13 +16,15 @@ import twilio from 'twilio';
 collectDefaultMetrics();
 
 const domain = process.env.FRONTEND_DOMAIN
-const accountSid = 'AC09f5dbae6f3d0958f34956e7fd042466'; // Your Account SID from www.twilio.com/console
-const authToken = '777ab2cebd3caceb714a0eab8fa395cd';
+
 const app = express();
 const PORT = 8000;
+// const twilio = require('twilio');
 const ClientCapability = twilio.jwt.ClientCapability;
 const VoiceResponse = twilio.twiml.VoiceResponse;
-const client = new twilio(accountSid, authToken);
+
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
 
 
 app.use(
@@ -33,9 +35,7 @@ app.use(
     saveUninitialized: false,
   })
 );
-app.use('/js/twilio.min.js', (req, res) => {
-  res.sendFile('./node_modules/twilio-client/dist/twilio.min.js');
-});
+
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
@@ -43,21 +43,16 @@ app.use("/media", express.static("media"));
 
 Connection();
 app.get('/token', (request, response) => {
-  console.log("token");
   const capability = new ClientCapability({
     accountSid: process.env.TWILIO_ACCOUNT_SID,
     authToken: process.env.TWILIO_AUTH_TOKEN,
   });
-
   capability.addScope(
     new ClientCapability.OutgoingClientScope({
       applicationSid: process.env.TWILIO_TWIML_APP_SID})
   );
-
   const token = capability.toJwt();
-console.log(token)
-  // Include token in a JSON response
-  response.status(200).send({
+  response.send({
     token: token,
   });
 });
@@ -66,10 +61,10 @@ console.log(token)
 app.post('/voice', (request, response) => {
   let voiceResponse = new VoiceResponse();
   voiceResponse.dial({
-    callerId: 9617949056,
+    callerId: process.env.TWILIO_NUMBER
   }, request.body.number);
   response.type('text/xml');
-  response.send(voiceResponse.toString());
+  response.send(voiceResponse.toString());  
 });
 
 app.get("/metrics", async (_req, res) => {
@@ -206,6 +201,7 @@ app.get(
   }
 );
 // LinkedIn Auth
+
 
 // Github Auth
 app.get('/auth/github',

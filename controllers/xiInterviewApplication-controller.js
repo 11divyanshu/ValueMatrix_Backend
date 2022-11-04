@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import Job from "../models/jobSchema.js";
 import User from "../models/userSchema.js";
 import Notification from "../models/notificationSchema.js";
-import XiInterviewApplication from "../models/xiInterviewApplicationSchema.js";
+import XiInterviewApplication from "../models/xiInterviewApplication.js";
 import {} from "dotenv/config.js";
 import fs from "fs";
 import passwordHash from "password-hash";

@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
-import Level from "../models/LevelSchema.js";
-import PerformanceMultiplier from "../models/PerformanceMultiplierSchema.js";
+import Level from "../models/levelSchema.js";
+import PerformanceMultiplier from "../models/performanceMultiplierSchema.js";
 import XICategory from "../models/xiCategorySchema.js";
 import Xi_info from "../models/xi_infoSchema.js";
-
+import twilio from "twilio";
+const ClientCapability = twilio.jwt.ClientCapability;
+const VoiceResponse = twilio.twiml.VoiceResponse;
 export const addXIInfo = async (request, response) => {
     try {
 
@@ -20,7 +22,6 @@ export const addXIInfo = async (request, response) => {
 }
 export const getXIInfo = async (request, response) => {
     try {
-        console.log(request.query)
         let user1 = await Xi_info.findOne(
             { candidate_id: request.query.id });
        return response.status(200).json({user:user1});
@@ -30,9 +31,37 @@ export const getXIInfo = async (request, response) => {
     }
 }
 
+export const getDialerToken = async (request, response) => {
+    try {
+        const capability = new ClientCapability({
+            accountSid: process.env.TWILIO_ACCOUNT_SID,
+            authToken: process.env.TWILIO_AUTH_TOKEN,
+          });
+          capability.addScope(
+            new ClientCapability.OutgoingClientScope({
+              applicationSid: process.env.TWILIO_TWIML_APP_SID})
+          );
+          const token = capability.toJwt();
+          response.send({
+            token: token,
+          });
+    } catch (error) {
+        response.status(500).send(error);
+    }
+}
+
+export const getDialerCall = async (request, response) => {
+    console.log(request.body);
+    let voiceResponse = new VoiceResponse();
+    voiceResponse.dial({
+      callerId: process.env.TWILIO_NUMBER
+    }, request.body.To);
+    response.type('text/xml');
+    response.send(voiceResponse.toString());  
+}
+
 export const updateXIInfo = async (request, response) => {
     try {
-        console.log(request.body.updates)
         let user1 = await Xi_info.findOneAndUpdate(
             { candidate_id: request.body.id },
             request.body.updates,

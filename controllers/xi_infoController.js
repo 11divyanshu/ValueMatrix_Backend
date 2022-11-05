@@ -3,7 +3,9 @@ import Level from "../models/LevelSchema.js";
 import PerformanceMultiplier from "../models/PerformanceMultiplierSchema.js";
 import XICategory from "../models/xiCategorySchema.js";
 import Xi_info from "../models/xi_infoSchema.js";
-
+import twilio from "twilio";
+const ClientCapability = twilio.jwt.ClientCapability;
+const VoiceResponse = twilio.twiml.VoiceResponse;
 export const addXIInfo = async (request, response) => {
     try {
 
@@ -25,6 +27,26 @@ export const getXIInfo = async (request, response) => {
             { candidate_id: request.query.id });
        return response.status(200).json({user:user1});
 
+    } catch (error) {
+
+    }
+}
+
+export const getDialerToken = async (request, response) => {
+    try {
+        console.log(process.env.TWILIO_ACCOUNT_SID);
+        const capability = new ClientCapability({
+            accountSid: process.env.TWILIO_ACCOUNT_SID,
+            authToken: process.env.TWILIO_AUTH_TOKEN,
+          });
+          capability.addScope(
+            new ClientCapability.OutgoingClientScope({
+              applicationSid: process.env.TWILIO_TWIML_APP_SID})
+          );
+          const token = capability.toJwt();
+          response.send({
+            token: token,
+          });
     } catch (error) {
 
     }

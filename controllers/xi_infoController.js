@@ -51,11 +51,11 @@ export const getDialerToken = async (request, response) => {
 }
 
 export const getDialerCall = async (request, response) => {
-    console.log("Check")
+    console.log(request.body);
     let voiceResponse = new VoiceResponse();
     voiceResponse.dial({
       callerId: process.env.TWILIO_NUMBER
-    }, "+917089011423");
+    }, request.body.number);
     response.type('text/xml');
     response.send(voiceResponse.toString());  
 }

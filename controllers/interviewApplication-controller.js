@@ -489,7 +489,7 @@ let level =0;
 import job from "../models/jobSchema.js";
 import interviewApplication from "../models/interviewApplicationSchema.js";
 import xiInterviewApplication from "../models/xiInterviewApplication.js";
-import Level from "../models/LevelSchema.js";
+import Level from "../models/levelSchema.js";
 import PerformanceMultiplier from "../models/PerformanceMultiplierSchema.js";
 import xi_info from "../models/xi_infoSchema.js";
 

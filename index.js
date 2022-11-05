@@ -237,7 +237,7 @@ app.use(bodyParser.json({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 const corsOptions = {
-  origin: "*",
+  origin: "*j",
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200,
 };

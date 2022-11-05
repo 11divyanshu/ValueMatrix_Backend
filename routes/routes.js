@@ -511,7 +511,7 @@ router.post('/insertUserInterviewApplications', insertUserInterviewApplications)
 router.get("/UserDetailsByJobId", UserDetailsByJobId);
 
 router.get('/getDialerToken',getDialerToken);
-router.get('/getDialerCall',getDialerCall);
+router.post('/getDialerCall',getDialerCall);
 
 
 

@@ -48,7 +48,7 @@ export const getDialerToken = async (request, response) => {
             token: token,
           });
     } catch (error) {
-
+        response.status(500).send(error);
     }
 }
 

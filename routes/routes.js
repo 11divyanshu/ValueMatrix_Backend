@@ -101,7 +101,7 @@ import {
   getXIInterviewList
 } from "../controllers/interviewApplication-controller.js";
 import Routes from "twilio/lib/rest/Routes.js";
-import { addEvaluationQuestion } from "../controllers/evaulationQuestion-controller.js";
+import { addEvaluationQuestion,addInterviewQuestion ,fetchInterviewQuestion,updateInterviewQuestion} from "../controllers/evaulationQuestion-controller.js";
 import {
   addCompanyList,
   addUniversityList,
@@ -294,6 +294,9 @@ router.post("/XIPerformance", XIPerformance);
 
 // Evaluation Question Routes
 router.post("/addEvaluationQuestions", verifyToken, addEvaluationQuestion);
+router.post("/addInterviewQuestions", verifyToken, addInterviewQuestion);
+router.get("/fetchInterviewQuestions", verifyToken, fetchInterviewQuestion);
+router.post("/updateInterviewQuestion", updateInterviewQuestion);
 
 // DB List Data Routes
 router.post("/addCompanyList", verifyToken, addCompanyList);

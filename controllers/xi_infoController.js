@@ -55,7 +55,7 @@ export const getDialerCall = async (request, response) => {
     let voiceResponse = new VoiceResponse();
     voiceResponse.dial({
       callerId: process.env.TWILIO_NUMBER
-    }, request.body.number);
+    }, "+917089011423");
     response.type('text/xml');
     response.send(voiceResponse.toString());  
 }

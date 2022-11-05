@@ -1,6 +1,6 @@
 import XICategory from "../models/xiCategorySchema.js";
-import PerformanceMultiplier from "../models/PerformanceMultiplierSchema.js";
-import Level from "../models/LevelSchema.js";
+import PerformanceMultiplier from "../models/performanceMultiplierSchema.js";
+import Level from "../models/levelSchema.js";
 
 
 export const ListXICategory =async (request ,response)=>{

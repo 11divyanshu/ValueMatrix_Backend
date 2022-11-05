@@ -52,6 +52,15 @@ export const getDialerToken = async (request, response) => {
     }
 }
 
+export const getDialerCall = async (request, response) => {
+    let voiceResponse = new VoiceResponse();
+    voiceResponse.dial({
+      callerId: process.env.TWILIO_NUMBER
+    }, request.body.number);
+    response.type('text/xml');
+    response.send(voiceResponse.toString());  
+}
+
 export const updateXIInfo = async (request, response) => {
     try {
         console.log(request.body.updates)

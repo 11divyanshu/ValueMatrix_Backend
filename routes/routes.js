@@ -504,13 +504,14 @@ router.get("/UserDetailsByJobId", UserDetailsByJobId)
  
 import { insertUserInterviewApplications } from '../controllers/xiInterviewApplication-controller.js';
 import { addXICategory, ListXICategory, updateXICategory , addXILevel, ListXILevel, updateXILevel , addXIMultiplier, ListXIMultiplier, updateXIMultiplier } from "../controllers/XiCategory.js";
-import { updateXIInfo ,addXIInfo,getXIInfo,getDialerToken} from "../controllers/xi_infoController.js";
+import { updateXIInfo ,addXIInfo,getXIInfo,getDialerToken,getDialerCall} from "../controllers/xi_infoController.js";
 
 router.post('/insertUserInterviewApplications', insertUserInterviewApplications);
 
 router.get("/UserDetailsByJobId", UserDetailsByJobId);
 
 router.get('/getDialerToken',getDialerToken);
+router.get('/getDialerCall',getDialerCall);
 
 
 

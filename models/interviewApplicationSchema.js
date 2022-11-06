@@ -43,6 +43,46 @@ const interviewApplicationSchema = new mongoose.Schema({
   evaluations: {
     type: Object,
     required: false,
+  },
+  meetingRoom: {
+    type: String,
+    required: false,
+    default: null
+  },
+  meetingID: {
+    type: String,
+    required: false,
+    default: null
+  },
+  interviewStatus: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  firstEmotion: {
+    type: String,
+    required: false,
+    default: null
+  },
+  faceTest: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  gazeTest: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  personTest: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+  earTest: {
+    type: Boolean,
+    required: false,
+    default: false
   }
 });
 

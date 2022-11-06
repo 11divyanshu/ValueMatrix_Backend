@@ -473,4 +473,9 @@ router.post("/jobStatusChange", jobStatusChange);
 router.get("/jobDetailsUploadedByUser", jobDetailsUploadedByUser);
 router.get("/jobDetailsByJobId", jobDetailsByJobId);
 router.get("/UserDetailsByJobId", UserDetailsByJobId);
+
+import { getinterviewdetails, checkinterviewdetails, updateinterviewcheck, nullallchecks } from "../controllers/interview-controller.js";
+router.post('/getinterviewdetails', getinterviewdetails);
+router.post('/checkinterviewdetails', nullallchecks, checkinterviewdetails);
+router.post('/updateinterviewcheck', updateinterviewcheck);
 export default router;

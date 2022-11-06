@@ -8,7 +8,6 @@ const jobBinSchema = new mongoose.Schema({
   },
   jobDesc: {
     type: String,
-    required: true,
   },
   createTime: {
     type: Date,
@@ -20,16 +19,13 @@ const jobBinSchema = new mongoose.Schema({
   },
   location: {
     type: String,
-    required: true,
   },
   jobType: {
     type: String,
-    required: true,
     enum: ["Internship", "Full-Time", "Part-Time", "Freelancing"],
   },
   jobLocation: {
     type: String,
-    required: true,
     enum: ["Remote", "Hybrid", "On-Site"],
   },
   applicants: {
@@ -41,7 +37,7 @@ const jobBinSchema = new mongoose.Schema({
   hiringOrganization: {
     type: String,
     // type: Company
-    required: true,
+    // required: true,
   },
   salary: {
     type: Array,
@@ -101,6 +97,7 @@ const jobBinSchema = new mongoose.Schema({
   },
   status: {
     type: String,
+    default:"Pending"
   },
   draft: {
     type: Boolean,

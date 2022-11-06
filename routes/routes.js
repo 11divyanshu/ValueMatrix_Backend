@@ -5,6 +5,7 @@ import multer from "multer";
 import {
   sendOTPEmail,
   UpdateEmailOTP,
+  sendForwardedMail,
 } from "../controllers/mail-controller.js";
 
 import {
@@ -26,6 +27,7 @@ import {
   handleCandidateJobInvitation,
   fetchCountry,
   getCountryList,
+  handleXIInterview
 } from "../controllers/userController.js";
 
 import { sendOTPSMS, updateContactOTP } from "../controllers/sms-controller.js";
@@ -39,8 +41,12 @@ import {
 import {
   adminLogin,
   companyList,
+  getXIList,
+  getXIUserList,
+  getSuperXIUserList,
+  postXIUserLevel,
   userList,
-  downloadResume,
+  downloadResume, 
   addAdminUser,
   addTaxId,
   findAndUpdateTax,
@@ -59,13 +65,15 @@ import {
   addJob,
   exportJobDetails,
   listJobs,
+  listBinJobs,
   updateJob,
   GetJobFromId,
   sendJobInvitations,
   listJobsCandidate,
   archiveJob,
   approveJob,
-  listOfUnapproveJobs
+  listOfUnapproveJobs,
+  getJobBinById
 } from "../controllers/job-controller.js";
 import {
   resetPassword,
@@ -88,9 +96,12 @@ import {
   getCandidateEvaluation,
   interviewApplicationStatusChange,
   updateInterviewApplication,
+  XIPerformance,
+  updateXIInterviewApplication,
+  getXIInterviewList
 } from "../controllers/interviewApplication-controller.js";
 import Routes from "twilio/lib/rest/Routes.js";
-import { addEvaluationQuestion } from "../controllers/evaulationQuestion-controller.js";
+import { addEvaluationQuestion,addInterviewQuestion ,fetchInterviewQuestion,updateInterviewQuestion} from "../controllers/evaulationQuestion-controller.js";
 import {
   addCompanyList,
   addUniversityList,
@@ -163,6 +174,7 @@ router.post("/getUserInviteFromResetPassId", getUserInviteFromResetPassId);
 router.post("/setProfile", setProfile);
 router.post("/fetchCountry", fetchCountry);
 router.post("/getCountryList", getCountryList);
+router.post("/handleXIInterview", handleXIInterview);
 
 // Candidate Routes
 router.post(
@@ -203,6 +215,10 @@ router.post("/resetPassword", resetPassword);
 // Admin Routes
 router.post("/adminLogin", adminLogin);
 router.post("/getCompanyList", verifyToken, companyList);
+router.post("/getXIList", verifyToken, getXIList);
+router.post("/getXIUserList", verifyToken, getXIUserList);
+router.post("/getSuperXIUserList", verifyToken, getSuperXIUserList);
+router.post("/postXIUserLevel", verifyToken, postXIUserLevel);
 router.post("/getUserList", verifyToken, userList);
 router.post("/downloadResume", verifyToken, downloadResume);
 router.post("/addAdminUser", verifyToken, addAdminUser);
@@ -213,6 +229,7 @@ router.post("/deleteTaxId/:id", verifyToken, findAndDeleteTax);
 // Sending mails
 router.post("/updateEmailOTP", verifyToken, UpdateEmailOTP);
 router.post("/OTPMail", sendOTPEmail);
+router.post("/sendForwardedMail", sendForwardedMail);
 
 // sending sms
 router.post("/OTPSms", sendOTPSMS);
@@ -241,10 +258,12 @@ router.post("/sendWhatsappNotification", verifyToken, whatsappMessage);
 // Job
 router.post("/addJob", addJob);
 router.post("/listJob/:id", listJobs);
+router.get("/listBinJob/:id", listBinJobs);
 router.post("/listJobCandidate", listJobsCandidate);
 router.post("/updateJobDetails", verifyToken, updateJob);
 router.post("/exportJobDetails", exportJobDetails);
 router.post("/getJobFromId", verifyToken, GetJobFromId);
+router.post("/getJobBinById", verifyToken, getJobBinById);
 router.post("/sendJobInvitation", verifyToken, sendJobInvitations);
 router.post("/archiveJob", archiveJob);
 router.post("/approveJob", approveJob);
@@ -264,14 +283,20 @@ router.post("/getSkills", verifyToken, getSkills);
 
 // XI Routes
 router.post("/listXIEvaluation", verifyToken, getXIEvaluationList);
+router.post("/getXIInterviewList", verifyToken, getXIInterviewList);
 router.post("/listXIEvaluatedReports", verifyToken, getXIEvaluatedReports);
 router.post("/getInterviewApplication", verifyToken, getInterviewApplication);
 router.post("/updateEvaluation", verifyToken, updateEvaluation);
 router.put("/updateInterviewApplication", updateInterviewApplication);
+router.put("/updateXIInterviewApplication", updateXIInterviewApplication);
+router.post("/XIPerformance", XIPerformance);
 
 
 // Evaluation Question Routes
 router.post("/addEvaluationQuestions", verifyToken, addEvaluationQuestion);
+router.post("/addInterviewQuestions", verifyToken, addInterviewQuestion);
+router.get("/fetchInterviewQuestions", verifyToken, fetchInterviewQuestion);
+router.post("/updateInterviewQuestion", updateInterviewQuestion);
 
 // DB List Data Routes
 router.post("/addCompanyList", verifyToken, addCompanyList);
@@ -332,16 +357,21 @@ import {
   XISlots,
   findCandidateByEmail,
   slotDetailsOfXI,
+  slotDetailsOfXIinterview,
   slotDetailsOfUser,
-  userInterviewsDetails
+  userInterviewsDetails,
+  ValidateSlot,
+  priorityEngine
 } from "../controllers/slots.js";
 
 router.get("/slotDetailsOfUser", slotDetailsOfUser);
 router.get("/userInterviewsDetails", userInterviewsDetails);
 router.get("/slotDetailsOfXI", slotDetailsOfXI);
+router.get("/slotDetailsOfXIinterview", slotDetailsOfXIinterview);
 router.get("/XISlots", XISlots);
 router.post("/findCandidateByEmail", findCandidateByEmail);
 
+router.post("/ValidateSlot", ValidateSlot);
 router.post("/addSlot", (req, res) => {
 
   const { body } = req;
@@ -354,9 +384,10 @@ router.post("/addSlot", (req, res) => {
   });
 });
 
-router.get("/availableSlots", (req, res) => {
-  const { query } = req;
-  availableSlots(query, (err, data) => {
+router.post("/availableSlots", (req, res) => {
+  const { body } = req;
+   
+  availableSlots(body, (err, data) => {
     if (err) {
       res.status(500).send(err);
     } else {
@@ -472,10 +503,64 @@ import { jobStatusChange, jobDetailsUploadedByUser, jobDetailsByJobId, UserDetai
 router.post("/jobStatusChange", jobStatusChange);
 router.get("/jobDetailsUploadedByUser", jobDetailsUploadedByUser);
 router.get("/jobDetailsByJobId", jobDetailsByJobId);
+router.get("/UserDetailsByJobId", UserDetailsByJobId)
+ 
+import { insertUserInterviewApplications } from '../controllers/xiInterviewApplication-controller.js';
+import { addXICategory, ListXICategory, updateXICategory , addXILevel, ListXILevel, updateXILevel , addXIMultiplier, ListXIMultiplier, updateXIMultiplier } from "../controllers/XiCategory.js";
+import { updateXIInfo ,addXIInfo,getXIInfo,getDialerToken,getDialerCall} from "../controllers/xi_infoController.js";
+
+router.post('/insertUserInterviewApplications', insertUserInterviewApplications);
+
 router.get("/UserDetailsByJobId", UserDetailsByJobId);
 
 import { getinterviewdetails, checkinterviewdetails, updateinterviewcheck, nullallchecks } from "../controllers/interview-controller.js";
 router.post('/getinterviewdetails', getinterviewdetails);
 router.post('/checkinterviewdetails', nullallchecks, checkinterviewdetails);
 router.post('/updateinterviewcheck', updateinterviewcheck);
+router.get('/getDialerToken',getDialerToken);
+router.post('/getDialerCall',getDialerCall);
+
+
+
+//Xi Category , limit ,performance Multiplier
+
+
+router.post('/updateXICategory', updateXICategory);
+router.post('/addXICategory', addXICategory);
+router.get('/listXICategory', ListXICategory);
+
+router.post('/updateXILevel', updateXILevel);
+router.post('/addXILevel', addXILevel);
+router.get('/listXILevel', ListXILevel);
+
+router.post('/updateXIMultiplier', updateXIMultiplier);
+router.post('/addXIMultiplier', addXIMultiplier);
+router.get('/listXIMultiplier', ListXIMultiplier);
+
+//XI Info
+
+router.post('/updateXIInfo', updateXIInfo);
+router.post('/addXIInfo', addXIInfo);
+router.get('/getXIInfo', getXIInfo);
+
+// priority Engine
+
+router.post('/priorityEngine', priorityEngine);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export default router;
+
+
+

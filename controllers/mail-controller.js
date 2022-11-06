@@ -40,6 +40,34 @@ export const sendOTPEmail = async (req, res) => {
     console.log(err);
   }
 };
+export const sendForwardedMail = async (req, res) => {
+  try {
+   
+
+    let html = `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
+        <div style="margin:50px auto;width:70%;padding:20px 0">
+          <div style="border-bottom:1px solid #eee">
+            <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Value Matrix</a>
+          </div>
+          <p style="font-size:1.1em">Hi,</p>
+          <p>Thank you for choosing us. Your Request for Upgrading to XI has been forwarded. Kindly book a slot for the interview </p>
+          <p style="font-size:0.9em;">Regards,<br />Value Matrix</p>
+          <hr style="border:none;border-top:1px solid #eee" />
+        </div>
+      </div>`;
+    
+    await sendGridMail.send({
+      to: req.body.mail,
+      from: "developervm171@gmail.com",
+      subject: "Value Matrix OTP",
+      html: html,
+    });
+
+    return res.status(200).json({Message:"Request Forwarded"});
+  } catch (err) {
+    console.log(err);
+  }
+};
 
 export const UpdateEmailOTP = async (request, response) => {
   try {

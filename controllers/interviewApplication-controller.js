@@ -79,49 +79,42 @@ export const getXIEvaluationList = async (request, response) => {
     ]);
 console.log(data)
     response.send(data)
-    // await InterviewApplication.find({
-    //   interviewers: { $in: mongoose.Types.ObjectId(u_id) },
-    // }).exec(async function (err, res) {
-    //   if (err) {
-    //     // console.log(err);
-    //     return response.status(500).json({ message: "Error Occured" });
-    //   } else {
-    //     // console.log(res);
-    //     await res.forEach(async (item, index) => {
-    //       let r = { application: item };
-    //       await Job.findOne({ _id: item.job }, async function (err, result) {
-    //         r.job = {
-    //           _id: result._id,
-    //           jobTitle: result.jobTitle,
-    //           hiringOrganization: result.hiringOrganization,
-    //           jobLocation: result.jobLocation,
-    //           jobDescription: result.jobDescription,
-    //           jobType: result.jobType,
-    //         };
-
-    //        await User.findOne(
-    //           { _id: item.applicant },
-    //           async function (err, result) {
-    //             r.applicant = {
-    //               _id: result._id,
-    //               firstName: result.firstName,
-    //               lastname: result.lastname,
-    //               contact: result.contact,
-    //               email: result.email,
-    //               username: result.username,
-    //             };
-    //           }
-    //         ).clone();
-    //       }).clone();
-
-    //       // console.log(r);
-    //       jobs.push(r);
-    //     });
-    //     setTimeout(() => {
-    //       return response.status(200).json({ jobs });
-    //     }, 2000);
-    //   }
-    // });
+   
+  } catch (err) {
+    return response.status(500).json({ Error: err.message });
+  }
+};
+export const getXIInterviewList = async (request, response) => {
+  try {
+    // console.log(request);
+    let u_id = request.body.user_id;
+    console.log(u_id);
+    let jobs = [];
+    let data = await xiInterviewApplication.aggregate([
+      { $match: { interviewer: mongoose.Types.ObjectId(u_id) } },
+      
+      {
+        $lookup: {
+          from: "slots",
+          localField: "slotId",
+          foreignField: "_id",
+          as: "slots",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "applicant",
+          foreignField: "_id",
+          as: "applicant",
+        },
+      },
+     
+      
+    ]);
+console.log(data)
+    response.send(data)
+   
   } catch (err) {
     return response.status(500).json({ Error: err.message });
   }
@@ -408,9 +401,97 @@ export const updateInterviewApplication = async (req, res) => {
     res.send(err).status(400);
   }
 };
+export const updateXIInterviewApplication = async (req, res) => {
+  try {
+    let id = req.query.id;
+
+    let data = await xiInterviewApplication.findOneAndUpdate(
+      { _id: mongoose.Types.ObjectId(id) },
+      req.body
+    );
+    if (data) {
+      res.send().status(200);
+    } else {
+      res.send({ data: "Updatation failed" }).status(400);
+    }
+  } catch (err) {
+    console.log("error in updateInterviewApplication", err);
+    res.send(err).status(400);
+  }
+};
+
+export const XIPerformance = async (req, res) => {
+  try {
+    let id = req.query.id;
+console.log(id)
+    let data = await InterviewApplication.find(
+      { interviewers: { $in: id }, status:"Interviewed" ,rating:{$gt :0} },
+     
+    ).clone()
+    let xidata = await xiInterviewApplication.find(
+      { interviewer:  mongoose.Types.ObjectId(id), status:"Interviewed",rating:{$gt :0} },
+     
+    ).clone()
+
+  let merge =[...data , ...xidata]
+  merge.sort(function(a, b){return  b.rating - a.rating });
+
+let rating =0;
+let count = merge.length;
+  if(merge.length >=40){
+    for(let i=0 ; i<40;i++){
+      rating =rating + merge[i].rating ;
+    }
+  }else{
+    for(let i=0 ; i<merge.length;i++){
+      rating =rating + merge[i].rating ;
+    }
+    }
+    rating  = rating*2  + count*10;
+let level =0;
+    await Level.find({min: { $lte:count} , max:{$gt :count}},  async(err, res) =>{
+      console.log(res)
+     level = res[0].level;
+      
+  }).clone()
+
+  let multiplier =0 ;
+    await PerformanceMultiplier.find({min: { $lte:rating} , max:{$gt :rating}},  async(err, res) =>{
+      console.log(res)
+       multiplier = res[0].multiplier;
+       let user1 = await xi_info.findOneAndUpdate(
+        { candidate_id: mongoose.Types.ObjectId(id) },
+        {rating : rating , count : merge.length , multiplier: multiplier , level:level},
+        
+    
+    );
+  }).clone()
+
+  console.log(rating);
+  console.log(count);
+
+ 
+
+
+
+    console.log(merge)
+    if (data) {
+      res.send().status(200);
+    } else {
+      res.send({ data: "Updatation failed" }).status(400);
+    }
+  } catch (err) {
+    console.log("error in updateInterviewApplication", err);
+    res.send(err).status(400);
+  }
+};
 
 import job from "../models/jobSchema.js";
 import interviewApplication from "../models/interviewApplicationSchema.js";
+import xiInterviewApplication from "../models/xiInterviewApplication.js";
+import Level from "../models/levelSchema.js";
+import PerformanceMultiplier from "../models/performanceMultiplierSchema.js";
+import xi_info from "../models/xi_infoSchema.js";
 
 var ObjectId = mongoose.Types.ObjectId;
 

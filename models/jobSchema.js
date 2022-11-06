@@ -50,7 +50,7 @@ const jobSchema = new mongoose.Schema({
   },
   invitations: {
     type: Array,
-    default: [],
+    
   },
   invitations_declined: {
     type: Array,

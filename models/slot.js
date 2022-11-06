@@ -16,6 +16,10 @@ const slotSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  weekNo:{
+  type:Number,
+  required:true,
+  },
   userId: {
     type:  mongoose.Schema.Types.ObjectId,
   },
@@ -23,6 +27,13 @@ const slotSchema = new mongoose.Schema({
     type: String,
     default : "Available"
   },
+  priority: {
+    type: Number,
+  },
+  value: {
+    type: Number,
+  },
+  
   isDeleted: {
     type: Boolean,
     default: false
@@ -41,7 +52,13 @@ const slotSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  slotType:{
+    type:String,
+    enum : ["XI", "SuperXI"],
+
+  }
 });
+
 
 const slot = mongoose.model("slot", slotSchema);
 export default slot;

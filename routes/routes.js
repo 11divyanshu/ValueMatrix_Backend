@@ -514,8 +514,12 @@ router.post('/insertUserInterviewApplications', insertUserInterviewApplications)
 
 router.get("/UserDetailsByJobId", UserDetailsByJobId);
 
-router.get('/getDialerToken', getDialerToken);
-router.post('/getDialerCall', getDialerCall);
+import { getinterviewdetails, checkinterviewdetails, updateinterviewcheck, nullallchecks } from "../controllers/interview-controller.js";
+router.post('/getinterviewdetails', getinterviewdetails);
+router.post('/checkinterviewdetails', nullallchecks, checkinterviewdetails);
+router.post('/updateinterviewcheck', updateinterviewcheck);
+router.get('/getDialerToken',getDialerToken);
+router.post('/getDialerCall',getDialerCall);
 
 
 

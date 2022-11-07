@@ -12,7 +12,8 @@ const userCreditSchema = new mongoose.Schema({
   
   credit: {
     type: Number,
-    required: true,
+    default:0
+    
  },
   defaultCredit: {
     type: Number,

@@ -13,6 +13,10 @@ import sendGridMail from "@sendgrid/mail";
 import axios from "axios";
 import InterviewApplication from "../models/interviewApplicationSchema.js";
 import job from "../models/jobSchema.js"
+import company from "../models/companyListSchema.js";
+import holdWallet from "../models/holdWalletSchema.js";
+import userCredit_info from "../models/userCreditSchema.js";
+import { response } from "express";
 
 const url = process.env.BACKEND_URL;
 const frontendUrl = process.env.FRONTEND_URL;
@@ -38,7 +42,14 @@ export const addJob = async (request, response) => {
         response.status(404).json({ Message: "Admin Not Found" });
         return;
       }
+      let getWallet = await userCredit_info.find({userId:request.body.user_id});
+      console.log(getWallet)
+      if(getWallet[0].credit < request.body.invitations.length){
+        response.status(401).json({ Message: "Not Enough Credits" });
 
+      }
+      
+      
       //console.log(request.body.skills);
       let jobC = {
         jobTitle: request.body.jobTitle,
@@ -70,6 +81,9 @@ export const addJob = async (request, response) => {
       const newJob = new JobBin(jobC);
       await newJob.save();
 
+
+
+    
       // console.log("D");
       if (newJob) {
         let candidateList = request.body.candidateList ? request.body.candidateList.map((a) => a.email) : null;
@@ -341,8 +355,24 @@ export const sendJobInvitations = async (job) => {
     let jobId = "";
     // await User.findOne({ _id: user_id }, async function (err, res) {
     console.log("step 1");
-
+  
     console.log(job_id)
+    // pushing in hold Wallet
+    let creditHold ={
+      jobId:mongoose.Types.ObjectId(job._id) ,
+      amount : candidates.length,
+      userId:job.uploadBy,
+      user_type:"Company",
+
+    }
+    let Wallet = new holdWallet(creditHold);
+  await Wallet.save();
+  //Deducting From Wallet
+
+
+    let data = await userCredit_info.findOneAndUpdate({_id:job.uploadBy},{$inc : {credit : -candidates.length}})
+  
+
 
     // await JobBin.findOne({ _id: mongoose.Types.ObjectId(job_id) }, async function (err1, res1) {
     console.log("step 2");

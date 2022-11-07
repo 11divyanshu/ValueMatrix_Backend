@@ -1,8 +1,12 @@
 import express from "express";
+import crypto from "crypto";
+import mongoose from "mongoose";
 import Razorpay from "razorpay"
 import verifyToken from "../middleware/auth.js";
 import multer from "multer";
 import { } from "dotenv/config";
+import User from "../models/userSchema.js"
+import userCredit_info from "../models/userCreditSchema.js"
 import {
   sendOTPEmail,
   UpdateEmailOTP,
@@ -546,6 +550,7 @@ import { addCreditCategory, ListCreditCategory, updateCreditCategory, addCreditC
 import CreditCategory from "../models/creditCategorySchema.js";
 import Transaction from "../models/transactionSchema.js";
 import { request } from "https";
+import { getTransactions,updateWallet,userRequestUpdate,userAcceptUpdate } from "../controllers/transactionController.js";
 
 router.post('/updateCreditCategory', updateCreditCategory);
 router.post('/addCreditCategory', addCreditCategory);
@@ -576,7 +581,12 @@ router.get('/getXIInfo', getXIInfo);
 router.post('/priorityEngine', priorityEngine);
 router.post('/addCoupon', addCoupon);
 
+//Transactions
 
+router.get('/getTransactions', getTransactions);
+router.post('/updateWallet', updateWallet);
+router.get('/userRequestUpdate', userRequestUpdate);
+router.get('/userAcceptUpdate', userAcceptUpdate);
 
 //Razorpay
 
@@ -606,7 +616,7 @@ router.post("/payment/orders", async (req, res) => {
 
 
     const options = {
-      amount: data[0].amount * req.body.amount * 100, // amount in smallest currency unit
+      amount: data[0].amount * req.body.amount *100, // amount in smallest currency unit
       currency: "INR",
       receipt: "receipt_order_74394",
       
@@ -641,8 +651,25 @@ router.post("/payment/success", async (req, res) => {
       razorpaySignature: razorpaySignature,
     },async function(err,res){
       console.log(res)
-    })
-    console.log(data)
+    }).clone()
+
+console.log(req.body.userId)
+   let data1 = await User.findOneAndUpdate({ _id: mongoose.Types.ObjectId(req.body.userId) }, {
+      $push:{
+        transactions:id
+      }
+    }).clone()
+    console.log(data1)
+    
+    let data2 = await userCredit_info.findOneAndUpdate({ userId: mongoose.Types.ObjectId(req.body.userId) }, {
+      $inc:{
+        credit: req.body.credit
+      }
+    }).clone()
+    
+    console.log(data2)
+
+     
 
     // Creating our own digest
     // The format should be like this:
@@ -666,6 +693,7 @@ router.post("/payment/success", async (req, res) => {
       paymentId: razorpayPaymentId,
     });
   } catch (error) {
+    console.log(error.message)
     res.status(500).send(error);
   }
 });

@@ -95,14 +95,17 @@ export const addSlot = (data, callback) => {
 
 
             for (let i = 0; i < data.length; i++) {
+              console.log(data[i])
 
               Slot.find(
                 { createdBy: data[i].createdBy, isDeleted: false }, async (err, res) => {
                   if (err) {
                     console.log(err)
                   } else {
-                    for (let i = 0; i < res.length; i++) {
-                      if ((res[i].startDate <= data[i].startDate && res[i].endDate >= data[i].startDate) || (res[i].startDate <= data[i].endDate && res[i].endDate >= data[i].endDate)) {
+                    for (let j = 0; j < res.length; j++) {
+                      console.log("res",res)
+                      console.log("data",data)
+                      if ((new Date(res[j].startDate) <= new Date(data[i].startDate) && new Date(res[j].endDate) >= new Date(data[i].startDate)) || (new Date(res[j].startDate) <= new Date(data[i].endDate) && new Date(res[j].endDate) >= new Date(data[i].endDate))) {
                         return cb("Slot Already Booked", null)
                       }
                     }
@@ -190,7 +193,7 @@ export const priorityEngine = async(request, response) => {
   // console.log(res)
   try {
     
- 
+
   let date = request.query.date;
   console.log(date)
   console.log(request.body)
@@ -223,13 +226,16 @@ export const priorityEngine = async(request, response) => {
 const updateSlot1 =async (array)=>{
   for(let j=0 ;j <array.length ;j++){
     await updateSlot(array[j]._id, { priority: j });
+    array[j]._id = j;
   
   }
+  return array;
   
 }
 
 const helper = async(array) =>{
   console.log(array)
+  let length = array.length;
  
   for (let i = 0; i < array.length; i++) {
     let xi1 = 0;
@@ -246,7 +252,7 @@ const helper = async(array) =>{
   
 array.sort(function(a, b){return a.value - b.value});
 console.log(array)
-await updateSlot1(array);
+let resArray = await updateSlot1(array);
 
 
     // for (let j = i + 1; j < array.length; j++) {
@@ -290,9 +296,9 @@ await updateSlot1(array);
 
       
     // }
-
+let obj = resArray[length-1];
   
-  return array;
+  return obj;
 
 }
 
@@ -322,7 +328,6 @@ export const bookSlot = (data, callback) => {
                 if (err) {
                   return cb(err, null);
                 }
-
 
                 var digits = "0123456789";
                 for (let i = 0; i < 6; i++) {
@@ -364,6 +369,7 @@ export const bookSlot = (data, callback) => {
                   },
                 },
               ],
+
               (err, res) => {
                 if (err) {
                   console.log(err);

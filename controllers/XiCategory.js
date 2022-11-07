@@ -1,7 +1,7 @@
 import XICategory from "../models/xiCategorySchema.js";
 import PerformanceMultiplier from "../models/performanceMultiplierSchema.js";
 import Level from "../models/levelSchema.js";
-
+import CreditCategory from "../models/creditCategorySchema.js"
 
 export const ListXICategory =async (request ,response)=>{
     try {
@@ -56,6 +56,7 @@ export const addXICategory =async(request ,response)=>{
     }
    
 }
+
 export const addXIMultiplier =async(request ,response)=>{
     try {
         console.log(request.body)

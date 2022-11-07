@@ -220,6 +220,13 @@ export const priorityEngine = async(request, response) => {
     
 }
 }
+const updateSlot1 =async (array)=>{
+  for(let j=0 ;j <array.length ;j++){
+    await updateSlot(array[j]._id, { priority: j });
+  
+  }
+  
+}
 
 const helper = async(array) =>{
   console.log(array)
@@ -234,14 +241,14 @@ const helper = async(array) =>{
       }
     }).clone();
   }
+  
 
   
 array.sort(function(a, b){return a.value - b.value});
 console.log(array)
+await updateSlot1(array);
 
-for(let j=0 ;j <array.length ;j++){
-  await updateSlot(array[j]._id, { priority: j });
-}
+
     // for (let j = i + 1; j < array.length; j++) {
     //   console.log(j)
 

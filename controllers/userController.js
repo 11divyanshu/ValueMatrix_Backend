@@ -17,6 +17,7 @@ import FormData from "form-data";
 import path from "path";
 import XIInterview from "../models/xiInterviewApplication.js";
 import xi_info from "../models/xi_infoSchema.js";
+import userCredit_info from "../models/userCreditSchema.js";
 
 const url = process.env.BACKEND_URL;
 const front_url = process.env.FRONTEND_URL;
@@ -228,6 +229,17 @@ export const userSignup = async (request, response) => {
         await newCandidate.save();
       }
     }
+
+
+
+    const creditInfo ={
+      userid: newUser._id,
+    }
+    let user_creditInfo = new userCredit_info(creditInfo);
+    await user_creditInfo.save();
+
+
+    
 
     if (request.body.user_type === "XI") {
       const candidateInfo = {

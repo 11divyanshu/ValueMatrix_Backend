@@ -4,6 +4,7 @@ import fs from "fs";
 import sendGridMail from "@sendgrid/mail";
 import axios from "axios";
 import interview from "../models/interviewApplicationSchema.js";
+import interviewQuestion from "../models/interviewQuestionSchema.js";
 import { job } from "cron";
 
 const url = process.env.BACKEND_URL;
@@ -226,12 +227,51 @@ export const checkcompilestatus = async (request, response)=>{
 
     do{
       let rsppnnss = await axios.request(options);
-      let updatecode = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { code: rsppnnss.data.source_code , output: rsppnnss.data.stdout , input: rsppnnss.data.stdin } }, { new: true });
       response.send({
         data: "Compilation Report",
         rsp: rsppnnss.data
       }).status(200);
     }while(statusId != 1 && statusId != 2);
+  } catch (err) {
+    response.send({ data: "something went wrong", err }).status(400);
+  }
+}
+
+export const savecode = async (request, response)=>{
+  console.log(request.body);
+  let crntinterview = await interview.findById(request.body.meetingID);
+  let oldcodingQuestions = crntinterview.codingQuestions;
+  let newcodingQuestions = [];
+  let receivedcode = {
+    question: request.body.qid,
+    source_code: request.body.source_code,
+    stdin: request.body.stdin,
+    stdout: request.body.stdout
+  };
+  for(let i=0; i<oldcodingQuestions.length; i++){
+    if(oldcodingQuestions[i].question===request.body.qid){
+      newcodingQuestions.push(receivedcode);
+    }else{
+      newcodingQuestions.push(oldcodingQuestions[i]);
+    }
+  }
+  let updatecode = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { codingQuestions: newcodingQuestions } }, { new: true });
+  response.send({
+    data: "Code Updated"
+  }).status(200);
+}
+
+export const xiquestions = async (request, response)=>{
+  try {
+    interviewQuestion.find({}, function (err, res) {
+      if (err) {
+        return response.send().status(400);
+      } else {
+        return response
+          .status(200)
+          .json({ ques: res });
+      }
+    })
   } catch (err) {
     response.send({ data: "something went wrong", err }).status(400);
   }

@@ -95,17 +95,21 @@ const interviewApplicationSchema = new mongoose.Schema({
   code:{
     type:String,
     default:"",
-    default: false
+    required: false,
   },
   output:{
     type:String,
     default:"",
-    default: false
+    required: false,
   },
   input:{
     type:String,
     default:"",
-    default: false
+    required: false,
+  },
+  codingQuestions:{
+    type: Array,
+    required: false
   }
 });
 

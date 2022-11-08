@@ -91,6 +91,21 @@ const interviewApplicationSchema = new mongoose.Schema({
   comment:{
     type:String,
     default:"",
+  },
+  code:{
+    type:String,
+    default:"",
+    default: false
+  },
+  output:{
+    type:String,
+    default:"",
+    default: false
+  },
+  input:{
+    type:String,
+    default:"",
+    default: false
   }
 });
 

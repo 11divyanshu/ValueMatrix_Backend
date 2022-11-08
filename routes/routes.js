@@ -589,10 +589,23 @@ router.get('/userRequestUpdate', userRequestUpdate);
 router.get('/userAcceptUpdate', userAcceptUpdate);
 
 //Razorpay
-
+router.post("/getUserCurrentCredit", async (req,res) => {
+  try{
+    console.log(req.body);
+    userCredit_info.findOne({userId:req.body.userId}, async function (err, res1) {
+      if (res1) {
+        return res.status(200).json({ data: res1 });
+      }
+      res.status(403).json({ Message: "Wallet Not Found" });
+    });
+  }catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+});
 router.post("/payment/orders", async (req, res) => {
   try {
-    console.log(req.body.user_type)
+    console.log(req.body);
     const instance = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_SECRET,
@@ -611,6 +624,7 @@ router.post("/payment/orders", async (req, res) => {
 
     }
     let transactionData = new Transaction(tData);
+
     await transactionData.save();
 
 
@@ -623,7 +637,7 @@ router.post("/payment/orders", async (req, res) => {
     };
 
     const order = await instance.orders.create(options);
-console.log(order)
+    console.log(order)
     if (!order) return res.status(500).send("Some error occured");
 
     res.json({order:order ,id:transactionData._id});
@@ -653,13 +667,13 @@ router.post("/payment/success", async (req, res) => {
       console.log(res)
     }).clone()
 
-console.log(req.body.userId)
+console.log("razorpaysignature : " + razorpaySignature)
    let data1 = await User.findOneAndUpdate({ _id: mongoose.Types.ObjectId(req.body.userId) }, {
       $push:{
         transactions:id
       }
     }).clone()
-    console.log(data1)
+    // console.log(data1)
     
     let data2 = await userCredit_info.findOneAndUpdate({ userId: mongoose.Types.ObjectId(req.body.userId) }, {
       $inc:{
@@ -667,7 +681,7 @@ console.log(req.body.userId)
       }
     }).clone()
     
-    console.log(data2)
+    // console.log(data2)
 
      
 
@@ -679,10 +693,10 @@ console.log(req.body.userId)
     shasum.update(`${orderCreationId}|${razorpayPaymentId}`);
 
     const digest = shasum.digest("hex");
-
+    console.log("Digest : " + digest);
     // comaparing our digest with the actual signature
-    if (digest !== razorpaySignature)
-      return res.status(400).json({ msg: "Transaction not legit!" });
+    // if (digest !== razorpaySignature)
+    //   return res.status(400).json({ msg: "Transaction not legit!" });
 
     // THE PAYMENT IS LEGIT & VERIFIED
     // YOU CAN SAVE THE DETAILS IN YOUR DATABASE IF YOU WANT

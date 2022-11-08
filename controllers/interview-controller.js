@@ -171,3 +171,68 @@ export const nullallchecks = async (request, response, next)=>{
     response.send({ data: "something went wrong", err }).status(400);
   }
 }
+
+export const compilecode = async (request, response)=>{
+  try{
+    console.log(request.body.data);
+    const options = {
+      method: "POST",
+      url: process.env.REACT_APP_RAPID_API_URL,
+      params: { base64_encoded: "true", fields: "*" },
+      headers: {
+        "content-type": "application/json",
+        "Content-Type": "application/json",
+        "X-RapidAPI-Host": process.env.REACT_APP_RAPID_API_HOST,
+        "X-RapidAPI-Key": process.env.REACT_APP_RAPID_API_KEY,
+      },
+      data: request.body.data,
+    };
+
+    console.log("options");
+
+    axios
+      .request(options)
+      .then(function (rspns) {
+        const token = rspns.data.token;
+        response.send({
+          data : "Token Generated",
+          token: token
+        }).status(200);
+      })
+      .catch((err) => {
+        let error = err.response ? err.response.data : err;
+        console.log(error);
+        response.send({
+          data: "Error",
+          error: error
+        }).status(400);
+      });
+  }catch{
+    response.send({ data: "something went wrong" }).status(400);
+  }
+}
+
+export const checkcompilestatus = async (request, response)=>{
+  try {
+    const options = {
+      method: "GET",
+      url: process.env.REACT_APP_RAPID_API_URL + "/" + request.body.token,
+      params: { base64_encoded: "true", fields: "*" },
+      headers: {
+        "X-RapidAPI-Host": process.env.REACT_APP_RAPID_API_HOST,
+        "X-RapidAPI-Key": process.env.REACT_APP_RAPID_API_KEY,
+      },
+    };
+
+    do{
+      let rsppnnss = await axios.request(options);
+      let updatecode = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { code: rsppnnss.data.source_code , output: rsppnnss.data.stdout , input: rsppnnss.data.stdin } }, { new: true });
+      response.send({
+        data: "Compilation Report",
+        rsp: rsppnnss.data
+      }).status(200);
+    }while(statusId != 1 && statusId != 2);
+  } catch (err) {
+    response.send({ data: "something went wrong", err }).status(400);
+  }
+}

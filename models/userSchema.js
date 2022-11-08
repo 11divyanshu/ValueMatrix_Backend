@@ -204,6 +204,10 @@ const userSchema = new mongoose.Schema({
   isXI:{
     type:Boolean,
     default:false,
+  },
+  transactions:{
+    type:Array,
+    default:[],
   }
 });
 

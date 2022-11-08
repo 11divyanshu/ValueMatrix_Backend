@@ -4,6 +4,7 @@ const levelSchema = new mongoose.Schema({
   level: {
     type: Number,
     required: true,
+    unique:true,
   },
   
   min: {

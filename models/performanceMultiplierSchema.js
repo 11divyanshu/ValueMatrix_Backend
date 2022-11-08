@@ -4,6 +4,7 @@ const performanceMultiplierSchema = new mongoose.Schema({
   multiplier: {
     type: Number,
     required: true,
+    unique:true,
   },
   min: {
     type: Number,

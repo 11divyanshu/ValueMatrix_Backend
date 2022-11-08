@@ -4,6 +4,7 @@ const xiCategorySchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
+    unique:true,
   },
   cat: {
     type: Number,

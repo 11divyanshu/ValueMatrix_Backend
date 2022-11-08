@@ -1,7 +1,12 @@
 import express from "express";
+import crypto from "crypto";
+import mongoose from "mongoose";
+import Razorpay from "razorpay"
 import verifyToken from "../middleware/auth.js";
 import multer from "multer";
-
+import { } from "dotenv/config";
+import User from "../models/userSchema.js"
+import userCredit_info from "../models/userCreditSchema.js"
 import {
   sendOTPEmail,
   UpdateEmailOTP,
@@ -46,7 +51,7 @@ import {
   getSuperXIUserList,
   postXIUserLevel,
   userList,
-  downloadResume, 
+  downloadResume,
   addAdminUser,
   addTaxId,
   findAndUpdateTax,
@@ -101,7 +106,7 @@ import {
   getXIInterviewList
 } from "../controllers/interviewApplication-controller.js";
 import Routes from "twilio/lib/rest/Routes.js";
-import { addEvaluationQuestion,addInterviewQuestion ,fetchInterviewQuestion,updateInterviewQuestion} from "../controllers/evaulationQuestion-controller.js";
+import { addEvaluationQuestion, addInterviewQuestion, fetchInterviewQuestion, updateInterviewQuestion } from "../controllers/evaulationQuestion-controller.js";
 import {
   addCompanyList,
   addUniversityList,
@@ -386,7 +391,7 @@ router.post("/addSlot", (req, res) => {
 
 router.post("/availableSlots", (req, res) => {
   const { body } = req;
-   
+
   availableSlots(body, (err, data) => {
     if (err) {
       res.status(500).send(err);
@@ -504,10 +509,10 @@ router.post("/jobStatusChange", jobStatusChange);
 router.get("/jobDetailsUploadedByUser", jobDetailsUploadedByUser);
 router.get("/jobDetailsByJobId", jobDetailsByJobId);
 router.get("/UserDetailsByJobId", UserDetailsByJobId)
- 
+
 import { insertUserInterviewApplications } from '../controllers/xiInterviewApplication-controller.js';
-import { addXICategory, ListXICategory, updateXICategory , addXILevel, ListXILevel, updateXILevel , addXIMultiplier, ListXIMultiplier, updateXIMultiplier } from "../controllers/XiCategory.js";
-import { updateXIInfo ,addXIInfo,getXIInfo,getDialerToken,getDialerCall} from "../controllers/xi_infoController.js";
+import { addXICategory, ListXICategory, updateXICategory, addXILevel, ListXILevel, updateXILevel, addXIMultiplier, ListXIMultiplier, updateXIMultiplier } from "../controllers/XiCategory.js";
+import { updateXIInfo, addXIInfo, getXIInfo, getDialerToken, getDialerCall } from "../controllers/xi_infoController.js";
 
 router.post('/insertUserInterviewApplications', insertUserInterviewApplications);
 
@@ -532,6 +537,8 @@ router.post('/updateXICategory', updateXICategory);
 router.post('/addXICategory', addXICategory);
 router.get('/listXICategory', ListXICategory);
 
+
+
 router.post('/updateXILevel', updateXILevel);
 router.post('/addXILevel', addXILevel);
 router.get('/listXILevel', ListXILevel);
@@ -539,6 +546,32 @@ router.get('/listXILevel', ListXILevel);
 router.post('/updateXIMultiplier', updateXIMultiplier);
 router.post('/addXIMultiplier', addXIMultiplier);
 router.get('/listXIMultiplier', ListXIMultiplier);
+
+
+//Credits
+import { addCreditCategory, ListCreditCategory, updateCreditCategory, addCreditConverter, ListCreditConverter, updateCreditConverter, getCreditInfoList, updateUserCreditInfo, addCoupon } from "../controllers/creditControllers.js";
+import CreditCategory from "../models/creditCategorySchema.js";
+import Transaction from "../models/transactionSchema.js";
+import { request } from "https";
+import { getTransactions,updateWallet,userRequestUpdate,userAcceptUpdate } from "../controllers/transactionController.js";
+
+router.post('/updateCreditCategory', updateCreditCategory);
+router.post('/addCreditCategory', addCreditCategory);
+router.get('/listCreditCategory', ListCreditCategory);
+
+router.post('/updateCreditConverter', updateCreditConverter);
+router.post('/addCreditConverter', addCreditConverter);
+router.get('/listCreditConverter', ListCreditConverter);
+
+
+
+
+
+router.post('/getCreditInfoList', getCreditInfoList);
+router.post('/updateUserCreditInfo', updateUserCreditInfo);
+
+
+
 
 //XI Info
 
@@ -549,6 +582,124 @@ router.get('/getXIInfo', getXIInfo);
 // priority Engine
 
 router.post('/priorityEngine', priorityEngine);
+router.post('/addCoupon', addCoupon);
+
+//Transactions
+
+router.get('/getTransactions', getTransactions);
+router.post('/updateWallet', updateWallet);
+router.get('/userRequestUpdate', userRequestUpdate);
+router.get('/userAcceptUpdate', userAcceptUpdate);
+
+//Razorpay
+
+router.post("/payment/orders", async (req, res) => {
+  try {
+    console.log(req.body.user_type)
+    const instance = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_SECRET,
+    });
+    // console.log(instance)
+    let amount = 0;
+    let data = await CreditCategory.find({ category: req.body.user_type });
+    console.log(data)
+
+
+    let tData = {
+      applicantId: req.body.userId,
+      amount: data[0].amount * req.body.amount * 100,
+      credit: req.body.amount,
+      transactionDate: new Date(),
+
+    }
+    let transactionData = new Transaction(tData);
+    await transactionData.save();
+
+
+
+    const options = {
+      amount: data[0].amount * req.body.amount *100, // amount in smallest currency unit
+      currency: "INR",
+      receipt: "receipt_order_74394",
+      
+    };
+
+    const order = await instance.orders.create(options);
+console.log(order)
+    if (!order) return res.status(500).send("Some error occured");
+
+    res.json({order:order ,id:transactionData._id});
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+router.post("/payment/success", async (req, res) => {
+  try {
+    // getting the details back from our font-end
+    console.log(req.body)
+    const {
+      orderCreationId,
+      razorpayPaymentId,
+      razorpayOrderId,
+      razorpaySignature,
+      
+    } = req.body.data;
+    let id =req.body.id;
+
+   let data = await Transaction.findOneAndUpdate({ _id: id }, {
+      orderCreationId: orderCreationId,
+      razorpayPaymentId: razorpayPaymentId,
+      razorpayOrderId: razorpayOrderId,
+      razorpaySignature: razorpaySignature,
+    },async function(err,res){
+      console.log(res)
+    }).clone()
+
+console.log(req.body.userId)
+   let data1 = await User.findOneAndUpdate({ _id: mongoose.Types.ObjectId(req.body.userId) }, {
+      $push:{
+        transactions:id
+      }
+    }).clone()
+    console.log(data1)
+    
+    let data2 = await userCredit_info.findOneAndUpdate({ userId: mongoose.Types.ObjectId(req.body.userId) }, {
+      $inc:{
+        credit: req.body.credit
+      }
+    }).clone()
+    
+    console.log(data2)
+
+     
+
+    // Creating our own digest
+    // The format should be like this:
+    // digest = hmac_sha256(orderCreationId + "|" + razorpayPaymentId, secret);
+    const shasum = crypto.createHmac("sha256", "w2lBtgmeuDUfnJVp43UpcaiT");
+
+    shasum.update(`${orderCreationId}|${razorpayPaymentId}`);
+
+    const digest = shasum.digest("hex");
+
+    // comaparing our digest with the actual signature
+    if (digest !== razorpaySignature)
+      return res.status(400).json({ msg: "Transaction not legit!" });
+
+    // THE PAYMENT IS LEGIT & VERIFIED
+    // YOU CAN SAVE THE DETAILS IN YOUR DATABASE IF YOU WANT
+
+    res.json({
+      msg: "success",
+      orderId: razorpayOrderId,
+      paymentId: razorpayPaymentId,
+    });
+  } catch (error) {
+    console.log(error.message)
+    res.status(500).send(error);
+  }
+});
 
 
 

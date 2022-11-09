@@ -271,10 +271,10 @@ export const userSignup = async (request, response) => {
       subject: "Value Matrix Sign Up",
       html: html,
     });
-    if (newUser) {
+    if (ussrr) {
       return response
         .status(200)
-        .json({ user: newUser, access_token: token.data.token });
+        .json({ user: ussrr, access_token: token.data.token });
     } else {
       return response.status(401).json("Invalid Signup!");
     }

@@ -6,6 +6,10 @@ const interviewQuestionSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    type:{
+        type: String,
+        required: true
+    },
     answer:{
         type: String,
         required: false
@@ -13,6 +17,23 @@ const interviewQuestionSchema = new mongoose.Schema({
     isDeleted:{
         type:Boolean,
         default:false
+    },
+    category:{
+        type: String,
+        default: true
+    },
+    level:{
+        type: String,
+        default: true
+    },
+    experience:{
+        type: String,
+        default: true
+    },
+    usage:{
+        type: Array,
+        required: false,
+        default: []
     }
 });
 

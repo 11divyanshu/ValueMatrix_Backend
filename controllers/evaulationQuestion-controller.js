@@ -43,6 +43,10 @@ export const addInterviewQuestion = async (req, response) => {
       let q = {
         question: question.question,
         answer: question.answer ? question.answer : "",
+        type: question.type,
+        level: question.level,
+        experience: question.experience,
+        category: question.category,
       };
       let ques = new interviewQuestion(q);
       await ques.save();

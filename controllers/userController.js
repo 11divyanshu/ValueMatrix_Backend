@@ -97,9 +97,11 @@ export const vaildateSignupDetails = async (request, response) => {
 // User Login
 export const userLogin = async (request, response) => {
   try {
+    console.log("check");
     var userData = await User.findOne({
       secondaryEmails: request.body.username,
     });
+    console.log(userData);
     if (userData) {
       return response.status(400).json({
         msg: "You can not login with secondary email",
@@ -122,12 +124,10 @@ export const userLogin = async (request, response) => {
     if (user && correctuser) {
       const token = await axios.post(`${url}/generateToken`, { user: user.id });
       const access_token = token.data.token;
-      user.access_token = access_token;
-      user.access_valid = true;
-      await user.save();
+      let ussrr = await User.findOneAndUpdate({ _id: user._id.toString()}, { access_token: access_token, access_valid: true });
       return response
         .status(200)
-        .json({ access_token: access_token, user: user });
+        .json({ access_token: access_token, user: ussrr });
     } else {
       return response.status(401).json("Invalid Login!");
     }
@@ -255,8 +255,9 @@ export const userSignup = async (request, response) => {
       user: newUser.id,
     });
     // console.log(token);
-    newUser.access_token = token.data.token;
-    await newUser.save();
+    let access_token = token.data.token;
+
+    let ussrr = await User.findOneAndUpdate({ _id: newUser._id.toString()}, { access_token: access_token, access_valid: true });
 
     let html = `<div>Hi ${request.body.username}</div>,
     <div>Welcome to Value Matrix. It is a great pleasure to have you on board</div>.

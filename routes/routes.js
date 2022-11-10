@@ -524,14 +524,15 @@ router.post('/insertUserInterviewApplications', insertUserInterviewApplications)
 
 router.get("/UserDetailsByJobId", UserDetailsByJobId);
 
-import { getinterviewdetails, checkinterviewdetails, updateinterviewcheck, nullallchecks, compilecode, checkcompilestatus, savecode, xiquestions } from "../controllers/interview-controller.js";
+import { getinterviewdetails, checkinterviewdetails, updateinterviewcheck, nullallchecks, compilecode, checkcompilestatus, savecode, xiquestions, getinterviewjob } from "../controllers/interview-controller.js";
 router.post('/getinterviewdetails', getinterviewdetails);
 router.post('/checkinterviewdetails', nullallchecks, checkinterviewdetails);
 router.post('/fetchinterviewdetails', checkinterviewdetails);
 router.post('/updateinterviewcheck', updateinterviewcheck);
 router.post('/compilecode', compilecode);
 router.post('/savecode', savecode);
-router.post('/xiquestions', xiquestions);
+router.post('/getxiquestions', xiquestions);
+router.post('/getinterviewjob', getinterviewjob);
 router.post('/checkcompilestatus', checkcompilestatus);
 router.get('/getDialerToken',getDialerToken);
 router.post('/getDialerCall',getDialerCall);

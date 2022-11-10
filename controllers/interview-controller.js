@@ -5,6 +5,7 @@ import sendGridMail from "@sendgrid/mail";
 import axios from "axios";
 import interview from "../models/interviewApplicationSchema.js";
 import interviewQuestion from "../models/interviewQuestionSchema.js";
+import Job from "../models/jobSchema.js";
 import { job } from "cron";
 
 const url = process.env.BACKEND_URL;
@@ -64,7 +65,8 @@ export const checkinterviewdetails = async (request, response) => {
               gazeTest: interviewDetails.gazeTest,
               personTest: interviewDetails.personTest,
               earTest: interviewDetails.earTest,
-              interviewStatus: interviewDetails.interviewStatus
+              interviewStatus: interviewDetails.interviewStatus,
+              jobid: interviewDetails.job.toString()
             }).status(200);
             // console.log(userAuthToken);
           });
@@ -89,7 +91,8 @@ export const checkinterviewdetails = async (request, response) => {
             gazeTest: interviewDetails.gazeTest,
             personTest: interviewDetails.personTest,
             earTest: interviewDetails.earTest,
-            interviewStatus: interviewDetails.interviewStatus
+            interviewStatus: interviewDetails.interviewStatus,
+            jobid: interviewDetails.job.toString()
           }).status(200);
           // console.log(userAuthToken);
         });
@@ -113,7 +116,8 @@ export const checkinterviewdetails = async (request, response) => {
                 gazeTest: interviewDetails.gazeTest,
                 personTest: interviewDetails.personTest,
                 earTest: interviewDetails.earTest,
-                interviewStatus: interviewDetails.interviewStatus
+                interviewStatus: interviewDetails.interviewStatus,
+                jobid: interviewDetails.job.toString()
               }).status(200);
               // console.log(userAuthToken);
             });
@@ -159,7 +163,7 @@ export const updateinterviewcheck = async (request, response)=>{
         updatedinterview: updatedinterview
       }).status(200);
     }
-  }catch{
+  }catch(err){
     response.send({ data: "something went wrong", err }).status(400);
   }
 }
@@ -263,13 +267,31 @@ export const savecode = async (request, response)=>{
 
 export const xiquestions = async (request, response)=>{
   try {
-    interviewQuestion.find({}, function (err, res) {
+    interviewQuestion.findOne({ type: request.body.type, level: request.body.level, experience: request.body.experience, category: request.body.category }, function (err, res) {
       if (err) {
         return response.send().status(400);
       } else {
         return response
           .status(200)
           .json({ ques: res });
+      }
+    })
+  } catch (err) {
+    response.send({ data: "something went wrong", err }).status(400);
+  }
+}
+
+export const getinterviewjob = async (request, response)=>{
+  try {
+    console.log(request.body);
+    let crntjob = await Job.findById(request.body.jobid);
+    Job.findOne({}, function (err, res) {
+      if (err) {
+        return response.send().status(400);
+      } else {
+        return response
+          .status(200)
+          .json({ job: crntjob });
       }
     })
   } catch (err) {

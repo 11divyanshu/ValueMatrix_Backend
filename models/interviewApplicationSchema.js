@@ -107,8 +107,16 @@ const interviewApplicationSchema = new mongoose.Schema({
     default:"",
     required: false,
   },
-  codingQuestions:{
+  generalQuestions:{
     type: Array,
+    required: false
+  },
+  ps1:{
+    type: Object,
+    required: false
+  },
+  ps2:{
+    type: Object,
     required: false
   }
 });

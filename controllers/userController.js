@@ -18,6 +18,7 @@ import path from "path";
 import XIInterview from "../models/xiInterviewApplication.js";
 import xi_info from "../models/xi_infoSchema.js";
 import userCredit_info from "../models/userCreditSchema.js";
+import { request } from "http";
 
 const url = process.env.BACKEND_URL;
 const front_url = process.env.FRONTEND_URL;
@@ -69,6 +70,16 @@ let profileData = {
   secondaryEmails: [],
   profileImg: "",
   googleId: "",
+};
+
+export const handleXIStatusChange = async (request, response) => {
+  try{
+    let data = request.body;
+    await User.findOneAndUpdate({_id:data.id}, {status:data.status})
+    response.send("XI status updated successfully.").status(200)
+  } catch (error) {
+    console.log("Error : ",  error);
+  }
 };
 
 // Validate Signup details
@@ -535,9 +546,11 @@ export const uploadCandidateResume = async (req, response) => {
         }
 
 
+        console.log(resumeData.ContactInformation.Location.StreetAddressLines);
         profileData.address = resumeData.ContactInformation.Location
           ? resumeData.ContactInformation.Location.StreetAddressLines[0]
           : "";
+
 
         let linkedIn = resumeData.ContactInformation.WebAddresses
           ? resumeData.ContactInformation.WebAddresses.filter(

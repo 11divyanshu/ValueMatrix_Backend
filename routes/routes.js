@@ -181,6 +181,12 @@ router.post("/fetchCountry", fetchCountry);
 router.post("/getCountryList", getCountryList);
 router.post("/handleXIInterview", handleXIInterview);
 
+import {handleXIStatusChange} from "../controllers/userController.js"
+router.post(
+  "/handleXIStatusChange",
+  handleXIStatusChange
+);
+
 // Candidate Routes
 router.post(
   "/uploadCandidateResume",

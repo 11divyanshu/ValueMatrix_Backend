@@ -332,11 +332,12 @@ passport.use(
       let contact = profile._json.mobilePhone;
       if (contact === null || contact === undefined) contact = profile.id;
       let username = profile.displayName;
+      let id = v4();
+      console.log(id);
       await user
         .findOne({ email: email }, async function (err, res) {
           if (res) {
             res.linkedInId = profile.id;
-            let id = v4();
             await res.save();
             return done(err, res);
           } else {

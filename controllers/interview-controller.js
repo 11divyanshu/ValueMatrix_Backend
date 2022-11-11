@@ -293,7 +293,7 @@ export const getinterviewjob = async (request, response)=>{
           .status(200)
           .json({ job: crntjob });
       }
-    })
+    }).clone()
   } catch (err) {
     response.send({ data: "something went wrong", err }).status(400);
   }

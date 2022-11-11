@@ -563,6 +563,7 @@ import CreditCategory from "../models/creditCategorySchema.js";
 import Transaction from "../models/transactionSchema.js";
 import { request } from "https";
 import { getTransactions,updateWallet,userRequestUpdate,userAcceptUpdate } from "../controllers/transactionController.js";
+import { createTaskScheduler } from "../controllers/taskScheduler.js";
 
 router.post('/updateCreditCategory', updateCreditCategory);
 router.post('/addCreditCategory', addCreditCategory);
@@ -724,6 +725,9 @@ console.log("razorpaysignature : " + razorpaySignature)
   }
 });
 
+
+// Task Scheduler
+router.post("/createTaskScheduler" ,createTaskScheduler)
 
 
 

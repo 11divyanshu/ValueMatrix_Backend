@@ -135,7 +135,8 @@ const userSchema = new mongoose.Schema({
   },
   user_type: {
     type: String,
-    enum: ["Company", "User", "XI", "SuperXI", "Company_User", "Admin_User"],
+    enum: ["Company", "User", "XI", "SuperXI", "Company_User", "Admin_User","Admin"],
+    
   },
   company_id: {
     type: String,

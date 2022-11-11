@@ -75,8 +75,10 @@ let profileData = {
 export const handleXIStatusChange = async (request, response) => {
   try{
     let data = request.body;
-    await User.findOneAndUpdate({_id:data.id}, {status:data.status})
-    response.send("XI status updated successfully.").status(200)
+    console.log("data" ,data)
+    let user  = await User.findOneAndUpdate({_id:data.id}, {status:data.status}) ; 
+    console.log(user)
+    return response.send("XI status updated successfully.").status(200)
   } catch (error) {
     console.log("Error : ",  error);
   }
@@ -242,9 +244,10 @@ export const userSignup = async (request, response) => {
     }
 
 
+    
 
     const creditInfo ={
-      userid: newUser._id,
+      userId: newUser._id,
     }
     let user_creditInfo = new userCredit_info(creditInfo);
     await user_creditInfo.save();

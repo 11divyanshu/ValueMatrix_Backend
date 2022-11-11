@@ -138,8 +138,9 @@ export const checkinterviewdetails = async (request, response) => {
 
 export const updateinterviewcheck = async (request, response)=>{
   try{
+    let approvedImage = request.body.img;
     if(request.body.type === "face"){
-      let updatedinterview = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { firstEmotion: request.body.data, faceTest: true } }, { new: true });
+      let updatedinterview = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { faceTest: true } }, { new: true });
       response.send({
         data: "Updated Test",
         updatedinterview: updatedinterview
@@ -168,9 +169,32 @@ export const updateinterviewcheck = async (request, response)=>{
   }
 }
 
+export const updatelivestatus = async (request, response)=>{
+  try{
+    let updatedinterview = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { livestats: request.body.stats } }, { new: true });
+    response.send({
+      data: "Updated Stats",
+    }).status(200);
+  }catch(err){
+    response.send({ data: "something went wrong", err }).status(400);
+  }
+}
+
+export const getlivestatus = async (request, response)=>{
+  try{
+    let livestatus = await interview.findById(request.body.meetingID);
+    response.send({
+      data: "Data Retrieved",
+      stats: livestatus
+    }).status(200);
+  }catch(err){
+    response.send({ data: "something went wrong", err }).status(400);
+  }
+}
+
 export const nullallchecks = async (request, response, next)=>{
   try{
-    let initcheck = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { firstEmotion: null, faceTest: false, gazeTest: false, personTest: false, earTest: false } });
+    let initcheck = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { faceTest: false, gazeTest: false, personTest: false, earTest: false } });
     return next();
   }catch{
     response.send({ data: "something went wrong", err }).status(400);

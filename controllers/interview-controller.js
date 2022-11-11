@@ -180,6 +180,53 @@ export const updatelivestatus = async (request, response)=>{
   }
 }
 
+export const startinterview = async (request, response)=>{
+  try{
+    let updatedinterviewstatus = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { interviewStatus: true } }, { new: true });
+    response.send({
+      data: "Interview Started",
+    }).status(200);
+  }catch(err){
+    response.send({ data: "something went wrong", err }).status(400);
+  }
+}
+
+export const endinterview = async (request, response)=>{
+  try{
+    let updatedinterviewstatus = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { interviewStatus: false } }, { new: true });
+    response.send({
+      data: "Interview Completed",
+    }).status(200);
+  }catch(err){
+    response.send({ data: "something went wrong", err }).status(400);
+  }
+}
+
+export const setquestionresult = async (request, response)=>{
+  try{
+    let interviewDetails = await interview.findById(request.body.meetingID);
+    let newset = [...interviewDetails.generalQuestions, request.body.qn]
+    let updatedinterviewstatus = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { generalQuestions: newset } }, { new: true });
+    response.send({
+      data: "Interview Completed",
+    }).status(200);
+  }catch(err){
+    response.send({ data: "something went wrong", err }).status(400);
+  }
+}
+
+export const savecode = async (request, response)=>{
+  try{
+    let updatedcode = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { codearea: request.body.code } }, { new: true });
+    response.send({
+      data: "Updated Code",
+      newstats: updatedcode
+    }).status(200);
+  }catch(err){
+    response.send({ data: "something went wrong", err }).status(400);
+  }
+}
+
 export const getlivestatus = async (request, response)=>{
   try{
     let livestatus = await interview.findById(request.body.meetingID);
@@ -263,30 +310,6 @@ export const checkcompilestatus = async (request, response)=>{
   } catch (err) {
     response.send({ data: "something went wrong", err }).status(400);
   }
-}
-
-export const savecode = async (request, response)=>{
-  console.log(request.body);
-  let crntinterview = await interview.findById(request.body.meetingID);
-  let oldcodingQuestions = crntinterview.codingQuestions;
-  let newcodingQuestions = [];
-  let receivedcode = {
-    question: request.body.qid,
-    source_code: request.body.source_code,
-    stdin: request.body.stdin,
-    stdout: request.body.stdout
-  };
-  for(let i=0; i<oldcodingQuestions.length; i++){
-    if(oldcodingQuestions[i].question===request.body.qid){
-      newcodingQuestions.push(receivedcode);
-    }else{
-      newcodingQuestions.push(oldcodingQuestions[i]);
-    }
-  }
-  let updatecode = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { codingQuestions: newcodingQuestions } }, { new: true });
-  response.send({
-    data: "Code Updated"
-  }).status(200);
 }
 
 export const xiquestions = async (request, response)=>{

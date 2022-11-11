@@ -181,6 +181,12 @@ router.post("/fetchCountry", fetchCountry);
 router.post("/getCountryList", getCountryList);
 router.post("/handleXIInterview", handleXIInterview);
 
+import {handleXIStatusChange} from "../controllers/userController.js"
+router.post(
+  "/handleXIStatusChange",
+  handleXIStatusChange
+);
+
 // Candidate Routes
 router.post(
   "/uploadCandidateResume",
@@ -559,6 +565,7 @@ import CreditCategory from "../models/creditCategorySchema.js";
 import Transaction from "../models/transactionSchema.js";
 import { request } from "https";
 import { getTransactions,updateWallet,userRequestUpdate,userAcceptUpdate } from "../controllers/transactionController.js";
+import { createTaskScheduler } from "../controllers/taskScheduler.js";
 
 router.post('/updateCreditCategory', updateCreditCategory);
 router.post('/addCreditCategory', addCreditCategory);
@@ -720,6 +727,9 @@ console.log("razorpaysignature : " + razorpaySignature)
   }
 });
 
+
+// Task Scheduler
+router.post("/createTaskScheduler" ,createTaskScheduler)
 
 
 

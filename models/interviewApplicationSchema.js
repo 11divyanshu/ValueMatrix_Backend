@@ -60,11 +60,6 @@ const interviewApplicationSchema = new mongoose.Schema({
     required: false,
     default: false
   },
-  firstEmotion: {
-    type: String,
-    required: false,
-    default: null
-  },
   faceTest: {
     type: Boolean,
     required: false,
@@ -118,6 +113,14 @@ const interviewApplicationSchema = new mongoose.Schema({
   },
   ps2:{
     type: Object,
+    required: false
+  },
+  livestats:{
+    type: Object,
+    required: false
+  },
+  codearea:{
+    type: String,
     required: false
   }
 });

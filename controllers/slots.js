@@ -95,7 +95,7 @@ export const addSlot = (data, callback) => {
 
 
             for (let i = 0; i < data.length; i++) {
-              console.log(data[i])
+              console.log("data",data[i])
 
               Slot.find(
                 { createdBy: data[i].createdBy, isDeleted: false }, async (err, res) => {
@@ -106,7 +106,8 @@ export const addSlot = (data, callback) => {
                       console.log("res",res)
                       console.log("data",data)
                       if ((new Date(res[j].startDate) <= new Date(data[i].startDate) && new Date(res[j].endDate) >= new Date(data[i].startDate)) || (new Date(res[j].startDate) <= new Date(data[i].endDate) && new Date(res[j].endDate) >= new Date(data[i].endDate))) {
-                        return cb("Slot Already Booked", null)
+                        console.log("slot booked")
+                        // return cb("Slot Already Booked", null)
                       }
                     }
                   }
@@ -195,8 +196,8 @@ export const priorityEngine = async(request, response) => {
     
 
   let date = request.query.date;
-  console.log(date)
-  console.log(request.body)
+  console.log("date" ,date)
+  console.log("body",request.body)
  
    await Slot.find(
     { status: "Available", isDeleted: false, startDate: request.query.date, slotType: request.body.type },
@@ -241,17 +242,22 @@ const helper = async(array) =>{
     let xi1 = 0;
     await xi_info.find({ candidate_id: array[i].createdBy }, async (err, res) => {
       if (res) {
+        console.log("1",res)
+        if(res[0] && res[0].level && res[0].level > 0 && res[0].cat && res[0].cat>0 && res[0].multiplier && res[0].multiplier >0){
         xi1 = res[0].level * res[0].cat * res[0].multiplier;
         array[i].value = xi1;
         await updateSlot(array[i]._id, { value: xi1 });
+        }
       }
     }).clone();
   }
+
   
+
 
   
 array.sort(function(a, b){return a.value - b.value});
-console.log(array)
+console.log("2",array)
 let resArray = await updateSlot1(array);
 
 
@@ -374,7 +380,7 @@ export const bookSlot = (data, callback) => {
                 if (err) {
                   console.log(err);
                 } else {
-                  console.log(res[0].user)
+                  console.log("slot user",res[0].user)
                   req.query({
                     authorization: fastsms_api,
                     route: "q",

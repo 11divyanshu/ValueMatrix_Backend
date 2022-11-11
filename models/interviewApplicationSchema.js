@@ -43,6 +43,7 @@ const interviewApplicationSchema = new mongoose.Schema({
   evaluations: {
     type: Object,
     required: false,
+    default:{}
   },
   meetingRoom: {
     type: String,

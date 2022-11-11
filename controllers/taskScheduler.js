@@ -7,8 +7,8 @@ export const createTaskScheduler = async(request ,response) =>{
     try {
         const task = {
             applicantId: request.body.applicantId,
-            interviewerid : request.body.interviewerid,
-            interviewid : request.body.interviewid,
+            interviewerid : request.body.interviewerId,
+            interviewid : request.body.interviewId,
             nextTime : request.body.nextTime,
             priority : request.body.priority,
             slotId:request.body.slotId,
@@ -43,7 +43,7 @@ const startTaskScheduler =async(schedule)=>{
 
             }
             
-        })
+        }).clone()
       
 
      },

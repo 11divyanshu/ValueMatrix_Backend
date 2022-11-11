@@ -370,7 +370,7 @@ export const sendJobInvitations = async (job) => {
   //Deducting From Wallet
 
 
-    let data = await userCredit_info.findOneAndUpdate({_id:job.uploadBy},{$inc : {credit : -candidates.length}})
+    let data = await userCredit_info.findOneAndUpdate({userId:job.uploadBy},{$inc : {credit : -candidates.length}})
   
 
 

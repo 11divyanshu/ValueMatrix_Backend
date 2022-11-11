@@ -244,7 +244,7 @@ export const userSignup = async (request, response) => {
     }
 
 
-    
+
 
     const creditInfo ={
       userId: newUser._id,
@@ -864,7 +864,7 @@ export const handleCandidateJobInvitation = async (request, response) => {
         ).clone();
       }
       return response.status(403);
-    });
+    }).clone();
   } catch (err) {
     console.log(err);
   }

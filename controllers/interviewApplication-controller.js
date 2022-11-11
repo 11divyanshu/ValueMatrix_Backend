@@ -45,6 +45,8 @@ export const getUserInterviewApplications = async (request, response) => {
 export const getXIEvaluationList = async (request, response) => {
   try {
     // console.log(request);
+
+
     let u_id = request.body.user_id;
     console.log(u_id);
     let jobs = [];
@@ -184,6 +186,8 @@ export const getXIEvaluatedReports = async (request, response) => {
 export const getInterviewApplication = async (request, response) => {
   try {
     let id = request.body.id;
+
+    
     
     console.log(request.body);
     await InterviewApplication.findOne({ _id: mongoose.Types.ObjectId(id) }).exec(async function (

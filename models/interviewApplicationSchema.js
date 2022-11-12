@@ -88,9 +88,18 @@ const interviewApplicationSchema = new mongoose.Schema({
     type:String,
     default:"",
   },
-  code:{
+  codequestion:{
     type:String,
-    default:"",
+    required: false,
+  },
+  codestdin:{
+    type:String,
+    default:"Code Inputs Appear Here...",
+    required: false,
+  },
+  codestdout:{
+    type:String,
+    default: "Code Output Appears Here...",
     required: false,
   },
   output:{
@@ -121,6 +130,11 @@ const interviewApplicationSchema = new mongoose.Schema({
   },
   codearea:{
     type: String,
+    required: false
+  },
+  codelanguage:{
+    type: String,
+    default: "Javascript",
     required: false
   }
 });

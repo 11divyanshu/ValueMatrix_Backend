@@ -138,7 +138,6 @@ export const checkinterviewdetails = async (request, response) => {
 
 export const updateinterviewcheck = async (request, response)=>{
   try{
-    let approvedImage = request.body.img;
     if(request.body.type === "face"){
       let updatedinterview = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { faceTest: true } }, { new: true });
       response.send({
@@ -217,7 +216,7 @@ export const setquestionresult = async (request, response)=>{
 
 export const savecode = async (request, response)=>{
   try{
-    let updatedcode = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { codearea: request.body.code } }, { new: true });
+    let updatedcode = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { codearea: request.body.code, codestdin: request.body.stdin, codestdout: request.body.stdout } }, { new: true });
     response.send({
       data: "Updated Code",
       newstats: updatedcode
@@ -314,10 +313,13 @@ export const checkcompilestatus = async (request, response)=>{
 
 export const xiquestions = async (request, response)=>{
   try {
-    interviewQuestion.findOne({ type: request.body.type, level: request.body.level, experience: request.body.experience, category: request.body.category }, function (err, res) {
+    interviewQuestion.findOne({ type: request.body.type, level: request.body.level, experience: request.body.experience, category: request.body.category }, async function (err, res) {
       if (err) {
         return response.send().status(400);
       } else {
+        if(request.body.type === "Problem Statement"){
+          let setproblemstm = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { codequestion: res.question } });
+        }
         return response
           .status(200)
           .json({ ques: res });

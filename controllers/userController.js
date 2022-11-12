@@ -110,7 +110,7 @@ export const vaildateSignupDetails = async (request, response) => {
 // User Login
 export const userLogin = async (request, response) => {
   try {
-    console.log("check");
+    console.log("Checking User Function");
     var userData = await User.findOne({
       secondaryEmails: request.body.username,
     });
@@ -137,6 +137,7 @@ export const userLogin = async (request, response) => {
     if (user && correctuser) {
       const token = await axios.post(`${url}/generateToken`, { user: user.id });
       const access_token = token.data.token;
+      console.log("access_token", access_token);
       let ussrr = await User.findOneAndUpdate({ _id: user._id.toString()}, { access_token: access_token, access_valid: true });
       return response
         .status(200)
@@ -145,6 +146,7 @@ export const userLogin = async (request, response) => {
       return response.status(401).json("Invalid Login!");
     }
   } catch (error) {
+    console.log("Error : ", error);
     return response.status(401).json(`Error : ${error.message}`);
   }
 };
@@ -180,7 +182,6 @@ export const userSignup = async (request, response) => {
     let cc = request.body.countryCode.split("-");
     let country = cc[1];
     let countryCode = cc[0];
-    // console.log(cc);
     let user1 = {
       username: request.body.username,
       email: request.body.email,

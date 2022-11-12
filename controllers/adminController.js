@@ -11,6 +11,7 @@ const url = process.env.BACKEND_URL;
 // Admin Login
 export const adminLogin = async (request, response) => {
   try {
+    console.log("Checking function");
     var user = await User.findOne({
       email: request.body.username,
       isAdmin: true,

@@ -15,7 +15,8 @@ const interviewApplicationSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
   },
   status: {
-    type: String
+    type: String,
+    default: "Pending",
   },
   createTime: {
     type: Date,

@@ -9,6 +9,7 @@ import passwordHash from "password-hash";
 import v4 from "uuid/v4.js";
 import { } from "dotenv/config";
 import Job from "../models/jobSchema.js";
+import jobBin from "../models/jobBinSchema.js";
 import Interview from "../models/interviewApplicationSchema.js";
 import multer from "multer";
 import fs from "fs";
@@ -101,6 +102,17 @@ export const vaildateSignupDetails = async (request, response) => {
       email: user1 !== null,
       contact: user2 !== null,
       username: user3 !== null,
+    });
+  } catch (error) {
+    console.log("Error : ", error);
+  }
+};
+
+export const getuserbyEmail = async (request, response) => {
+  try {
+    let user = await User.findOne({ email: request.body.email });
+    return response.json({
+      data: user
     });
   } catch (error) {
     console.log("Error : ", error);
@@ -804,7 +816,11 @@ export const getJobInvitations = async (request, response) => {
           let jobInvites = await Job.find({
             _id: { $in: user.job_invitations},
           }).clone();
-          return response.status(200).json({ jobInvites: jobInvites });
+          let jobInvitesbin = await jobBin.find({
+            _id: { $in: user.job_invitations},
+          }).clone();
+          console.log(jobInvitesbin);
+          return response.status(200).json({ jobInvites: jobInvites, jobInvitesbin: jobInvitesbin });
         }
         return response.status(403);
       }

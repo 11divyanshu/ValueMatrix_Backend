@@ -466,7 +466,7 @@ export const XISlots = (request, response) => {
       if (res) {
         return response.status(200).json(res);
       }
-    })
+    }).sort({ "_id": -1 })
   } catch (error) {
     res.status(400).send('something went wrong', err);
 
@@ -593,7 +593,7 @@ export const slotDetailsOfUser = async (req, res) => {
         },
       },
     ]);
-    // console.log(data);
+    console.log(data);
     res.send(data)
   }
   catch (err) {

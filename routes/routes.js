@@ -32,7 +32,8 @@ import {
   handleCandidateJobInvitation,
   fetchCountry,
   getCountryList,
-  handleXIInterview
+  handleXIInterview,
+  getuserbyEmail
 } from "../controllers/userController.js";
 
 import { sendOTPSMS, updateContactOTP } from "../controllers/sms-controller.js";
@@ -77,6 +78,7 @@ import {
   listJobsCandidate,
   archiveJob,
   approveJob,
+  approveCandidate,
   listOfUnapproveJobs,
   getJobBinById
 } from "../controllers/job-controller.js";
@@ -180,6 +182,7 @@ router.post("/setProfile", setProfile);
 router.post("/fetchCountry", fetchCountry);
 router.post("/getCountryList", getCountryList);
 router.post("/handleXIInterview", handleXIInterview);
+router.post("/getuserbyEmail", getuserbyEmail);
 
 import {handleXIStatusChange} from "../controllers/userController.js"
 router.post(
@@ -278,6 +281,7 @@ router.post("/getJobBinById", verifyToken, getJobBinById);
 router.post("/sendJobInvitation", verifyToken, sendJobInvitations);
 router.post("/archiveJob", archiveJob);
 router.post("/approveJob", approveJob);
+router.post("/approveCandidate", approveCandidate);
 
 
 
@@ -510,14 +514,15 @@ router.get("/countryCodeList", (req, res) => {
 
 router.post('/interviewApplicationstatusChange', interviewApplicationStatusChange);
 
-import { jobStatusChange, jobDetailsUploadedByUser, jobDetailsByJobId, UserDetailsByJobId } from "../controllers/job-controller.js";
+import { jobStatusChange, jobDetailsUploadedByUser, jobDetailsByJobId, UserDetailsByJobId, allJobs } from "../controllers/job-controller.js";
 router.post("/jobStatusChange", jobStatusChange);
 router.get("/jobDetailsUploadedByUser", jobDetailsUploadedByUser);
 router.get("/jobDetailsByJobId", jobDetailsByJobId);
 router.get("/UserDetailsByJobId", UserDetailsByJobId)
+router.get("/allJobs", allJobs)
 
 import { insertUserInterviewApplications } from '../controllers/xiInterviewApplication-controller.js';
-import { addXICategory, ListXICategory, updateXICategory, addXILevel, ListXILevel, updateXILevel, addXIMultiplier, ListXIMultiplier, updateXIMultiplier } from "../controllers/XiCategory.js";
+import { addXIPanels, ListXIPanels, updateXIPanels, addXICategory, ListXICategory, updateXICategory, addXILevel, ListXILevel, updateXILevel, addXIMultiplier, ListXIMultiplier, updateXIMultiplier } from "../controllers/XiCategory.js";
 import { updateXIInfo, addXIInfo, getXIInfo, getDialerToken, getDialerCall } from "../controllers/xi_infoController.js";
 
 router.post('/insertUserInterviewApplications', insertUserInterviewApplications);
@@ -551,6 +556,11 @@ router.post('/getDialerCall',getDialerCall);
 router.post('/updateXICategory', updateXICategory);
 router.post('/addXICategory', addXICategory);
 router.get('/listXICategory', ListXICategory);
+
+
+router.post('/updateXIPanels', updateXIPanels);
+router.post('/addXIPanels', addXIPanels);
+router.get('/listXIPanels', ListXIPanels);
 
 
 

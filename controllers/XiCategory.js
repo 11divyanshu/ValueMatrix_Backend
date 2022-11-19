@@ -1,7 +1,62 @@
 import XICategory from "../models/xiCategorySchema.js";
+import XIPanels from "../models/xiPanelsSchema.js";
 import PerformanceMultiplier from "../models/performanceMultiplierSchema.js";
 import Level from "../models/levelSchema.js";
 import CreditCategory from "../models/creditCategorySchema.js"
+
+export const ListXIPanels =async (request ,response)=>{
+    try {
+        await XIPanels.find({isDeleted:false},function(err,res){
+            if(err){
+                console.log(err)
+            }else{
+                return response.status(200).json({panels:res});
+            }
+        }) 
+    } catch (error) {
+        
+    }
+  
+}
+export const updateXIPanels =async(request ,response)=>{
+    try {
+        // console.log(request.body)
+        let user1 = await XIPanels.findOneAndUpdate(
+            { _id: request.body.id },
+            request.body.updates,
+            
+          );
+          await XIPanels.find({isDeleted:false},function(err,res){
+            if(err){
+                console.log(err)
+            }else{
+                return response.status(200).json({category:res});
+            }
+        }) 
+    } catch (error) {
+        
+    }
+   
+}
+export const addXIPanels =async(request ,response)=>{
+    try {
+        console.log(request.body)
+       let category ={
+        category : request.body.category,
+        cat : request.body.cat,
+        limit : request.body.limit,
+        payout : request.body.payout,
+       }
+
+       const user = new XIPanels(category);
+       await user.save();
+       return response.status(200).json({Message:"Success"});
+    } catch (error) {
+        return response.status(400).json({Message:"Error"});
+        
+    }
+   
+}
 
 export const ListXICategory =async (request ,response)=>{
     try {

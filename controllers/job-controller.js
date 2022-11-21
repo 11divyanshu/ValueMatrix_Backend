@@ -915,7 +915,7 @@ export const approveJob = async (req, res) => {
         await user.save();
       }).clone();
 
-    sendJobInvitations(newJob);
+    // sendJobInvitations(newJob);
     console.log(newJob);
 
     await JobBin.findOneAndDelete({ _id: req.body._id });

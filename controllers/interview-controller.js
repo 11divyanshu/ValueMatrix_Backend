@@ -226,6 +226,18 @@ export const savecode = async (request, response)=>{
   }
 }
 
+export const updatewhiteboard = async (request, response)=>{
+  try{
+    let updatedcode = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { whiteboard: request.body.data } }, { new: true });
+    response.send({
+      data: "Updated Whiteboard",
+      newstats: updatedcode
+    }).status(200);
+  }catch(err){
+    response.send({ data: "something went wrong", err }).status(400);
+  }
+}
+
 export const getlivestatus = async (request, response)=>{
   try{
     let livestatus = await interview.findById(request.body.meetingID);

@@ -30,7 +30,7 @@ export const updateXIPanels =async(request ,response)=>{
             if(err){
                 console.log(err)
             }else{
-                return response.status(200).json({category:res});
+                return response.status(200).json({panels:res});
             }
         }) 
     } catch (error) {
@@ -41,14 +41,12 @@ export const updateXIPanels =async(request ,response)=>{
 export const addXIPanels =async(request ,response)=>{
     try {
         console.log(request.body)
-       let category ={
-        category : request.body.category,
-        cat : request.body.cat,
-        limit : request.body.limit,
-        payout : request.body.payout,
+       let panel ={
+        panel : request.body.panel,
+        permissions : request.body.permissions,
        }
 
-       const user = new XIPanels(category);
+       const user = new XIPanels(panel);
        await user.save();
        return response.status(200).json({Message:"Success"});
     } catch (error) {

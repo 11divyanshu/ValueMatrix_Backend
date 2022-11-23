@@ -1,21 +1,13 @@
 import mongoose from "mongoose";
 
 const xiPanelsSchema = new mongoose.Schema({
-  category: {
+  panel: {
     type: String,
     required: true,
     unique:true,
   },
-  cat: {
-    type: Number,
-    required: true,
- },
-  limit: {
-    type: Number,
-    required: true,
- },
-  payout: {
-    type: Number,
+  permissions: {
+    type: Array,
     required: true,
  },
  isDeleted:{

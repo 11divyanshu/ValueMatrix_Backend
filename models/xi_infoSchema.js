@@ -55,6 +55,10 @@ const xiSchema = new mongoose.Schema({
     type:Number,
     default:0,
   },
+  panelId:{
+    type: String,
+    default:'',
+  },
 });
 
 const xi_info = new mongoose.model("xi_info", xiSchema);

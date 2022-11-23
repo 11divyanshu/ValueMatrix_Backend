@@ -133,6 +133,10 @@ const interviewApplicationSchema = new mongoose.Schema({
     type: String,
     required: false
   },
+  whiteboard:{
+    type: String,
+    required: false
+  },
   codelanguage:{
     type: String,
     default: "Javascript",

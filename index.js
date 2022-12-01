@@ -180,6 +180,7 @@ app.get(
     failureRedirect: "/login",
   }),
   async function (req, res) {
+    console.log(req);
     const token = await getToken(req.user);
     await res.cookie("access_token", token.data.token, { origin: domain });
     if (req.user.invite) {

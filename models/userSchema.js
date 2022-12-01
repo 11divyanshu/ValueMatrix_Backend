@@ -121,7 +121,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  linkedInUrl: {
+  linkedinurl: {
+    type: String,
+    required: false,
+  },
+  linkedinurlkey: {
     type: String,
     required: false,
   },

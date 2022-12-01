@@ -278,32 +278,34 @@ export const GetJobFromId = async (request, response) => {
         invited = [];
 
       if (res) {
-        await User.find({ _id: { $in: res.applicants } }, function (err, res) {
-          res.map((result) => {
-            InterviewApplication.findOne(
-              { applicant: result._id },
-              function (err, res) {
-                // console.log(res);
+        console.log(res.invitations)
+        // await User.find({ _id: { $in: res.applicants } }, function (err, res) {
+        //   res.map((result) => {
+        //     console.log(result);
+        //     InterviewApplication.findOne(
+        //       { applicant: result._id },
+        //       function (err, res) {
+        //         // console.log(res);
 
-                let data = {
-                  _id: result._id,
-                  appid: res._id,
-                  firstName: result.firstName,
-                  lastname: result.lastname,
-                  contact: result.contact,
-                  email: result.email,
-                  username: result.username,
-                  status: res.status,
-                };
-                applicants.push(data);
-              }
-            );
-          });
-        }).clone();
+        //         let data = {
+        //           _id: result._id,
+        //           appid: res._id,
+        //           firstName: result.firstName,
+        //           lastname: result.lastname,
+        //           contact: result.contact,
+        //           email: result.email,
+        //           username: result.username,
+        //           status: res.status,
+        //         };
+        //         applicants.push(data);
+        //       }
+        //     );
+        //   });
+        // }).clone();
         // console.log(applicants);
-        declined = await User.find({ _id: { $in: res.invitations_declined } });
-        invited = await User.find({ _id: { $in: res.invitations } });
-        response.status(200).json({ job: res, applicants, declined, invited });
+        // declined = await User.find({ _id: { $in: res.invitations_declined } });
+        // invited = await User.find({ _id: { $in: res.invitations } });
+        response.status(200).json({ job: res });
       } else response.status(403).json("Data Not Found");
     });
   } catch (error) { }
@@ -314,7 +316,7 @@ export const getJobBinById = async (request, response) => {
       let applicants = [],
         declined = [],
         invited = [];
-
+        console.log(typeof(res.applicants));
       if (res) {
         await User.find({ _id: { $in: res.applicants } }, function (err, res) {
           res.map((result) => {
@@ -949,7 +951,7 @@ export const listOfUnapproveJobs = async (req, res) => {
 };
 export const allJobs = async (req, res) => {
   try {
-    const jobData = await Job.find()
+    const jobData = await Job.find().sort({ "_id": -1 });
     res.send(jobData);
   } catch (err) {
     console.log("Error listOfUnapproveJob: ", err);

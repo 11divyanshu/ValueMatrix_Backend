@@ -416,6 +416,61 @@ export const bookSlot = (data, callback) => {
   }
 };
 
+export const newSlotUpdater = (req, callback) => {
+  try {
+    let slotsdata = req.body.data;
+    console.log(req.body.date);
+    User.findOne({ _id: mongoose.Types.ObjectId(req.body.id) }, async function(err, aduser){
+      if(err){
+        callback(err, null);
+      }
+      let insertions = [];
+      for(let i=0; i<slotsdata.length; i++){
+        if(slotsdata[i].action === "delete"){
+          console.log(mongoose.Types.ObjectId(slotsdata[i].data._id));
+          await Slot.findOneAndDelete({ _id: mongoose.Types.ObjectId(slotsdata[i].data._id) });
+        }
+        if(slotsdata[i].action === "create"){
+          let slotstartDate = new Date(req.body.date + " " + slotsdata[i].startTime);
+          let slotendDate = new Date(req.body.date + " " + slotsdata[i].endTime);
+          let currentDate = slotstartDate;
+          let startDate = new Date(currentDate.getFullYear(), 0, 1);
+          var days = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000));
+          var weekNumber = Math.ceil(days / 7);
+          let insertObj = {
+            createdBy: mongoose.Types.ObjectId(req.body.id),
+            startDate: slotstartDate,
+            endDate: slotendDate,
+            slotType: aduser.user_type,
+            weekNo: weekNumber,
+          };
+          insertions.push(insertObj);
+        }
+      }
+      Slot.insertMany(insertions, (err, res) => {
+        if (err) {
+          callback(err, null);
+        }
+        callback(null, "Data updated succesfully");
+      });
+    });
+    // Slot.findOneAndUpdate(
+    //   { _id: mongoose.Types.ObjectId(req.query.slotId) },
+    //   req.body,
+    //   { returnOriginal: false },
+    //   (err, res) => {
+    //     if (err) {
+    //       callback(err, null);
+    //     } else {
+    //       callback(null, res);
+    //     }
+    //   }
+    // );
+  } catch (err) {
+    callback(err, null);
+  }
+};
+
 export const slotUpdate = (req, callback) => {
   try {
     Slot.findOneAndUpdate(

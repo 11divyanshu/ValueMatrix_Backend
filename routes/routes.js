@@ -368,6 +368,7 @@ import {
   availableSlots,
   bookSlot,
   slotUpdate,
+  newSlotUpdater,
   slotdelete,
   XISlots,
   findCandidateByEmail,
@@ -425,6 +426,16 @@ router.post("/bookSlot", (req, res) => {
 
 router.put("/updateSlot", (req, res) => {
   slotUpdate(req, (err, data) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.send(data);
+    }
+  });
+});
+
+router.put("/newslotupdater", (req, res) => {
+  newSlotUpdater(req, (err, data) => {
     if (err) {
       res.status(500).send(err);
     } else {

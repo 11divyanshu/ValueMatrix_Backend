@@ -73,6 +73,21 @@ let profileData = {
   googleId: "",
 };
 
+export const getUserStats = async (request, response) => {
+  try{
+    let id = request.body.id;
+    console.log("id" ,id)
+    let user = await User.findById(id);
+    console.log(user.job_invitations.length);
+    return response.send({
+      message:"Data Retrieved",
+      invited: user.job_invitations.length
+    }).status(200)
+  } catch (error) {
+    console.log("Error : ",  error);
+  }
+};
+
 export const handleXIStatusChange = async (request, response) => {
   try{
     let data = request.body;

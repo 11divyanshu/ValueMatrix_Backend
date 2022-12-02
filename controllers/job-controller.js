@@ -651,7 +651,7 @@ export const sendJobInvite = async (job, indx, candet) => {
                 });
 
                 if (index === candidates.length - 1) {
-                  await JobBin.findOne(
+                  await Job.findOne(
                     { _id: job._id },
                     async function (err, user) {
                       console.log(invitations)
@@ -930,7 +930,7 @@ export const approveJob = async (req, res) => {
 export const approveCandidate = async (req, res) => {
   try {
     console.log(req.body)
-    const jobData = await JobBin.findOne({ _id: req.body._id }).lean();
+    const jobData = await Job.findOne({ _id: req.body._id }).lean();
     console.log(jobData)
     sendJobInvite(jobData, req.body.index, req.body.candet);
     res.send();

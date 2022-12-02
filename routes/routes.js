@@ -33,7 +33,8 @@ import {
   fetchCountry,
   getCountryList,
   handleXIInterview,
-  getuserbyEmail
+  getuserbyEmail,
+  getUserStats
 } from "../controllers/userController.js";
 
 import { sendOTPSMS, updateContactOTP } from "../controllers/sms-controller.js";
@@ -163,6 +164,7 @@ var storage1 = multer.diskStorage({
 var upload1 = multer({ storage: storage1 });
 
 // User Routes
+router.post("/getUserStats", getUserStats);
 router.post("/userSignup", userSignup);
 router.post("/userLogin", userLogin);
 router.post("/validateSignup", vaildateSignupDetails);

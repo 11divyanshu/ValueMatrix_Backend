@@ -34,7 +34,10 @@ import {
   getCountryList,
   handleXIInterview,
   getuserbyEmail,
-  getUserStats
+  getUserStats,
+  setprofileauth,
+  getprofileauth,
+  getOtherLI
 } from "../controllers/userController.js";
 
 import { sendOTPSMS, updateContactOTP } from "../controllers/sms-controller.js";
@@ -165,6 +168,9 @@ var upload1 = multer({ storage: storage1 });
 
 // User Routes
 router.post("/getUserStats", getUserStats);
+router.post("/setprofileauth", setprofileauth);
+router.post("/getprofileauth", getprofileauth);
+router.post("/getOtherLI", getOtherLI);
 router.post("/userSignup", userSignup);
 router.post("/userLogin", userLogin);
 router.post("/validateSignup", vaildateSignupDetails);
@@ -542,13 +548,14 @@ router.post('/insertUserInterviewApplications', insertUserInterviewApplications)
 
 router.get("/UserDetailsByJobId", UserDetailsByJobId);
 
-import { getinterviewdetails, checkinterviewdetails, updateinterviewcheck, updatelivestatus, getlivestatus, startinterview, setquestionresult, endinterview, nullallchecks, compilecode, checkcompilestatus, savecode, updatewhiteboard, xiquestions, getinterviewjob } from "../controllers/interview-controller.js";
+import { getinterviewdetails, checkinterviewdetails, updateinterviewcheck, updatelivestatus, getlivestatus, startinterview, setquestionresult, endinterview, nullallchecks, compilecode, checkcompilestatus, savecode, updatewhiteboard, xiquestions, getinterviewjob, startlivemeet } from "../controllers/interview-controller.js";
 router.post('/getinterviewdetails', getinterviewdetails);
 router.post('/checkinterviewdetails', nullallchecks, checkinterviewdetails);
 router.post('/fetchinterviewdetails', checkinterviewdetails);
 router.post('/updateinterviewcheck', updateinterviewcheck);
 router.post('/updatelivestatus', updatelivestatus);
 router.post('/getlivestatus', getlivestatus);
+router.post('/startlivemeet', startlivemeet);
 router.post('/compilecode', compilecode);
 router.post('/savecode', savecode);
 router.post('/updatewhiteboard', updatewhiteboard);

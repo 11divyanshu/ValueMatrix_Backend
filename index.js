@@ -180,7 +180,7 @@ app.get(
     failureRedirect: "/login",
   }),
   async function (req, res) {
-    console.log(req);
+    // if(req.user.pauth === true){}else{}
     const token = await getToken(req.user);
     await res.cookie("access_token", token.data.token, { origin: domain });
     if (req.user.invite) {
@@ -199,7 +199,12 @@ app.get(
       a: token.data.token
     });
 
-    res.redirect(url1 + "/?" + r);
+    if(req.user.pauth === true){
+      res.redirect(url1 + "/editProfile");
+    }else{
+      res.redirect(url1 + "/?" + r);
+    }
+
   }
 );
 // LinkedIn Auth

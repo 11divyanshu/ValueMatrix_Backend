@@ -250,6 +250,24 @@ export const getlivestatus = async (request, response)=>{
   }
 }
 
+export const startlivemeet = async (request, response)=>{
+  try{
+    let meetingID = request.body.meetingID;
+    let livedata = await axios.post("https://api.cluster.dyte.in/v2/meetings/"+meetingID+"/livestreams",{},{
+      headers:{
+        'authorization': 'Basic ',
+        'content-type': 'application/json'
+      }
+    });
+    response.send({
+      data: "Data Retrieved",
+      live: livedata
+    }).status(200);
+  }catch(err){
+    response.send({ data: "something went wrong", err }).status(400);
+  }
+}
+
 export const nullallchecks = async (request, response, next)=>{
   try{
     let initcheck = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { faceTest: false, gazeTest: false, personTest: false, earTest: false } });

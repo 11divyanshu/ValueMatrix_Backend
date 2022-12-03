@@ -176,6 +176,10 @@ const userSchema = new mongoose.Schema({
     type: Array,
     default: [],
   },
+  pauth:{
+    type: Boolean,
+    default: false
+  },
   // language: [
   //   {
   //     name: String,

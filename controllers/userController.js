@@ -88,6 +88,53 @@ export const getUserStats = async (request, response) => {
   }
 };
 
+export const setprofileauth = async (request, response) => {
+  try{
+    let id = request.body.id;
+    console.log("id" ,id)
+    let user = await User.findOneAndUpdate({ _id: id }, { pauth: true });
+    return response.send({
+      message:"Profile Auth Updated"
+    }).status(200)
+  } catch (error) {
+    console.log("Error : ",  error);
+  }
+};
+
+export const getprofileauth = async (request, response) => {
+  try{
+    let id = request.body.id;
+    let getuser = await User.findById(id);
+    let pauthstatus = getuser.pauth;
+    let user = await User.findOneAndUpdate({ _id: id }, { pauth: false });
+    return response.send({
+      message:"Profile Auth Updated",
+      status : pauthstatus
+    }).status(200)
+  } catch (error) {
+    console.log("Error : ",  error);
+  }
+};
+
+export const getOtherLI = async (request, response) => {
+  try{
+    let li = request.body.li;
+    let getuser = await User.findOne({ linkedinurl: li }, async function(err, res){
+      if(res){
+        return response.send({
+          message:"Profile Found",
+        }).status(200);
+      }else{
+        return response.send({
+          message:"Profile Not Found",
+        }).status(200);
+      }
+    }).clone();
+  } catch (error) {
+    console.log("Error : ",  error);
+  }
+};
+
 export const handleXIStatusChange = async (request, response) => {
   try{
     let data = request.body;

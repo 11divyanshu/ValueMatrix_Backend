@@ -10,7 +10,7 @@ var fastsms_api = process.env.FAST2SMS_API_KEY;
 
 export const ValidateSlot = async (request, response) => {
   try {
-    console.log(request.body)
+    console.log(request.body);
     await Slot.find(
       { createdBy: request.body.id, isDeleted: false },
       async (err, res) => {
@@ -18,10 +18,9 @@ export const ValidateSlot = async (request, response) => {
         } else {
           let currentDate = new Date(request.body.startTime);
           let startDate = new Date(currentDate.getFullYear(), 0, 1);
-          var days = Math.floor((currentDate - startDate) /
-            (24 * 60 * 60 * 1000));
-
-
+          var days = Math.floor(
+            (currentDate - startDate) / (24 * 60 * 60 * 1000)
+          );
 
           var weekNumber = Math.ceil(days / 7);
           let count = 0;
@@ -30,42 +29,34 @@ export const ValidateSlot = async (request, response) => {
               count++;
             }
           }
-          console.log(count)
+          console.log(count);
           let limit = 0;
-          await xi_info.find({ candidate_id: request.body.id }, function (err, res) {
-            if (res) {
+          await xi_info
+            .find({ candidate_id: request.body.id }, function (err, res) {
+              if (res) {
+                limit = res[0].limit;
 
-              limit = res[0].limit;
-
-              if (count >= limit) {
-                return response.status(200).json({ check: false });
-              } else {
-                return response.status(200).json({ check: true });
-
+                if (count >= limit) {
+                  return response.status(200).json({ check: false });
+                } else {
+                  return response.status(200).json({ check: true });
+                }
               }
-            }
-          }).clone();
-
-
-
-
+            })
+            .clone();
         }
       }
     );
-
-
   } catch (error) {
     // response.status(400).send('something went wrong', error);
-
   }
-}
+};
 
 export const addSlot = (data, callback) => {
   try {
     let user_type;
     async.series(
       [
-
         function (cb) {
           try {
             User.findOne(
@@ -76,7 +67,11 @@ export const addSlot = (data, callback) => {
                   return cb(err, null);
                 }
                 user_type = res.user_type;
-                if (res && res.user_type !== "XI" && res.user_type !== "SuperXI") {
+                if (
+                  res &&
+                  res.user_type !== "XI" &&
+                  res.user_type !== "SuperXI"
+                ) {
                   return cb("Your not eligible to create slot", null);
                 }
                 cb();
@@ -88,36 +83,45 @@ export const addSlot = (data, callback) => {
         },
 
         function (cb) {
-          console.log(user_type)
+          console.log(user_type);
           try {
             let insertData = [];
 
-
-
             for (let i = 0; i < data.length; i++) {
-              console.log("data",data[i])
+              console.log("data", data[i]);
 
               Slot.find(
-                { createdBy: data[i].createdBy, isDeleted: false }, async (err, res) => {
+                { createdBy: data[i].createdBy, isDeleted: false },
+                async (err, res) => {
                   if (err) {
-                    console.log(err)
+                    console.log(err);
                   } else {
                     for (let j = 0; j < res.length; j++) {
-                      console.log("res",res)
-                      console.log("data",data)
-                      if ((new Date(res[j].startDate) <= new Date(data[i].startDate) && new Date(res[j].endDate) >= new Date(data[i].startDate)) || (new Date(res[j].startDate) <= new Date(data[i].endDate) && new Date(res[j].endDate) >= new Date(data[i].endDate))) {
-                        console.log("slot booked")
+                      console.log("res", res);
+                      console.log("data", data);
+                      if (
+                        (new Date(res[j].startDate) <=
+                          new Date(data[i].startDate) &&
+                          new Date(res[j].endDate) >=
+                            new Date(data[i].startDate)) ||
+                        (new Date(res[j].startDate) <=
+                          new Date(data[i].endDate) &&
+                          new Date(res[j].endDate) >= new Date(data[i].endDate))
+                      ) {
+                        console.log("slot booked");
                         // return cb("Slot Already Booked", null)
                       }
                     }
                   }
-                })
+                }
+              );
 
               data[i].slotId = i;
               let currentDate = new Date(data[i].startDate);
               let startDate = new Date(currentDate.getFullYear(), 0, 1);
-              var days = Math.floor((currentDate - startDate) /
-                (24 * 60 * 60 * 1000));
+              var days = Math.floor(
+                (currentDate - startDate) / (24 * 60 * 60 * 1000)
+              );
 
               var weekNumber = Math.ceil(days / 7);
               let insertObj = {
@@ -128,8 +132,6 @@ export const addSlot = (data, callback) => {
                 weekNo: weekNumber,
               };
               insertData.push(insertObj);
-
-
             }
             Slot.insertMany(insertData, (err, res) => {
               if (err) {
@@ -158,18 +160,21 @@ export const addSlot = (data, callback) => {
 export const availableSlots = (data, callback) => {
   try {
     console.log(data);
-    Slot.find(
-      { status: "Available", cancelBy: { $nin: [data.userId] }, isDeleted: false, slotType: data.type }).sort({ startDate: 1 })
+    Slot.find({
+      status: "Available",
+      cancelBy: { $nin: [data.userId] },
+      isDeleted: false,
+      slotType: data.type,
+    })
+      .sort({ startDate: 1 })
       .exec(async (err, res) => {
         if (err) {
           callback(err, null);
         } else {
           // const data = await priorityEngine(res);
           callback(null, res);
-
         }
-      }
-      );
+      });
   } catch (err) {
     callback(err, null);
   }
@@ -181,147 +186,135 @@ const updateSlot = async (id, body) => {
 
     (err, res) => {
       if (err) {
-        console.log(err)
+        console.log(err);
       } else {
         return;
       }
     }
-  ).clone()
-}
+  ).clone();
+};
 
-
-export const priorityEngine = async(request, response) => {
+export const priorityEngine = async (request, response) => {
   // console.log(res)
   try {
-    
+    let date = request.query.date;
+    console.log("date", date);
+    console.log("body", request.body);
 
-  let date = request.query.date;
-  console.log("date" ,date)
-  console.log("body",request.body)
- 
-   await Slot.find(
-    { status: "Available", isDeleted: false, startDate: request.query.date, slotType: request.body.type },
-    async (err, res) => {
-      if (err) {
-        console.log(err)
-      } else {
-        // const data = await priorityEngine(res);
-      
-       let data = await helper(res);
-       return response.status(200).json({slot:data});
-      }
-    }
-    );
-   
+    await Slot.find(
+      {
+        status: "Available",
+        isDeleted: false,
+        startDate: request.query.date,
+        slotType: request.body.type,
+      },
+      async (err, res) => {
+        if (err) {
+          console.log(err);
+        } else {
+          // const data = await priorityEngine(res);
 
- 
-
- 
-
- 
-  
-} catch (error) {
-    
-}
-}
-const updateSlot1 =async (array)=>{
-  for(let j=0 ;j <array.length ;j++){
-    await updateSlot(array[j]._id, { priority: j });
-    array[j]._id = j;
-  
-  }
-  return array;
-  
-}
-
-const helper = async(array) =>{
-  console.log(array)
-  let length = array.length;
- 
-  for (let i = 0; i < array.length; i++) {
-    let xi1 = 0;
-    await xi_info.find({ candidate_id: array[i].createdBy }, async (err, res) => {
-      if (res) {
-        console.log("1",res)
-        if(res[0] && res[0].level && res[0].level > 0 && res[0].cat && res[0].cat>0 && res[0].multiplier && res[0].multiplier >0){
-        xi1 = res[0].level * res[0].cat * res[0].multiplier;
-        array[i].value = xi1;
-        await updateSlot(array[i]._id, { value: xi1 });
+          let data = await helper(res);
+          return response.status(200).json({ slot: data });
         }
       }
-    }).clone();
+    );
+  } catch (error) {}
+};
+const updateSlot1 = async (array) => {
+  for (let j = 0; j < array.length; j++) {
+    await updateSlot(array[j]._id, { priority: j });
+    array[j]._id = j;
+  }
+  return array;
+};
+
+const helper = async (array) => {
+  console.log(array);
+  let length = array.length;
+
+  for (let i = 0; i < array.length; i++) {
+    let xi1 = 0;
+    await xi_info
+      .find({ candidate_id: array[i].createdBy }, async (err, res) => {
+        if (res) {
+          console.log("1", res);
+          if (
+            res[0] &&
+            res[0].level &&
+            res[0].level > 0 &&
+            res[0].cat &&
+            res[0].cat > 0 &&
+            res[0].multiplier &&
+            res[0].multiplier > 0
+          ) {
+            xi1 = res[0].level * res[0].cat * res[0].multiplier;
+            array[i].value = xi1;
+            await updateSlot(array[i]._id, { value: xi1 });
+          }
+        }
+      })
+      .clone();
   }
 
-  
+  array.sort(function (a, b) {
+    return a.value - b.value;
+  });
+  console.log("2", array);
+  let resArray = await updateSlot1(array);
 
+  // for (let j = i + 1; j < array.length; j++) {
+  //   console.log(j)
 
-  
-array.sort(function(a, b){return a.value - b.value});
-console.log("2",array)
-let resArray = await updateSlot1(array);
+  //     console.log("inside if")
+  //     let xi2 = 0;
 
+  //     await xi_info.find({ candidate_id: array[j].createdBy }, async (err, res) => {
+  //       if (res) {
 
-    // for (let j = i + 1; j < array.length; j++) {
-    //   console.log(j)
+  //         xi2 = res[0].level * res[0].cat * res[0].multiplier;
+  //         array[j].value = xi2;
+  //         await updateSlot(array[j]._id, { value: xi2 });
 
+  //         console.log(xi1)
+  //         console.log(xi2)
+  //         if (xi2 > xi1) {
+  //           console.log("1", xi2)
+  //           await updateSlot(array[j]._id, { priority: array[j].priority + 1 });
+  //           array[j].priority = array[j].priority + 1;
 
-    //     console.log("inside if")
-    //     let xi2 = 0;
+  //         }
+  //         if (xi1 > xi2) {
+  //           console.log(xi2)
+  //           await updateSlot(array[i]._id, { priority: array[i].priority + 1 });
 
+  //           array[i].priority = array[i].priority + 1;
+  //         }
+  //         if (xi1 == xi2) {
+  //           console.log("equal")
+  //           await updateSlot(array[j]._id, { priority: array[j].priority });
 
+  //           array[i].priority = array[j].priority;
+  //         }
+  //       }
+  //     }).clone();
 
-    //     await xi_info.find({ candidate_id: array[j].createdBy }, async (err, res) => {
-    //       if (res) {
+  // }
+  let obj = resArray[length - 1];
 
-    //         xi2 = res[0].level * res[0].cat * res[0].multiplier;
-    //         array[j].value = xi2;
-    //         await updateSlot(array[j]._id, { value: xi2 });
-
-    //         console.log(xi1)
-    //         console.log(xi2)
-    //         if (xi2 > xi1) {
-    //           console.log("1", xi2)
-    //           await updateSlot(array[j]._id, { priority: array[j].priority + 1 });
-    //           array[j].priority = array[j].priority + 1;
-
-    //         }
-    //         if (xi1 > xi2) {
-    //           console.log(xi2)
-    //           await updateSlot(array[i]._id, { priority: array[i].priority + 1 });
-
-    //           array[i].priority = array[i].priority + 1;
-    //         }
-    //         if (xi1 == xi2) {
-    //           console.log("equal")
-    //           await updateSlot(array[j]._id, { priority: array[j].priority });
-
-    //           array[i].priority = array[j].priority;
-    //         }
-    //       }
-    //     }).clone();
-
-      
-    // }
-let obj = resArray[length-1];
-  
   return obj;
-
-}
-
+};
 
 export const findCandidateByEmail = async (req, response) => {
   const email = req.query.email;
   await Candidate.find({ email: email }, async function (err, res) {
     return response.status(200).json(res);
-  }).clone()
-}
-
-
+  }).clone();
+};
 
 export const bookSlot = (data, callback) => {
   try {
     let OTP = "";
-
 
     async.parallel(
       [
@@ -354,12 +347,10 @@ export const bookSlot = (data, callback) => {
                 });
               }
             );
-
           } catch (err) {
             cb(err, null);
           }
         },
-      
 
         function (cb) {
           try {
@@ -380,7 +371,7 @@ export const bookSlot = (data, callback) => {
                 if (err) {
                   console.log(err);
                 } else {
-                  console.log("slot user",res[0].user)
+                  console.log("slot user", res[0].user);
                   req.query({
                     authorization: fastsms_api,
                     route: "q",
@@ -420,40 +411,51 @@ export const newSlotUpdater = (req, callback) => {
   try {
     let slotsdata = req.body.data;
     console.log(req.body.date);
-    User.findOne({ _id: mongoose.Types.ObjectId(req.body.id) }, async function(err, aduser){
-      if(err){
-        callback(err, null);
-      }
-      let insertions = [];
-      for(let i=0; i<slotsdata.length; i++){
-        if(slotsdata[i].action === "delete"){
-          console.log(mongoose.Types.ObjectId(slotsdata[i].data._id));
-          await Slot.findOneAndDelete({ _id: mongoose.Types.ObjectId(slotsdata[i].data._id) });
-        }
-        if(slotsdata[i].action === "create"){
-          let slotstartDate = new Date(req.body.date + " " + slotsdata[i].startTime);
-          let slotendDate = new Date(req.body.date + " " + slotsdata[i].endTime);
-          let currentDate = slotstartDate;
-          let startDate = new Date(currentDate.getFullYear(), 0, 1);
-          var days = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000));
-          var weekNumber = Math.ceil(days / 7);
-          let insertObj = {
-            createdBy: mongoose.Types.ObjectId(req.body.id),
-            startDate: slotstartDate,
-            endDate: slotendDate,
-            slotType: aduser.user_type,
-            weekNo: weekNumber,
-          };
-          insertions.push(insertObj);
-        }
-      }
-      Slot.insertMany(insertions, (err, res) => {
+    User.findOne(
+      { _id: mongoose.Types.ObjectId(req.body.id) },
+      async function (err, aduser) {
         if (err) {
           callback(err, null);
         }
-        callback(null, "Data updated succesfully");
-      });
-    });
+        let insertions = [];
+        for (let i = 0; i < slotsdata.length; i++) {
+          if (slotsdata[i].action === "delete") {
+            console.log(mongoose.Types.ObjectId(slotsdata[i].data._id));
+            await Slot.findOneAndDelete({
+              _id: mongoose.Types.ObjectId(slotsdata[i].data._id),
+            });
+          }
+          if (slotsdata[i].action === "create") {
+            let slotstartDate = new Date(
+              req.body.date + " " + slotsdata[i].startTime
+            );
+            let slotendDate = new Date(
+              req.body.date + " " + slotsdata[i].endTime
+            );
+            let currentDate = slotstartDate;
+            let startDate = new Date(currentDate.getFullYear(), 0, 1);
+            var days = Math.floor(
+              (currentDate - startDate) / (24 * 60 * 60 * 1000)
+            );
+            var weekNumber = Math.ceil(days / 7);
+            let insertObj = {
+              createdBy: mongoose.Types.ObjectId(req.body.id),
+              startDate: slotstartDate,
+              endDate: slotendDate,
+              slotType: aduser.user_type,
+              weekNo: weekNumber,
+            };
+            insertions.push(insertObj);
+          }
+        }
+        Slot.insertMany(insertions, (err, res) => {
+          if (err) {
+            callback(err, null);
+          }
+          callback(null, "Data updated succesfully");
+        });
+      }
+    );
     // Slot.findOneAndUpdate(
     //   { _id: mongoose.Types.ObjectId(req.query.slotId) },
     //   req.body,
@@ -496,7 +498,7 @@ export const slotdelete = (req, callback) => {
       {
         isDeleted: true,
         status: "Available",
-        $unset: { candidateId: 1, interviewId: 1 }
+        $unset: { candidateId: 1, interviewId: 1 },
       },
       { returnOriginal: false },
       (err, res) => {
@@ -514,20 +516,21 @@ export const slotdelete = (req, callback) => {
 
 export const XISlots = (request, response) => {
   try {
-    Slot.find({ createdBy: request.query.id, isDeleted: false }, async function (err, res) {
-      if (err) {
-        return response.status(500).json({ Message: "No Available Slots" });
+    Slot.find(
+      { createdBy: request.query.id, isDeleted: false },
+      async function (err, res) {
+        if (err) {
+          return response.status(500).json({ Message: "No Available Slots" });
+        }
+        if (res) {
+          return response.status(200).json(res);
+        }
       }
-      if (res) {
-        return response.status(200).json(res);
-      }
-    }).sort({ "_id": -1 })
+    ).sort({ _id: -1 });
   } catch (error) {
-    res.status(400).send('something went wrong', err);
-
+    res.status(400).send("something went wrong", err);
   }
-}
-
+};
 
 export const slotDetailsOfXI = async (req, res) => {
   try {
@@ -559,13 +562,12 @@ export const slotDetailsOfXI = async (req, res) => {
       },
     ]);
     console.log(data);
-    res.send(data)
-  }
-  catch (err) {
+    res.send(data);
+  } catch (err) {
     console.log(err);
-    res.status(400).send('something went wrong', err);
+    res.status(400).send("something went wrong", err);
   }
-}
+};
 export const slotDetailsOfXIinterview = async (req, res) => {
   try {
     const data = await Slot.aggregate([
@@ -596,20 +598,12 @@ export const slotDetailsOfXIinterview = async (req, res) => {
       },
     ]);
     console.log(data);
-    res.send(data)
-  }
-  catch (err) {
+    res.send(data);
+  } catch (err) {
     console.log(err);
-    res.status(400).send('something went wrong', err);
+    res.status(400).send("something went wrong", err);
   }
-}
-
-
-
-
-
-
-
+};
 
 export const slotDetailsOfUser = async (req, res) => {
   try {
@@ -649,18 +643,17 @@ export const slotDetailsOfUser = async (req, res) => {
       },
     ]);
     console.log(data);
-    res.send(data)
-  }
-  catch (err) {
+    res.send(data);
+  } catch (err) {
     console.log(err);
-    res.status(400).send('something went wrong', err);
+    res.status(400).send("something went wrong", err);
   }
-}
+};
 
 export const userInterviewsDetails = async (req, res) => {
   try {
     const data = await Slot.aggregate([
-      { $match: { _id: mongoose.Types.ObjectId(req.query.slotId)} },
+      { $match: { _id: mongoose.Types.ObjectId(req.query.slotId) } },
       {
         $lookup: {
           from: "interviewapplications",
@@ -687,10 +680,20 @@ export const userInterviewsDetails = async (req, res) => {
       },
     ]);
     // console.log(data);
-    res.send(data)
-  }
-  catch (err) {
+    res.send(data);
+  } catch (err) {
     console.log(err);
-    res.status(400).send('something went wrong', err);
+    res.status(400).send("something went wrong", err);
   }
-}
+};
+
+export const slot_by_interviewId = async (req, res) => {
+  try {
+    const data = await Slot.findOne({
+      interviewId: mongoose.Types.ObjectId(req.query.id),
+    });
+    res.send(data);
+  } catch (err) {
+    res.status(400).send("something went wrong", err);
+  }
+};

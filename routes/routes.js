@@ -1,13 +1,13 @@
 import express from "express";
 import crypto from "crypto";
 import mongoose from "mongoose";
-import Razorpay from "razorpay"
+import Razorpay from "razorpay";
 import verifyToken from "../middleware/auth.js";
-import { InvoiceNumber } from 'invoice-number'
+import { InvoiceNumber } from "invoice-number";
 import multer from "multer";
-import { } from "dotenv/config";
-import User from "../models/userSchema.js"
-import userCredit_info from "../models/userCreditSchema.js"
+import {} from "dotenv/config";
+import User from "../models/userSchema.js";
+import userCredit_info from "../models/userCreditSchema.js";
 import {
   sendOTPEmail,
   UpdateEmailOTP,
@@ -50,7 +50,6 @@ import {
   tokenGenerator,
 } from "../controllers/token-controller.js";
 
-
 import {
   adminLogin,
   companyList,
@@ -87,7 +86,7 @@ import {
   approveJob,
   approveCandidate,
   listOfUnapproveJobs,
-  getJobBinById
+  getJobBinById,
 } from "../controllers/job-controller.js";
 import {
   resetPassword,
@@ -98,7 +97,7 @@ import {
 import {
   addCompanyUser,
   filterCompany,
-  getCompanyUserList
+  getCompanyUserList,
 } from "../controllers/companyController.js";
 import { addSkill, getSkills } from "../controllers/skillController.js";
 import {
@@ -112,10 +111,15 @@ import {
   updateInterviewApplication,
   XIPerformance,
   updateXIInterviewApplication,
-  getXIInterviewList
+  getXIInterviewList,
 } from "../controllers/interviewApplication-controller.js";
 import Routes from "twilio/lib/rest/Routes.js";
-import { addEvaluationQuestion, addInterviewQuestion, fetchInterviewQuestion, updateInterviewQuestion } from "../controllers/evaulationQuestion-controller.js";
+import {
+  addEvaluationQuestion,
+  addInterviewQuestion,
+  fetchInterviewQuestion,
+  updateInterviewQuestion,
+} from "../controllers/evaulationQuestion-controller.js";
 import {
   addCompanyList,
   addUniversityList,
@@ -124,7 +128,6 @@ import {
   checkCompany,
   listUnapproveCompany,
   approveCompany,
-
 } from "../controllers/dbListDataController.js";
 
 import {
@@ -197,11 +200,8 @@ router.post("/getCountryList", getCountryList);
 router.post("/handleXIInterview", handleXIInterview);
 router.post("/getuserbyEmail", getuserbyEmail);
 
-import {handleXIStatusChange} from "../controllers/userController.js"
-router.post(
-  "/handleXIStatusChange",
-  handleXIStatusChange
-);
+import { handleXIStatusChange } from "../controllers/userController.js";
+router.post("/handleXIStatusChange", handleXIStatusChange);
 
 // Candidate Routes
 router.post(
@@ -230,8 +230,6 @@ router.post("/getCandidateEvaluation", verifyToken, getCandidateEvaluation);
 // router.post("/approveCompany", approveCompany);
 router.get("/unapprovedJobsList", listOfUnapproveJobs);
 router.get("/getCompanyUserList", getCompanyUserList);
-
-
 
 // Reset Password
 router.post("/sendResetPasswordMail", resetPasswordByEmail);
@@ -296,8 +294,6 @@ router.post("/archiveJob", archiveJob);
 router.post("/approveJob", approveJob);
 router.post("/approveCandidate", approveCandidate);
 
-
-
 // Interview Applications
 router.post(
   "/getUserInterviewApplications",
@@ -319,7 +315,6 @@ router.put("/updateInterviewApplication", updateInterviewApplication);
 router.put("/updateXIInterviewApplication", updateXIInterviewApplication);
 router.post("/XIPerformance", XIPerformance);
 
-
 // Evaluation Question Routes
 router.post("/addEvaluationQuestions", verifyToken, addEvaluationQuestion);
 router.post("/addInterviewQuestions", verifyToken, addInterviewQuestion);
@@ -336,7 +331,6 @@ router.post("/addcompany", addcompany);
 router.get("/getJobTitles", getJobTitles);
 router.get("/listUnapproveTitles", listUnapproveTitles);
 router.post("/approveTitle", approveTitle);
-
 
 // Candidate Routes
 router.post("/addCandidate", verifyToken, addCandidate);
@@ -390,11 +384,13 @@ import {
   slotDetailsOfUser,
   userInterviewsDetails,
   ValidateSlot,
-  priorityEngine
+  priorityEngine,
+  slot_by_interviewId,
 } from "../controllers/slots.js";
 
 router.get("/slotDetailsOfUser", slotDetailsOfUser);
 router.get("/userInterviewsDetails", userInterviewsDetails);
+router.get("/slot_by_interviewId", slot_by_interviewId);
 router.get("/slotDetailsOfXI", slotDetailsOfXI);
 router.get("/slotDetailsOfXIinterview", slotDetailsOfXIinterview);
 router.get("/XISlots", XISlots);
@@ -402,7 +398,6 @@ router.post("/findCandidateByEmail", findCandidateByEmail);
 
 router.post("/ValidateSlot", ValidateSlot);
 router.post("/addSlot", (req, res) => {
-
   const { body } = req;
   addSlot(body, (err, data) => {
     if (err) {
@@ -424,7 +419,6 @@ router.post("/availableSlots", (req, res) => {
     }
   });
 });
-
 
 router.post("/bookSlot", (req, res) => {
   const { body } = req;
@@ -457,7 +451,6 @@ router.put("/newslotupdater", (req, res) => {
   });
 });
 
-
 router.delete("/deleteSlot", (req, res) => {
   slotdelete(req, (err, data) => {
     if (err) {
@@ -476,9 +469,8 @@ import {
   getJobTitles,
   listUnapproveTitles,
   approveTitle,
-  addcompany
+  addcompany,
 } from "../controllers/languages.js";
-
 
 router.post("/addLanguages", (req, res) => {
   addLanguages(req.body, (err, data) => {
@@ -500,20 +492,15 @@ router.get("/languagesList", (req, res) => {
   });
 });
 
-
-
-
 // Check Company
 router.post("/checkCompany", checkCompany);
 router.get("/listUnapproveCompany", listUnapproveCompany);
 router.post("/approveCompany", approveCompany);
 
-
-
 // CountryCode Routes
 import {
   addCountryCodes,
-  listOfCountryaCodes
+  listOfCountryaCodes,
 } from "../controllers/countryCodeController.js";
 router.post("/addCountryCodes", (req, res) => {
   addCountryCodes(req.body, (err, data) => {
@@ -535,127 +522,180 @@ router.get("/countryCodeList", (req, res) => {
   });
 });
 
+router.post(
+  "/interviewApplicationstatusChange",
+  interviewApplicationStatusChange
+);
 
-router.post('/interviewApplicationstatusChange', interviewApplicationStatusChange);
-
-import { jobStatusChange, jobDetailsUploadedByUser, jobDetailsByJobId, UserDetailsByJobId, allJobs } from "../controllers/job-controller.js";
+import {
+  jobStatusChange,
+  jobDetailsUploadedByUser,
+  jobDetailsByJobId,
+  UserDetailsByJobId,
+  allJobs,
+} from "../controllers/job-controller.js";
 router.post("/jobStatusChange", jobStatusChange);
 router.get("/jobDetailsUploadedByUser", jobDetailsUploadedByUser);
 router.get("/jobDetailsByJobId", jobDetailsByJobId);
-router.get("/UserDetailsByJobId", UserDetailsByJobId)
-router.get("/allJobs", allJobs)
+router.get("/UserDetailsByJobId", UserDetailsByJobId);
+router.get("/allJobs", allJobs);
 
-import { insertUserInterviewApplications } from '../controllers/xiInterviewApplication-controller.js';
-import { addXIPanels, ListXIPanels, updateXIPanels, addXICategory, ListXICategory, updateXICategory, addXILevel, ListXILevel, updateXILevel, addXIMultiplier, ListXIMultiplier, updateXIMultiplier } from "../controllers/XiCategory.js";
-import { updateXIInfo, addXIInfo, getXIInfo, getDialerToken, getDialerCall } from "../controllers/xi_infoController.js";
+import { insertUserInterviewApplications } from "../controllers/xiInterviewApplication-controller.js";
+import {
+  addXIPanels,
+  ListXIPanels,
+  updateXIPanels,
+  addXICategory,
+  ListXICategory,
+  updateXICategory,
+  addXILevel,
+  ListXILevel,
+  updateXILevel,
+  addXIMultiplier,
+  ListXIMultiplier,
+  updateXIMultiplier,
+} from "../controllers/XiCategory.js";
+import {
+  updateXIInfo,
+  addXIInfo,
+  getXIInfo,
+  getDialerToken,
+  getDialerCall,
+} from "../controllers/xi_infoController.js";
 
-router.post('/insertUserInterviewApplications', insertUserInterviewApplications);
+router.post(
+  "/insertUserInterviewApplications",
+  insertUserInterviewApplications
+);
 
 router.get("/UserDetailsByJobId", UserDetailsByJobId);
 
-import { getinterviewdetails, checkinterviewdetails, updateinterviewcheck, updatelivestatus, getlivestatus, startinterview, setquestionresult, endinterview, nullallchecks, compilecode, checkcompilestatus, savecode, updatewhiteboard, xiquestions, getinterviewjob, startlivemeet, handleproctoring, handlerecording } from "../controllers/interview-controller.js";
-router.post('/handlerecording', handlerecording);
-router.post('/handleproctoring', handleproctoring);
-router.post('/getinterviewdetails', getinterviewdetails);
-router.post('/checkinterviewdetails', nullallchecks, checkinterviewdetails);
-router.post('/fetchinterviewdetails', checkinterviewdetails);
-router.post('/updateinterviewcheck', updateinterviewcheck);
-router.post('/updatelivestatus', updatelivestatus);
-router.post('/getlivestatus', getlivestatus);
-router.post('/startlivemeet', startlivemeet);
-router.post('/compilecode', compilecode);
-router.post('/savecode', savecode);
-router.post('/updatewhiteboard', updatewhiteboard);
-router.post('/startinterview', startinterview);
-router.post('/setquestionresult', setquestionresult);
-router.post('/endinterview', endinterview);
-router.post('/savecode', savecode);
-router.post('/getxiquestions', xiquestions);
-router.post('/getinterviewjob', getinterviewjob);
-router.post('/checkcompilestatus', checkcompilestatus);
-router.get('/getDialerToken',getDialerToken);
-router.post('/getDialerCall',getDialerCall);
-
-
+import {
+  getinterviewdetails,
+  checkinterviewdetails,
+  updateinterviewcheck,
+  updatelivestatus,
+  getlivestatus,
+  startinterview,
+  setquestionresult,
+  endinterview,
+  nullallchecks,
+  compilecode,
+  checkcompilestatus,
+  savecode,
+  updatewhiteboard,
+  xiquestions,
+  getinterviewjob,
+  startlivemeet,
+  handleproctoring,
+  handlerecording,
+} from "../controllers/interview-controller.js";
+router.post("/handlerecording", handlerecording);
+router.post("/handleproctoring", handleproctoring);
+router.post("/getinterviewdetails", getinterviewdetails);
+router.post("/checkinterviewdetails", nullallchecks, checkinterviewdetails);
+router.post("/fetchinterviewdetails", checkinterviewdetails);
+router.post("/updateinterviewcheck", updateinterviewcheck);
+router.post("/updatelivestatus", updatelivestatus);
+router.post("/getlivestatus", getlivestatus);
+router.post("/startlivemeet", startlivemeet);
+router.post("/compilecode", compilecode);
+router.post("/savecode", savecode);
+router.post("/updatewhiteboard", updatewhiteboard);
+router.post("/startinterview", startinterview);
+router.post("/setquestionresult", setquestionresult);
+router.post("/endinterview", endinterview);
+router.post("/savecode", savecode);
+router.post("/getxiquestions", xiquestions);
+router.post("/getinterviewjob", getinterviewjob);
+router.post("/checkcompilestatus", checkcompilestatus);
+router.get("/getDialerToken", getDialerToken);
+router.post("/getDialerCall", getDialerCall);
 
 //Xi Category , limit ,performance Multiplier
 
+router.post("/updateXICategory", updateXICategory);
+router.post("/addXICategory", addXICategory);
+router.get("/listXICategory", ListXICategory);
 
-router.post('/updateXICategory', updateXICategory);
-router.post('/addXICategory', addXICategory);
-router.get('/listXICategory', ListXICategory);
+router.post("/updateXIPanels", updateXIPanels);
+router.post("/addXIPanels", addXIPanels);
+router.get("/listXIPanels", ListXIPanels);
 
+router.post("/updateXILevel", updateXILevel);
+router.post("/addXILevel", addXILevel);
+router.get("/listXILevel", ListXILevel);
 
-router.post('/updateXIPanels', updateXIPanels);
-router.post('/addXIPanels', addXIPanels);
-router.get('/listXIPanels', ListXIPanels);
-
-
-
-router.post('/updateXILevel', updateXILevel);
-router.post('/addXILevel', addXILevel);
-router.get('/listXILevel', ListXILevel);
-
-router.post('/updateXIMultiplier', updateXIMultiplier);
-router.post('/addXIMultiplier', addXIMultiplier);
-router.get('/listXIMultiplier', ListXIMultiplier);
-
+router.post("/updateXIMultiplier", updateXIMultiplier);
+router.post("/addXIMultiplier", addXIMultiplier);
+router.get("/listXIMultiplier", ListXIMultiplier);
 
 //Credits
-import { addCreditCategory, ListCreditCategory, updateCreditCategory, addCreditConverter, ListCreditConverter, updateCreditConverter, getCreditInfoList, updateUserCreditInfo, addCoupon } from "../controllers/creditControllers.js";
+import {
+  addCreditCategory,
+  ListCreditCategory,
+  updateCreditCategory,
+  addCreditConverter,
+  ListCreditConverter,
+  updateCreditConverter,
+  getCreditInfoList,
+  updateUserCreditInfo,
+  addCoupon,
+} from "../controllers/creditControllers.js";
 import CreditCategory from "../models/creditCategorySchema.js";
 import Transaction from "../models/transactionSchema.js";
 import { request } from "https";
-import { getTransactions,updateWallet,userRequestUpdate,userAcceptUpdate } from "../controllers/transactionController.js";
+import {
+  getTransactions,
+  updateWallet,
+  userRequestUpdate,
+  userAcceptUpdate,
+} from "../controllers/transactionController.js";
 import { createTaskScheduler } from "../controllers/taskScheduler.js";
 
-router.post('/updateCreditCategory', updateCreditCategory);
-router.post('/addCreditCategory', addCreditCategory);
-router.get('/listCreditCategory', ListCreditCategory);
+router.post("/updateCreditCategory", updateCreditCategory);
+router.post("/addCreditCategory", addCreditCategory);
+router.get("/listCreditCategory", ListCreditCategory);
 
-router.post('/updateCreditConverter', updateCreditConverter);
-router.post('/addCreditConverter', addCreditConverter);
-router.get('/listCreditConverter', ListCreditConverter);
+router.post("/updateCreditConverter", updateCreditConverter);
+router.post("/addCreditConverter", addCreditConverter);
+router.get("/listCreditConverter", ListCreditConverter);
 
-
-
-
-
-router.post('/getCreditInfoList', getCreditInfoList);
-router.post('/updateUserCreditInfo', updateUserCreditInfo);
-
-
-
+router.post("/getCreditInfoList", getCreditInfoList);
+router.post("/updateUserCreditInfo", updateUserCreditInfo);
 
 //XI Info
 
-router.post('/updateXIInfo', updateXIInfo);
-router.post('/addXIInfo', addXIInfo);
-router.get('/getXIInfo', getXIInfo);
+router.post("/updateXIInfo", updateXIInfo);
+router.post("/addXIInfo", addXIInfo);
+router.get("/getXIInfo", getXIInfo);
 
 // priority Engine
 
-router.post('/priorityEngine', priorityEngine);
-router.post('/addCoupon', addCoupon);
+router.post("/priorityEngine", priorityEngine);
+router.post("/addCoupon", addCoupon);
 
 //Transactions
 
-router.get('/getTransactions', getTransactions);
-router.post('/updateWallet', updateWallet);
-router.get('/userRequestUpdate', userRequestUpdate);
-router.get('/userAcceptUpdate', userAcceptUpdate);
+router.get("/getTransactions", getTransactions);
+router.post("/updateWallet", updateWallet);
+router.get("/userRequestUpdate", userRequestUpdate);
+router.get("/userAcceptUpdate", userAcceptUpdate);
 
 //Razorpay
-router.post("/getUserCurrentCredit", async (req,res) => {
-  try{
+router.post("/getUserCurrentCredit", async (req, res) => {
+  try {
     console.log(req.body);
-    userCredit_info.findOne({userId:req.body.userId}, async function (err, res1) {
-      if (res1) {
-        return res.status(200).json({ data: res1 });
+    userCredit_info.findOne(
+      { userId: req.body.userId },
+      async function (err, res1) {
+        if (res1) {
+          return res.status(200).json({ data: res1 });
+        }
+        res.status(403).json({ Message: "Wallet Not Found" });
       }
-      res.status(403).json({ Message: "Wallet Not Found" });
-    });
-  }catch (error) {
+    );
+  } catch (error) {
     console.log(error);
     res.status(500).send(error);
   }
@@ -674,9 +714,9 @@ router.post("/payment/orders", async (req, res) => {
 
     let dcount = tcount.toString().length;
 
-    let invcount = ""
-    for(let i=0; i<(6-dcount); i++){
-      invcount = invcount+"0";
+    let invcount = "";
+    for (let i = 0; i < 6 - dcount; i++) {
+      invcount = invcount + "0";
     }
     invcount = invcount + tcount;
 
@@ -684,7 +724,13 @@ router.post("/payment/orders", async (req, res) => {
 
     let dt = new Date();
 
-    let invoice = dt.getFullYear().toString() + "/" + (dt.getMonth() + 1).toString() + "/" + usr.firstName.substring(0, 3).toUpperCase() + invcount.toString();
+    let invoice =
+      dt.getFullYear().toString() +
+      "/" +
+      (dt.getMonth() + 1).toString() +
+      "/" +
+      usr.firstName.substring(0, 3).toUpperCase() +
+      invcount.toString();
 
     let tData = {
       applicantId: req.body.userId,
@@ -692,24 +738,23 @@ router.post("/payment/orders", async (req, res) => {
       credit: req.body.amount,
       transactionDate: new Date(),
       invoiceID: invoice,
-      invoiceDate: new Date()
-    }
+      invoiceDate: new Date(),
+    };
     let transactionData = new Transaction(tData);
 
     await transactionData.save();
-    
+
     const options = {
-      amount: data[0].amount * req.body.amount *100, // amount in smallest currency unit
+      amount: data[0].amount * req.body.amount * 100, // amount in smallest currency unit
       currency: "INR",
-      receipt: "receipt_order_"+invoice,
-      
+      receipt: "receipt_order_" + invoice,
     };
 
     const order = await instance.orders.create(options);
-    console.log(order)
+    console.log(order);
     if (!order) return res.status(500).send("Some error occured");
 
-    res.json({order:order ,id:transactionData._id});
+    res.json({ order: order, id: transactionData._id });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -717,42 +762,51 @@ router.post("/payment/orders", async (req, res) => {
 router.post("/payment/success", async (req, res) => {
   try {
     // getting the details back from our font-end
-    console.log(req.body)
+    console.log(req.body);
     const {
       orderCreationId,
       razorpayPaymentId,
       razorpayOrderId,
       razorpaySignature,
-      
     } = req.body.data;
-    let id =req.body.id;
+    let id = req.body.id;
 
-   let data = await Transaction.findOneAndUpdate({ _id: id }, {
-      orderCreationId: orderCreationId,
-      razorpayPaymentId: razorpayPaymentId,
-      razorpayOrderId: razorpayOrderId,
-      razorpaySignature: razorpaySignature,
-    },async function(err,res){
-      console.log(res)
-    }).clone()
-
-console.log("razorpaysignature : " + razorpaySignature)
-   let data1 = await User.findOneAndUpdate({ _id: mongoose.Types.ObjectId(req.body.userId) }, {
-      $push:{
-        transactions:id
+    let data = await Transaction.findOneAndUpdate(
+      { _id: id },
+      {
+        orderCreationId: orderCreationId,
+        razorpayPaymentId: razorpayPaymentId,
+        razorpayOrderId: razorpayOrderId,
+        razorpaySignature: razorpaySignature,
+      },
+      async function (err, res) {
+        console.log(res);
       }
-    }).clone()
+    ).clone();
+
+    console.log("razorpaysignature : " + razorpaySignature);
+    let data1 = await User.findOneAndUpdate(
+      { _id: mongoose.Types.ObjectId(req.body.userId) },
+      {
+        $push: {
+          transactions: id,
+        },
+      }
+    ).clone();
     // console.log(data1)
-    
-    let data2 = await userCredit_info.findOneAndUpdate({ userId: mongoose.Types.ObjectId(req.body.userId) }, {
-      $inc:{
-        credit: req.body.credit
-      }
-    }).clone()
-    
-    // console.log(data2)
 
-     
+    let data2 = await userCredit_info
+      .findOneAndUpdate(
+        { userId: mongoose.Types.ObjectId(req.body.userId) },
+        {
+          $inc: {
+            credit: req.body.credit,
+          },
+        }
+      )
+      .clone();
+
+    // console.log(data2)
 
     // Creating our own digest
     // The format should be like this:
@@ -776,28 +830,12 @@ console.log("razorpaysignature : " + razorpaySignature)
       paymentId: razorpayPaymentId,
     });
   } catch (error) {
-    console.log(error.message)
+    console.log(error.message);
     res.status(500).send(error);
   }
 });
 
-
 // Task Scheduler
-router.post("/createTaskScheduler" ,createTaskScheduler)
-
-
-
-
-
-
-
-
-
-
-
-
+router.post("/createTaskScheduler", createTaskScheduler);
 
 export default router;
-
-
-

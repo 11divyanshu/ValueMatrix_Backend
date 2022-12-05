@@ -269,6 +269,8 @@ export const exportJobDetails = async (request, response) => {
   } catch (error) { }
 };
 
+export const GetJobDetailsfromID = async (request, response) => {}
+
 // Get Job From Id
 export const GetJobFromId = async (request, response) => {
   try {
@@ -310,6 +312,7 @@ export const GetJobFromId = async (request, response) => {
     });
   } catch (error) { }
 };
+
 export const getJobBinById = async (request, response) => {
   try {
     await JobBin.find({ _id: request.body.job_id }, async function (err, res) {

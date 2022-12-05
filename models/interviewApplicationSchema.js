@@ -153,6 +153,18 @@ const interviewApplicationSchema = new mongoose.Schema({
   dyterecording:{
     type: String,
     default: ""
+  },
+  earpieceDetectionStatus:{
+    type: Boolean,
+  },
+  leftEyeBlinkRate:{
+    type: String,
+  },
+  personMorethenDetected:{
+    type: Boolean,
+  },
+  rightEyeBlinkRate:{
+    type: String,
   }
 });
 

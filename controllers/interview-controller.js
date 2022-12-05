@@ -8,9 +8,9 @@ import interviewQuestion from "../models/interviewQuestionSchema.js";
 import Job from "../models/jobSchema.js";
 import { job } from "cron";
 
-import AdmZip from "adm-zip";
-
+import fetch from 'node-fetch';
 import AWS from 'aws-sdk';
+import { response } from "express";
 
 const url = process.env.BACKEND_URL;
 const frontendUrl = process.env.FRONTEND_URL;
@@ -181,57 +181,18 @@ export const handlerecording = async (req, response)=>{
     Body: blob,
   }).promise();
   if(uploadedImage){
-    let setrecording = interview.findOneAndUpdate({ _id: req.body.id },{ recording: uploadedImage.Location });
-    response.send({data:"Recording Saved"}).status(200);
+    let setrecording = await interview.findOneAndUpdate({ _id: req.body.meetingID },{ recording: uploadedImage.Location.toString() });
+    response.send({
+      data:"Recording Saved",
+      link: uploadedImage.Location
+    }).status(200);
   }
 }
 
 export const handleproctoring = async (req, res)=>{
   try{
-    // let downloadfile = await axios.post(`https://ec7d-2401-4900-1c62-948a-1c79-6fbc-fcb3-1553.in.ngrok.io/download_files`,{
-    //   job_id: "638b5cfea3da542323c2cd5c"
-    //  });
-    //  let zip = new AdmZip(downloadfile);
-    //  var zipEntries = zip.getEntries();
-    //  console.log(zipEntries);
-    //  res.send(zipEntries).status(200);
-
-    var data = JSON.stringify({
-      "job_id": "638b5cfea3da542323c2cd5c"
-    });
-
-    var config = {
-      method: 'post',
-      url: 'https://ec7d-2401-4900-1c62-948a-1c79-6fbc-fcb3-1553.in.ngrok.io/download_files',
-      headers: { 
-        'Content-Type': 'application/json'
-      },
-      data : data
-    };
-
-    axios(config)
-    .then(function (response) {
-
-      // res.send(response);
-      let zip = new AdmZip(response);
-      var zipEntries = zip.getEntries();
-      console.log(zipEntries);
-      zipEntries.forEach(function (zipEntry) {
-        console.log(zipEntry.toString());
-      });
-       res.send(zipEntries).status(200);
-      // response.set({
-      //   'Content-Type': 'application/zip',
-      //   'Content-Disposition': 'attachment; filename="zip"'
-      // });
-      // console.log(JSON.stringify(response.data));
-      // console.log(JSON.stringify(response.data));
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-
-
+    let setintv = await interview.findOneAndUpdate({ _id: req.body.id }, req.body.proctoring);
+    res.send(setintv).status(200);
   }catch(err){
     return err;
   }

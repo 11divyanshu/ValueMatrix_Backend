@@ -979,6 +979,33 @@ export const listOfUnapproveCompanies = async (req, res) => {
   }
 };
 
+// list of unapproved jobs
+export const getBlockedDate = async (req, res) => {
+  try {
+    const uuser = await User.findById(req.body.id);
+    res.send({
+      data: "Date Added",
+      dates: uuser.blockedDates
+    }).status(200);
+  } catch (err) {
+    console.log("Error Update Blocked Date: ", err);
+    res.send(err);
+  }
+};
+
+// list of unapproved jobs
+export const updateBlockedDate = async (req, res) => {
+  try {
+    const uuser = await User.findOneAndUpdate({ _id: req.body.id }, { blockedDates: req.body.blockeddates });
+    res.send({
+      data: "Date Added"
+    }).status(200);
+  } catch (err) {
+    console.log("Error Update Blocked Date: ", err);
+    res.send(err);
+  }
+};
+
 export const handleXIInterview = async (request, response) => {
   try {
     console.log(request.body);

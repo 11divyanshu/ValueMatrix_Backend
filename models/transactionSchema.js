@@ -30,6 +30,12 @@ const transactionSchema = new mongoose.Schema({
     },
     transactionDate:{
         type:Date
+    },
+    invoiceDate:{
+        type:Date
+    },
+    invoiceID:{
+        type: String
     }
 
 

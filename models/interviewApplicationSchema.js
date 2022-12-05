@@ -141,6 +141,18 @@ const interviewApplicationSchema = new mongoose.Schema({
     type: String,
     default: "Javascript",
     required: false
+  },
+  livestream:{
+    type: String,
+    default: ""
+  },
+  recording:{
+    type: String,
+    default: ""
+  },
+  dyterecording:{
+    type: String,
+    default: ""
   }
 });
 

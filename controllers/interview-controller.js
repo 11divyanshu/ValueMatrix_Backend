@@ -8,6 +8,10 @@ import interviewQuestion from "../models/interviewQuestionSchema.js";
 import Job from "../models/jobSchema.js";
 import { job } from "cron";
 
+import AdmZip from "adm-zip";
+
+import AWS from 'aws-sdk';
+
 const url = process.env.BACKEND_URL;
 const frontendUrl = process.env.FRONTEND_URL;
 const orgid = process.env.ORGID;
@@ -38,6 +42,7 @@ export const checkinterviewdetails = async (request, response) => {
   try {
     // console.log(request.body);
     let interviewDetails = await interview.findById(request.body.meetingID);
+    // response.send({ data: interviewDetails }).status(400);
     if(interviewDetails.meetingID === null){
       axios.post("https://api.cluster.dyte.in/v1/organizations/"+orgid+"/meeting",{
         "title": "Value Matrix Interview Room #"+request.body.meetingID,
@@ -54,7 +59,7 @@ export const checkinterviewdetails = async (request, response) => {
               "name": request.body.participant.firstName,
               "picture": `${url}/media/profileImg/${request.body.participant.profileImg}`
             },
-          },{headers:{Authorization: apikey}}).then((userresponse)=>{
+          },{headers:{Authorization: apikey}}).then(async (userresponse)=>{
             var userAuthToken = userresponse.data.data.authResponse.authToken;
             response.send({
               data: "Data Retrieved",
@@ -80,7 +85,7 @@ export const checkinterviewdetails = async (request, response) => {
             "name": request.body.participant.firstName,
             "picture": `${url}/media/profileImg/${request.body.participant.profileImg}`
           },
-        },{headers:{Authorization: apikey}}).then((userresponse)=>{
+        },{headers:{Authorization: apikey}}).then(async (userresponse)=>{
           var userAuthToken = userresponse.data.data.authResponse.authToken;
           response.send({
             data: "Data Retrieved",
@@ -92,6 +97,7 @@ export const checkinterviewdetails = async (request, response) => {
             personTest: interviewDetails.personTest,
             earTest: interviewDetails.earTest,
             interviewStatus: interviewDetails.interviewStatus,
+            livestream: interviewDetails.livestream,
             jobid: interviewDetails.job.toString()
           }).status(200);
           // console.log(userAuthToken);
@@ -135,6 +141,101 @@ export const checkinterviewdetails = async (request, response) => {
     response.send({ data: "something went wrong", err }).status(400);
   }
 };
+
+export const startlivemeet = async (req, response)=>{
+  try{
+    await axios.post("https://api.cluster.dyte.in/v2/meetings/"+req.body.meetingID+"/livestreams",{
+      name: req.body.room
+    },{
+      headers:{
+        Authorization: 'Basic YzJjM2RkZTgtMGUzNy00NWVkLTlkNGEtZTMyNGE1ZjNmZGNlOmE5Nzc2NjM0YmMwNGUxNTczZDI2',
+      }
+    }).then((data)=>{
+      response.send(data);
+    }).catch( async (err)=>{
+      let respp = await axios.get("https://api.cluster.dyte.in/v2/meetings/"+req.body.meetingID+"/active-livestream", {
+        headers:{
+          Authorization: 'Basic YzJjM2RkZTgtMGUzNy00NWVkLTlkNGEtZTMyNGE1ZjNmZGNlOmE5Nzc2NjM0YmMwNGUxNTczZDI2'
+        }
+      });
+      response.send(respp).status(200);
+      // .then((res2)=>{ response.send(res2).status(200); })
+      // .catch((err)=> { response.send({ data: "something went wrong", err }).status(400); })
+    });
+  }catch(err){
+    response.send({ data: "something went wrong 2", err }).status(400);
+  }
+}
+
+export const handlerecording = async (req, response)=>{
+  const s3 = new AWS.S3({
+    accessKeyId: process.env.AWS_S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY,
+  });
+  const imageURL = req.body.link;
+  const res = await fetch(imageURL);
+  const blob = await res.buffer();
+  const uploadedImage = await s3.upload({
+    Bucket: process.env.AWS_S3_BUCKET_NAME,
+    Key: req.body.id + "_recording" + ".mp4",
+    Body: blob,
+  }).promise();
+  if(uploadedImage){
+    let setrecording = interview.findOneAndUpdate({ _id: req.body.id },{ recording: uploadedImage.Location });
+    response.send({data:"Recording Saved"}).status(200);
+  }
+}
+
+export const handleproctoring = async (req, res)=>{
+  try{
+    // let downloadfile = await axios.post(`https://ec7d-2401-4900-1c62-948a-1c79-6fbc-fcb3-1553.in.ngrok.io/download_files`,{
+    //   job_id: "638b5cfea3da542323c2cd5c"
+    //  });
+    //  let zip = new AdmZip(downloadfile);
+    //  var zipEntries = zip.getEntries();
+    //  console.log(zipEntries);
+    //  res.send(zipEntries).status(200);
+
+    var data = JSON.stringify({
+      "job_id": "638b5cfea3da542323c2cd5c"
+    });
+
+    var config = {
+      method: 'post',
+      url: 'https://ec7d-2401-4900-1c62-948a-1c79-6fbc-fcb3-1553.in.ngrok.io/download_files',
+      headers: { 
+        'Content-Type': 'application/json'
+      },
+      data : data
+    };
+
+    axios(config)
+    .then(function (response) {
+
+      // res.send(response);
+      let zip = new AdmZip(response);
+      var zipEntries = zip.getEntries();
+      console.log(zipEntries);
+      zipEntries.forEach(function (zipEntry) {
+        console.log(zipEntry.toString());
+      });
+       res.send(zipEntries).status(200);
+      // response.set({
+      //   'Content-Type': 'application/zip',
+      //   'Content-Disposition': 'attachment; filename="zip"'
+      // });
+      // console.log(JSON.stringify(response.data));
+      // console.log(JSON.stringify(response.data));
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
+
+  }catch(err){
+    return err;
+  }
+}
 
 export const updateinterviewcheck = async (request, response)=>{
   try{
@@ -244,24 +345,6 @@ export const getlivestatus = async (request, response)=>{
     response.send({
       data: "Data Retrieved",
       stats: livestatus
-    }).status(200);
-  }catch(err){
-    response.send({ data: "something went wrong", err }).status(400);
-  }
-}
-
-export const startlivemeet = async (request, response)=>{
-  try{
-    let meetingID = request.body.meetingID;
-    let livedata = await axios.post("https://api.cluster.dyte.in/v2/meetings/"+meetingID+"/livestreams",{},{
-      headers:{
-        'authorization': 'Basic ',
-        'content-type': 'application/json'
-      }
-    });
-    response.send({
-      data: "Data Retrieved",
-      live: livedata
     }).status(200);
   }catch(err){
     response.send({ data: "something went wrong", err }).status(400);

@@ -9,7 +9,7 @@ import user from "../models/userSchema.js";
 export const getTransactions = async(req,res)=>{
   try {
     let id = req.query.id;
-    let data = await Transaction.find({applicantId:id});
+    let data = await Transaction.find({applicantId:id}).sort({ "_id": -1 });
     return res.status(200).json(data);
   } catch (error) {
     return res.send().status(400);

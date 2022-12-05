@@ -3,6 +3,7 @@ import crypto from "crypto";
 import mongoose from "mongoose";
 import Razorpay from "razorpay"
 import verifyToken from "../middleware/auth.js";
+import { InvoiceNumber } from 'invoice-number'
 import multer from "multer";
 import { } from "dotenv/config";
 import User from "../models/userSchema.js"
@@ -37,7 +38,9 @@ import {
   getUserStats,
   setprofileauth,
   getprofileauth,
-  getOtherLI
+  getOtherLI,
+  getBlockedDate,
+  updateBlockedDate,
 } from "../controllers/userController.js";
 
 import { sendOTPSMS, updateContactOTP } from "../controllers/sms-controller.js";
@@ -188,6 +191,8 @@ router.post("/logout", logout);
 router.post("/getUserInviteFromResetPassId", getUserInviteFromResetPassId);
 router.post("/setProfile", setProfile);
 router.post("/fetchCountry", fetchCountry);
+router.post("/getBlockedDate", getBlockedDate);
+router.post("/updateBlockedDate", updateBlockedDate);
 router.post("/getCountryList", getCountryList);
 router.post("/handleXIInterview", handleXIInterview);
 router.post("/getuserbyEmail", getuserbyEmail);
@@ -548,7 +553,9 @@ router.post('/insertUserInterviewApplications', insertUserInterviewApplications)
 
 router.get("/UserDetailsByJobId", UserDetailsByJobId);
 
-import { getinterviewdetails, checkinterviewdetails, updateinterviewcheck, updatelivestatus, getlivestatus, startinterview, setquestionresult, endinterview, nullallchecks, compilecode, checkcompilestatus, savecode, updatewhiteboard, xiquestions, getinterviewjob, startlivemeet } from "../controllers/interview-controller.js";
+import { getinterviewdetails, checkinterviewdetails, updateinterviewcheck, updatelivestatus, getlivestatus, startinterview, setquestionresult, endinterview, nullallchecks, compilecode, checkcompilestatus, savecode, updatewhiteboard, xiquestions, getinterviewjob, startlivemeet, handleproctoring, handlerecording } from "../controllers/interview-controller.js";
+router.post('/handlerecording', handlerecording);
+router.post('/handleproctoring', handleproctoring);
 router.post('/getinterviewdetails', getinterviewdetails);
 router.post('/checkinterviewdetails', nullallchecks, checkinterviewdetails);
 router.post('/fetchinterviewdetails', checkinterviewdetails);
@@ -655,7 +662,6 @@ router.post("/getUserCurrentCredit", async (req,res) => {
 });
 router.post("/payment/orders", async (req, res) => {
   try {
-    console.log(req.body);
     const instance = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_SECRET,
@@ -663,26 +669,39 @@ router.post("/payment/orders", async (req, res) => {
     // console.log(instance)
     let amount = 0;
     let data = await CreditCategory.find({ category: req.body.user_type });
-    console.log(data)
 
+    let tcount = await Transaction.find().count();
+
+    let dcount = tcount.toString().length;
+
+    let invcount = ""
+    for(let i=0; i<(6-dcount); i++){
+      invcount = invcount+"0";
+    }
+    invcount = invcount + tcount;
+
+    let usr = await User.findById(req.body.userId);
+
+    let dt = new Date();
+
+    let invoice = dt.getFullYear().toString() + "/" + (dt.getMonth() + 1).toString() + "/" + usr.firstName.substring(0, 3).toUpperCase() + invcount.toString();
 
     let tData = {
       applicantId: req.body.userId,
       amount: data[0].amount * req.body.amount * 100,
       credit: req.body.amount,
       transactionDate: new Date(),
-
+      invoiceID: invoice,
+      invoiceDate: new Date()
     }
     let transactionData = new Transaction(tData);
 
     await transactionData.save();
-
-
-
+    
     const options = {
       amount: data[0].amount * req.body.amount *100, // amount in smallest currency unit
       currency: "INR",
-      receipt: "receipt_order_74394",
+      receipt: "receipt_order_"+invoice,
       
     };
 

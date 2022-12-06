@@ -14,6 +14,47 @@ const url = process.env.BACKEND_URL;
 const frontendUrl = process.env.FRONTEND_URL;
 
 // Get List of User Applications
+export const getcandidatesevaluations = async (request, response) => {
+  try {
+    let data = request.body.data;
+    let temp = [];
+    console.log("start 12345");
+    for(let i=0; i<data.length; i++){
+      console.log("start");
+      let intvapp = await InterviewApplication.findOne({ applicant: data[i].Uid, job: request.body.id });
+      if(intvapp){
+        temp.push(intvapp);
+      }else{
+        temp.push({ status:"nf" });
+      }
+    }
+    return response.status(200).json({ message: "Success", data: temp });
+    // let u_id = request.body.user_id;
+    // await InterviewApplication.find({ applicant: u_id })
+    //   .sort({ updateTime: -1 })
+    //   .exec(async function (err, res) {
+    //     if (err) {
+    //       return response.status(500).json({ message: "Error Occured" });
+    //     } else {
+    //       // let job = await Job.findOne({ _id: res.job }).select({ jobTitle: 1, hiringOrgainzation: 1, });
+    //       // return response.status(200).json({ message: "Success", data: res, job: job });
+    //       let data = [];
+    //       for (let i = 0; i < res.length; i++) {
+    //         let job = await Job.findOne(
+    //           { _id: res[i].job },
+    //           function (err, res1) {
+    //             data.push({ ...res1, ...res[i] });
+    //           }
+    //         ).clone();
+    //       }
+    //       return response.status(200).json({ message: "Success", data: data });
+    //     }
+    //   });
+  } catch (err) {
+    return response.status(500).json({ Error: err.message });
+  }
+};
+
 export const getUserInterviewApplications = async (request, response) => {
   try {
     let u_id = request.body.user_id;
@@ -209,6 +250,7 @@ export const getInterviewApplication = async (request, response) => {
             jobType: result.jobType,
             salary: result.salary,
             questions: result.questions,
+            skills: result.skills
           };
         }).clone();
 
@@ -221,6 +263,9 @@ export const getInterviewApplication = async (request, response) => {
               contact: result.contact,
               email: result.email,
               username: result.username,
+              profileImg: result.profileImg,
+              linkedinurlkey: result.linkedinurlkey,
+              skills: result.tools
             };
           }).clone();
 
@@ -314,7 +359,6 @@ export const updateEvaluation = async (request, response) => {
           tempEv[xi_id] = r;
           // console.log(tempEv);
           let tempSkills = [];
-          e;
 
           User.findById(res.applicant, async function (err, user) {
             tempSkills = user.tools;

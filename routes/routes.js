@@ -112,6 +112,7 @@ import {
   XIPerformance,
   updateXIInterviewApplication,
   getXIInterviewList,
+  getcandidatesevaluations,
 } from "../controllers/interviewApplication-controller.js";
 import Routes from "twilio/lib/rest/Routes.js";
 import {
@@ -310,6 +311,7 @@ router.post("/listXIEvaluation", verifyToken, getXIEvaluationList);
 router.post("/getXIInterviewList", verifyToken, getXIInterviewList);
 router.post("/listXIEvaluatedReports", verifyToken, getXIEvaluatedReports);
 router.post("/getInterviewApplication", verifyToken, getInterviewApplication);
+router.post("/getcandidatesevaluations", getcandidatesevaluations);
 router.post("/updateEvaluation", verifyToken, updateEvaluation);
 router.put("/updateInterviewApplication", updateInterviewApplication);
 router.put("/updateXIInterviewApplication", updateXIInterviewApplication);

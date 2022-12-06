@@ -254,7 +254,7 @@ export const startinterview = async (request, response)=>{
 
 export const endinterview = async (request, response)=>{
   try{
-    let updatedinterviewstatus = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { interviewStatus: false } }, { new: true });
+    let updatedinterviewstatus = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { interviewStatus: false, status: "Interviewed" } }, { new: true });
     response.send({
       data: "Interview Completed",
     }).status(200);

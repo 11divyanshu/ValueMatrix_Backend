@@ -272,7 +272,6 @@ export const getInterviewApplication = async (request, response) => {
               psycdata: psycdetails.data
             };
           }).clone();
-
           // console.log(data);
 
         }

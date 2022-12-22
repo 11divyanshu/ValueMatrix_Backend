@@ -185,6 +185,7 @@ export const getuserbyEmail = async (request, response) => {
 export const userLogin = async (request, response) => {
   try {
     console.log("Checking User Function");
+    console.log(request.body)
     var userData = await User.findOne({
       secondaryEmails: request.body.username,
     });

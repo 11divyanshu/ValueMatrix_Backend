@@ -228,16 +228,13 @@ export const getXIEvaluatedReports = async (request, response) => {
 export const getInterviewApplication = async (request, response) => {
   try {
     let id = request.body.id;
-
-    
-    
-    console.log(request.body);
     await InterviewApplication.findOne({ _id: mongoose.Types.ObjectId(id) }).exec(async function (
       err,
       res
     ) {
-      console.log(res)
+      // console.log(res)
       if (err) {
+        console.log(err);
         return response.status(500).json({ message: "Error Occured" });
       } else {
         let data = { application: res };

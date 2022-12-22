@@ -64,22 +64,18 @@ const interviewApplicationSchema = new mongoose.Schema({
   faceTest: {
     type: Boolean,
     required: false,
-    default: false
   },
   gazeTest: {
     type: Boolean,
     required: false,
-    default: false
   },
   personTest: {
     type: Boolean,
     required: false,
-    default: false
   },
   earTest: {
     type: Boolean,
     required: false,
-    default: false
   },
   rating:{
     type:Number,

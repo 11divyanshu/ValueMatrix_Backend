@@ -12,6 +12,7 @@ import axios from "axios";
 
 const url = process.env.BACKEND_URL;
 const frontendUrl = process.env.FRONTEND_URL;
+const psycurl = process.env.PSYC_URL;
 
 // Get List of User Applications
 export const getcandidatesevaluations = async (request, response) => {
@@ -255,7 +256,9 @@ export const getInterviewApplication = async (request, response) => {
         }).clone();
 
         while (data.applicant == undefined) {
-          await User.findOne({ _id: res.applicant }, function (err, result) {
+          await User.findOne({ _id: res.applicant }, async function (err, result) {
+            let psycdetails = await axios.get(psycurl+"/"+result.linkedinurlkey);
+            console.log("psy ",psycdetails)
             data.applicant = {
               _id: result._id,
               firstName: result.firstName,
@@ -265,7 +268,8 @@ export const getInterviewApplication = async (request, response) => {
               username: result.username,
               profileImg: result.profileImg,
               linkedinurlkey: result.linkedinurlkey,
-              skills: result.tools
+              skills: result.tools,
+              psycdata: psycdetails.data
             };
           }).clone();
 

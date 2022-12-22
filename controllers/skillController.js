@@ -1,10 +1,37 @@
 import Skill from "../models/skillsSchema.js";
+import Cognitiveskill from "../models/cognitiveskillsSchema.js";
 import User from "../models/userSchema.js";
 
 export const getSkills = async (req, res) => {
   try {
     const skills = await Skill.find().sort();
     return res.status(200).json(skills);
+  } catch (error) {
+    return res.status(404).json({ message: error.message });
+  }
+};
+
+export const getcognitiveSkills = async (req, res) => {
+  try {
+    const cognitiveskills = await Cognitiveskill.find().sort();
+    return res.status(200).json(cognitiveskills);
+  } catch (error) {
+    return res.status(404).json({ message: error.message });
+  }
+};
+
+export const rmSkills = async (req, res) => {
+  try {
+    const skills = await Skill.find().sort();
+    // for(let i=0; i<skills.length; i++){
+    //   await Skill.findOneAndDelete({_id: skills[i]._id},async function(err ,res){
+    //     if(err){
+    //       return res.status(400).send(err);
+    //     }
+    //     console.log("deleted ",i);
+    //   });
+    // }
+    return res.status(200).json(skills.length);
   } catch (error) {
     return res.status(404).json({ message: error.message });
   }

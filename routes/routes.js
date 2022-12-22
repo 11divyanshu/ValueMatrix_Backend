@@ -99,7 +99,7 @@ import {
   filterCompany,
   getCompanyUserList,
 } from "../controllers/companyController.js";
-import { addSkill, getSkills } from "../controllers/skillController.js";
+import { addSkill, getSkills, rmSkills, getcognitiveSkills } from "../controllers/skillController.js";
 import {
   getInterviewApplication,
   getUserInterviewApplications,
@@ -305,6 +305,8 @@ router.post(
 // Skills Routes
 router.post("/addSkills", verifyToken, addSkill);
 router.post("/getSkills", verifyToken, getSkills);
+router.post("/getcognitiveSkills", verifyToken, getcognitiveSkills);
+router.post("/rmSkills", rmSkills);
 
 // XI Routes
 router.post("/listXIEvaluation", verifyToken, getXIEvaluationList);

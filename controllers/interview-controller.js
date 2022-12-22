@@ -207,19 +207,19 @@ export const updateinterviewcheck = async (request, response)=>{
         updatedinterview: updatedinterview
       }).status(200);
     }else if(request.body.type === "gaze"){
-      let updatedinterview = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { gazeTest: true } }, { new: true });
+      let updatedinterview = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { faceTest: true, gazeTest: true } }, { new: true });
       response.send({
         data: "Updated Test",
         updatedinterview: updatedinterview
       }).status(200);
     }else if(request.body.type === "person"){
-      let updatedinterview = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { personTest: true } }, { new: true });
+      let updatedinterview = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { faceTest: true, gazeTest: true, personTest: true } }, { new: true });
       response.send({
         data: "Updated Test",
         updatedinterview: updatedinterview
       }).status(200);
     }else if(request.body.type === "ear"){
-      let updatedinterview = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { earTest: true } }, { new: true });
+      let updatedinterview = await interview.findOneAndUpdate({ _id: request.body.meetingID }, { $set: { faceTest: true, gazeTest: true, personTest: true, earTest: true } }, { new: true });
       response.send({
         data: "Updated Test",
         updatedinterview: updatedinterview
